@@ -1,0 +1,2257 @@
+   1              		.cpu arm926ej-s
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 18, 4
+  11              		.file	"cyfxtx.c"
+  19              	.Ltext0:
+  20              		.cfi_sections	.debug_frame
+  21              		.align	2
+  22              		.global	CyU3PUndefinedHandler
+  24              	CyU3PUndefinedHandler:
+  25              	.LFB0:
+  26              		.file 1 "../cyfxtx.c"
+   1:../cyfxtx.c   **** /*
+   2:../cyfxtx.c   ****  ## Cypress USB 3.0 Platform source file (cyfxtx.c)
+   3:../cyfxtx.c   ****  ## ===========================
+   4:../cyfxtx.c   ****  ##
+   5:../cyfxtx.c   ****  ##  Copyright Cypress Semiconductor Corporation, 2010-2011,
+   6:../cyfxtx.c   ****  ##  All Rights Reserved
+   7:../cyfxtx.c   ****  ##  UNPUBLISHED, LICENSED SOFTWARE.
+   8:../cyfxtx.c   ****  ##
+   9:../cyfxtx.c   ****  ##  CONFIDENTIAL AND PROPRIETARY INFORMATION
+  10:../cyfxtx.c   ****  ##  WHICH IS THE PROPERTY OF CYPRESS.
+  11:../cyfxtx.c   ****  ##
+  12:../cyfxtx.c   ****  ##  Use of this file is governed
+  13:../cyfxtx.c   ****  ##  by the license agreement included in the file
+  14:../cyfxtx.c   ****  ##
+  15:../cyfxtx.c   ****  ##     <install>/license/license.txt
+  16:../cyfxtx.c   ****  ##
+  17:../cyfxtx.c   ****  ##  where <install> is the Cypress software
+  18:../cyfxtx.c   ****  ##  installation root directory path.
+  19:../cyfxtx.c   ****  ##
+  20:../cyfxtx.c   ****  ## ===========================
+  21:../cyfxtx.c   **** */
+  22:../cyfxtx.c   **** 
+  23:../cyfxtx.c   **** /*
+  24:../cyfxtx.c   ****    This file is taken from the FX3 SDK package. Please use the cyfxtx.c file from
+  25:../cyfxtx.c   ****    the latest FX3 SDK release as the base version of the file.
+  26:../cyfxtx.c   ****  */
+  27:../cyfxtx.c   **** 
+  28:../cyfxtx.c   **** /* This file defines the porting requied for the ThreadX RTOS.
+  29:../cyfxtx.c   ****  * This file shall be provided in source form and must be compiled
+  30:../cyfxtx.c   ****  * with the application source code
+  31:../cyfxtx.c   ****  */
+  32:../cyfxtx.c   **** 
+  33:../cyfxtx.c   **** #include <cyu3os.h>
+  34:../cyfxtx.c   **** #include <cyu3error.h>
+  35:../cyfxtx.c   **** 
+  36:../cyfxtx.c   **** 
+  37:../cyfxtx.c   **** /*
+  38:../cyfxtx.c   ****    The MEM heap is a Memory byte pool which is used to allocate OS objects
+  39:../cyfxtx.c   ****    such as thread stacks and memory for message queues. The Cypress FX3
+  40:../cyfxtx.c   ****    libraries require a Mem heap size of at least 32 KB.
+  41:../cyfxtx.c   ****  */
+  42:../cyfxtx.c   **** #define CY_U3P_MEM_HEAP_BASE         ((uint8_t *)0x40038000)
+  43:../cyfxtx.c   **** #define CY_U3P_MEM_HEAP_SIZE         (0x8000)
+  44:../cyfxtx.c   **** 
+  45:../cyfxtx.c   **** #define CY_U3P_SYS_MEM_TOP           (0x40080000)
+  46:../cyfxtx.c   **** 
+  47:../cyfxtx.c   **** /*
+  48:../cyfxtx.c   ****    The buffer heap is used to obtain data buffers for DMA transfers in or out of
+  49:../cyfxtx.c   ****    the FX3 device. The reference implementation of the buffer allocator makes use
+  50:../cyfxtx.c   ****    of a reserved area in the SYSTEM RAM and ensures that all allocated DMA buffers
+  51:../cyfxtx.c   ****    are aligned to cache lines.
+  52:../cyfxtx.c   ****  */
+  53:../cyfxtx.c   **** #define CY_U3P_BUFFER_HEAP_BASE      (((uint32_t)(CY_U3P_MEM_HEAP_BASE) + (CY_U3P_MEM_HEAP_SIZE)))
+  54:../cyfxtx.c   **** #define CY_U3P_BUFFER_HEAP_SIZE      ((CY_U3P_SYS_MEM_TOP) - (CY_U3P_BUFFER_HEAP_BASE))
+  55:../cyfxtx.c   **** 
+  56:../cyfxtx.c   **** #define CY_U3P_BUFFER_ALLOC_TIMEOUT  (10)
+  57:../cyfxtx.c   **** #define CY_U3P_MEM_ALLOC_TIMEOUT     (10)
+  58:../cyfxtx.c   **** 
+  59:../cyfxtx.c   **** #define CY_U3P_MAX(a,b)                 (((a) > (b)) ? (a) : (b))
+  60:../cyfxtx.c   **** #define CY_U3P_MIN(a,b)                 (((a) < (b)) ? (a) : (b))
+  61:../cyfxtx.c   **** 
+  62:../cyfxtx.c   **** CyBool_t         glMemPoolInit = CyFalse;
+  63:../cyfxtx.c   **** CyU3PBytePool    glMemBytePool;
+  64:../cyfxtx.c   **** CyU3PDmaBufMgr_t glBufferManager = {{0}, 0, 0, 0, 0, 0};
+  65:../cyfxtx.c   **** 
+  66:../cyfxtx.c   **** /* These functions are exception handlers. These are default
+  67:../cyfxtx.c   ****  * implementations and the application firmware can have a
+  68:../cyfxtx.c   ****  * re-implementation. All these exceptions are not currently
+  69:../cyfxtx.c   ****  * handled and are mapped to while (1) */
+  70:../cyfxtx.c   **** 
+  71:../cyfxtx.c   **** /* This function is the undefined instruction handler. This
+  72:../cyfxtx.c   ****  * occurs when the CPU encounters an undefined instruction. */
+  73:../cyfxtx.c   **** void
+  74:../cyfxtx.c   **** CyU3PUndefinedHandler (
+  75:../cyfxtx.c   ****         void)
+  76:../cyfxtx.c   **** {
+  27              		.loc 1 76 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.L2:
+  33 0000 FEFFFFEA 		b	.L2
+  34              		.cfi_endproc
+  35              	.LFE0:
+  37              		.align	2
+  38              		.global	CyU3PPrefetchHandler
+  40              	CyU3PPrefetchHandler:
+  41              	.LFB1:
+  77:../cyfxtx.c   ****     for (;;);
+  78:../cyfxtx.c   **** }
+  79:../cyfxtx.c   **** 
+  80:../cyfxtx.c   **** /* This function is the intruction prefetch error handler. This
+  81:../cyfxtx.c   ****  * occurs when the CPU encounters an instruction prefetch error.
+  82:../cyfxtx.c   ****  * Since there are no virtual memory use case, this is an unknown
+  83:../cyfxtx.c   ****  * memory access error. This is a fatal error. */
+  84:../cyfxtx.c   **** void
+  85:../cyfxtx.c   **** CyU3PPrefetchHandler (
+  86:../cyfxtx.c   ****         void)
+  87:../cyfxtx.c   **** {
+  42              		.loc 1 87 0
+  43              		.cfi_startproc
+  44              		@ args = 0, pretend = 0, frame = 0
+  45              		@ frame_needed = 0, uses_anonymous_args = 0
+  46              		@ link register save eliminated.
+  47              	.L4:
+  48 0004 FEFFFFEA 		b	.L4
+  49              		.cfi_endproc
+  50              	.LFE1:
+  52              		.align	2
+  53              		.global	CyU3PAbortHandler
+  55              	CyU3PAbortHandler:
+  56              	.LFB2:
+  88:../cyfxtx.c   ****     for (;;);
+  89:../cyfxtx.c   **** }
+  90:../cyfxtx.c   **** 
+  91:../cyfxtx.c   **** /* This function is the data abort error handler. This occurs when
+  92:../cyfxtx.c   ****  * the CPU encounters an data prefetch error. Since there are no
+  93:../cyfxtx.c   ****  * virtual memory use case, this is an unknown memory access error.
+  94:../cyfxtx.c   ****  * This is a fatal error. */
+  95:../cyfxtx.c   **** void
+  96:../cyfxtx.c   **** CyU3PAbortHandler (
+  97:../cyfxtx.c   ****         void)
+  98:../cyfxtx.c   **** {
+  57              		.loc 1 98 0
+  58              		.cfi_startproc
+  59              		@ args = 0, pretend = 0, frame = 0
+  60              		@ frame_needed = 0, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  62              	.L6:
+  63 0008 FEFFFFEA 		b	.L6
+  64              		.cfi_endproc
+  65              	.LFE2:
+  67              		.align	2
+  68              		.global	tx_application_define
+  70              	tx_application_define:
+  71              	.LFB3:
+  99:../cyfxtx.c   ****     for (;;);
+ 100:../cyfxtx.c   **** }
+ 101:../cyfxtx.c   **** 
+ 102:../cyfxtx.c   **** /* This function is expected to be invoked by the RTOS kernel after
+ 103:../cyfxtx.c   ****  * initialization. No explicit call to this function must be made.
+ 104:../cyfxtx.c   ****  */
+ 105:../cyfxtx.c   **** void
+ 106:../cyfxtx.c   **** tx_application_define (
+ 107:../cyfxtx.c   ****         void *unusedMem)
+ 108:../cyfxtx.c   **** {
+  72              		.loc 1 108 0
+  73              		.cfi_startproc
+  74              		@ args = 0, pretend = 0, frame = 0
+  75              		@ frame_needed = 0, uses_anonymous_args = 0
+  76              		@ link register save eliminated.
+  77              	.LVL0:
+ 109:../cyfxtx.c   ****     (void) unusedMem;
+ 110:../cyfxtx.c   ****     CyU3PApplicationDefine ();
+ 111:../cyfxtx.c   **** }
+  78              		.loc 1 111 0
+ 110:../cyfxtx.c   ****     CyU3PApplicationDefine ();
+  79              		.loc 1 110 0
+  80 000c FEFFFFEA 		b	CyU3PApplicationDefine
+  81              		.cfi_endproc
+  82              	.LFE3:
+  84              		.align	2
+  85              		.global	CyU3PMemInit
+  87              	CyU3PMemInit:
+  88              	.LFB4:
+ 112:../cyfxtx.c   **** 
+ 113:../cyfxtx.c   **** /* This function initializes the custom heap for OS specific dynamic memory allocation.
+ 114:../cyfxtx.c   ****  * The function should not be explicitly invoked. This function is called from the 
+ 115:../cyfxtx.c   ****  * API library. Modify this function depending upon the heap requirement of 
+ 116:../cyfxtx.c   ****  * application code. The minimum required value is specified by the predefined macro.
+ 117:../cyfxtx.c   ****  * Any value less than specified can cause the drivers to stop functioning.
+ 118:../cyfxtx.c   ****  * The function creates a global byte pool.
+ 119:../cyfxtx.c   ****  */
+ 120:../cyfxtx.c   **** void
+ 121:../cyfxtx.c   **** CyU3PMemInit (
+ 122:../cyfxtx.c   ****         void)
+ 123:../cyfxtx.c   **** {
+  89              		.loc 1 123 0
+  90              		.cfi_startproc
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124:../cyfxtx.c   ****     if (!glMemPoolInit)
+  93              		.loc 1 124 0
+  94 0010 38C09FE5 		ldr	ip, .L11
+ 123:../cyfxtx.c   **** {
+  95              		.loc 1 123 0
+  96 0014 04E02DE5 		str	lr, [sp, #-4]!
+  97              	.LCFI0:
+  98              		.cfi_def_cfa_offset 4
+  99              		.loc 1 124 0
+ 100 0018 00109CE5 		ldr	r1, [ip, #0]
+ 123:../cyfxtx.c   **** {
+ 101              		.loc 1 123 0
+ 102 001c 0CD04DE2 		sub	sp, sp, #12
+ 103              	.LCFI1:
+ 104              		.cfi_def_cfa_offset 16
+ 105              		.loc 1 124 0
+ 106 0020 000051E3 		cmp	r1, #0
+ 107 0024 0700001A 		bne	.L8
+ 108              		.cfi_offset 14, -4
+ 125:../cyfxtx.c   ****     {
+ 126:../cyfxtx.c   **** 	glMemPoolInit = CyTrue;
+ 109              		.loc 1 126 0
+ 110 0028 01E0A0E3 		mov	lr, #1
+ 111 002c 00E08CE5 		str	lr, [ip, #0]
+ 127:../cyfxtx.c   **** 	CyU3PBytePoolCreate (&glMemBytePool, CY_U3P_MEM_HEAP_BASE, CY_U3P_MEM_HEAP_SIZE);
+ 112              		.loc 1 127 0
+ 113 0030 1C009FE5 		ldr	r0, .L11+4
+ 114 0034 34C0A0E3 		mov	ip, #52
+ 115 0038 18209FE5 		ldr	r2, .L11+8
+ 116 003c 0239A0E3 		mov	r3, #32768
+ 117 0040 00C08DE5 		str	ip, [sp, #0]
+ 118 0044 FEFFFFEB 		bl	_txe_byte_pool_create
+ 119              	.L8:
+ 128:../cyfxtx.c   ****     }
+ 129:../cyfxtx.c   **** }
+ 120              		.loc 1 129 0
+ 121 0048 0CD08DE2 		add	sp, sp, #12
+ 122 004c 04F09DE4 		ldmfd	sp!, {pc}
+ 123              	.L12:
+ 124              		.align	2
+ 125              	.L11:
+ 126 0050 00000000 		.word	.LANCHOR0
+ 127 0054 00000000 		.word	glMemBytePool
+ 128 0058 00800340 		.word	1073971200
+ 129              		.cfi_endproc
+ 130              	.LFE4:
+ 132              		.align	2
+ 133              		.global	CyU3PMemAlloc
+ 135              	CyU3PMemAlloc:
+ 136              	.LFB5:
+ 130:../cyfxtx.c   **** 
+ 131:../cyfxtx.c   **** void *
+ 132:../cyfxtx.c   **** CyU3PMemAlloc (
+ 133:../cyfxtx.c   ****         uint32_t size)
+ 134:../cyfxtx.c   **** {
+ 137              		.loc 1 134 0
+ 138              		.cfi_startproc
+ 139              		@ args = 0, pretend = 0, frame = 8
+ 140              		@ frame_needed = 0, uses_anonymous_args = 0
+ 141              	.LVL1:
+ 142 005c 10402DE9 		stmfd	sp!, {r4, lr}
+ 143              	.LCFI2:
+ 144              		.cfi_def_cfa_offset 8
+ 145 0060 08D04DE2 		sub	sp, sp, #8
+ 146              	.LCFI3:
+ 147              		.cfi_def_cfa_offset 16
+ 148              		.loc 1 134 0
+ 149 0064 0040A0E1 		mov	r4, r0
+ 150              		.cfi_offset 14, -4
+ 151              		.cfi_offset 4, -8
+ 135:../cyfxtx.c   ****     void     *ret_p;
+ 136:../cyfxtx.c   ****     uint32_t status;
+ 137:../cyfxtx.c   **** 
+ 138:../cyfxtx.c   ****     /* Cannot wait in interrupt context */
+ 139:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 152              		.loc 1 139 0
+ 153 0068 FEFFFFEB 		bl	_tx_thread_identify
+ 154              	.LVL2:
+ 140:../cyfxtx.c   ****     {
+ 141:../cyfxtx.c   ****         status = CyU3PByteAlloc (&glMemBytePool, (void **)&ret_p, size, CY_U3P_MEM_ALLOC_TIMEOUT);
+ 155              		.loc 1 141 0
+ 156 006c 04108DE2 		add	r1, sp, #4
+ 157 0070 0420A0E1 		mov	r2, r4
+ 139:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 158              		.loc 1 139 0
+ 159 0074 003050E2 		subs	r3, r0, #0
+ 160              		.loc 1 141 0
+ 161 0078 0A30A013 		movne	r3, #10
+ 162 007c 14009FE5 		ldr	r0, .L18
+ 142:../cyfxtx.c   ****     }
+ 143:../cyfxtx.c   ****     else
+ 144:../cyfxtx.c   ****     {
+ 145:../cyfxtx.c   ****         status = CyU3PByteAlloc (&glMemBytePool, (void **)&ret_p, size, CYU3P_NO_WAIT);
+ 163              		.loc 1 145 0
+ 164 0080 FEFFFFEB 		bl	_txe_byte_allocate
+ 165              	.LVL3:
+ 146:../cyfxtx.c   ****     }
+ 147:../cyfxtx.c   **** 
+ 148:../cyfxtx.c   ****     if(status == CY_U3P_SUCCESS)
+ 166              		.loc 1 148 0
+ 167 0084 000050E3 		cmp	r0, #0
+ 168              	.LVL4:
+ 149:../cyfxtx.c   ****     {
+ 150:../cyfxtx.c   ****         return ret_p;
+ 169              		.loc 1 150 0
+ 170 0088 04009D05 		ldreq	r0, [sp, #4]
+ 171              	.LVL5:
+ 151:../cyfxtx.c   ****     }
+ 152:../cyfxtx.c   **** 
+ 153:../cyfxtx.c   ****     return (NULL);
+ 172              		.loc 1 153 0
+ 173 008c 0000A013 		movne	r0, #0
+ 154:../cyfxtx.c   **** }
+ 174              		.loc 1 154 0
+ 175 0090 08D08DE2 		add	sp, sp, #8
+ 176 0094 1080BDE8 		ldmfd	sp!, {r4, pc}
+ 177              	.L19:
+ 178              		.align	2
+ 179              	.L18:
+ 180 0098 00000000 		.word	glMemBytePool
+ 181              		.cfi_endproc
+ 182              	.LFE5:
+ 184              		.align	2
+ 185              		.global	CyU3PMemFree
+ 187              	CyU3PMemFree:
+ 188              	.LFB6:
+ 155:../cyfxtx.c   **** 
+ 156:../cyfxtx.c   **** void
+ 157:../cyfxtx.c   **** CyU3PMemFree (
+ 158:../cyfxtx.c   ****         void *mem_p)
+ 159:../cyfxtx.c   **** {
+ 189              		.loc 1 159 0
+ 190              		.cfi_startproc
+ 191              		@ args = 0, pretend = 0, frame = 0
+ 192              		@ frame_needed = 0, uses_anonymous_args = 0
+ 193              		@ link register save eliminated.
+ 194              	.LVL6:
+ 160:../cyfxtx.c   ****      CyU3PByteFree (mem_p);
+ 161:../cyfxtx.c   **** }
+ 195              		.loc 1 161 0
+ 160:../cyfxtx.c   ****      CyU3PByteFree (mem_p);
+ 196              		.loc 1 160 0
+ 197 009c FEFFFFEA 		b	_txe_byte_release
+ 198              		.cfi_endproc
+ 199              	.LFE6:
+ 201              		.align	2
+ 202              		.global	CyU3PMemSet
+ 204              	CyU3PMemSet:
+ 205              	.LFB7:
+ 162:../cyfxtx.c   **** 
+ 163:../cyfxtx.c   **** void
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 165:../cyfxtx.c   ****         uint8_t *ptr,
+ 166:../cyfxtx.c   ****         uint8_t data,
+ 167:../cyfxtx.c   ****         uint32_t count)
+ 168:../cyfxtx.c   **** {
+ 206              		.loc 1 168 0
+ 207              		.cfi_startproc
+ 208              		@ args = 0, pretend = 0, frame = 0
+ 209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 210              		@ link register save eliminated.
+ 211              	.LVL7:
+ 169:../cyfxtx.c   ****     /* Loop unrolling for faster operation */
+ 170:../cyfxtx.c   ****     while (count >> 3)
+ 212              		.loc 1 170 0
+ 213 00a0 A231B0E1 		movs	r3, r2, lsr #3
+ 168:../cyfxtx.c   **** {
+ 214              		.loc 1 168 0
+ 215 00a4 F0012DE9 		stmfd	sp!, {r4, r5, r6, r7, r8}
+ 216              	.LCFI4:
+ 217              		.cfi_def_cfa_offset 20
+ 218              		.loc 1 170 0
+ 219 00a8 0B00000A 		beq	.L22
+ 220              		.cfi_offset 8, -4
+ 221              		.cfi_offset 7, -8
+ 222              		.cfi_offset 6, -12
+ 223              		.cfi_offset 5, -16
+ 224              		.cfi_offset 4, -20
+ 225              	.L31:
+ 171:../cyfxtx.c   ****     {
+ 172:../cyfxtx.c   ****         ptr[0] = data;
+ 173:../cyfxtx.c   ****         ptr[1] = data;
+ 174:../cyfxtx.c   ****         ptr[2] = data;
+ 175:../cyfxtx.c   ****         ptr[3] = data;
+ 176:../cyfxtx.c   ****         ptr[4] = data;
+ 177:../cyfxtx.c   ****         ptr[5] = data;
+ 178:../cyfxtx.c   ****         ptr[6] = data;
+ 179:../cyfxtx.c   ****         ptr[7] = data;
+ 180:../cyfxtx.c   **** 
+ 181:../cyfxtx.c   ****         count -= 8;
+ 226              		.loc 1 181 0
+ 227 00ac 082042E2 		sub	r2, r2, #8
+ 228              	.LVL8:
+ 170:../cyfxtx.c   ****     while (count >> 3)
+ 229              		.loc 1 170 0
+ 230 00b0 A231B0E1 		movs	r3, r2, lsr #3
+ 172:../cyfxtx.c   ****         ptr[0] = data;
+ 231              		.loc 1 172 0
+ 232 00b4 0010C0E5 		strb	r1, [r0, #0]
+ 173:../cyfxtx.c   ****         ptr[1] = data;
+ 233              		.loc 1 173 0
+ 234 00b8 0110C0E5 		strb	r1, [r0, #1]
+ 174:../cyfxtx.c   ****         ptr[2] = data;
+ 235              		.loc 1 174 0
+ 236 00bc 0210C0E5 		strb	r1, [r0, #2]
+ 175:../cyfxtx.c   ****         ptr[3] = data;
+ 237              		.loc 1 175 0
+ 238 00c0 0310C0E5 		strb	r1, [r0, #3]
+ 176:../cyfxtx.c   ****         ptr[4] = data;
+ 239              		.loc 1 176 0
+ 240 00c4 0410C0E5 		strb	r1, [r0, #4]
+ 177:../cyfxtx.c   ****         ptr[5] = data;
+ 241              		.loc 1 177 0
+ 242 00c8 0510C0E5 		strb	r1, [r0, #5]
+ 178:../cyfxtx.c   ****         ptr[6] = data;
+ 243              		.loc 1 178 0
+ 244 00cc 0610C0E5 		strb	r1, [r0, #6]
+ 179:../cyfxtx.c   ****         ptr[7] = data;
+ 245              		.loc 1 179 0
+ 246 00d0 0710C0E5 		strb	r1, [r0, #7]
+ 182:../cyfxtx.c   ****         ptr += 8;
+ 247              		.loc 1 182 0
+ 248 00d4 080080E2 		add	r0, r0, #8
+ 249              	.LVL9:
+ 170:../cyfxtx.c   ****     while (count >> 3)
+ 250              		.loc 1 170 0
+ 251 00d8 F3FFFF1A 		bne	.L31
+ 252              	.L22:
+ 253              	.LVL10:
+ 183:../cyfxtx.c   ****     }
+ 184:../cyfxtx.c   **** 
+ 185:../cyfxtx.c   ****     while (count--)
+ 254              		.loc 1 185 0 discriminator 1
+ 255 00dc 000052E3 		cmp	r2, #0
+ 256 00e0 7100000A 		beq	.L21
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 257              		.loc 1 164 0
+ 258 00e4 004060E2 		rsb	r4, r0, #0
+ 259 00e8 034004E2 		and	r4, r4, #3
+ 260              		.loc 1 185 0
+ 261 00ec 020054E1 		cmp	r4, r2
+ 262 00f0 0240A021 		movcs	r4, r2
+ 263 00f4 000054E3 		cmp	r4, #0
+ 264 00f8 016042E2 		sub	r6, r2, #1
+ 265 00fc 6C00000A 		beq	.L30
+ 186:../cyfxtx.c   ****     {
+ 187:../cyfxtx.c   ****         *ptr = data;
+ 266              		.loc 1 187 0
+ 267 0100 0030A0E1 		mov	r3, r0
+ 268 0104 027042E2 		sub	r7, r2, #2
+ 269 0108 018044E2 		sub	r8, r4, #1
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 270              		.loc 1 164 0
+ 271 010c 010054E3 		cmp	r4, #1
+ 272              		.loc 1 187 0
+ 273 0110 0110C3E4 		strb	r1, [r3], #1
+ 274 0114 038008E2 		and	r8, r8, #3
+ 275 0118 0350A0E1 		mov	r5, r3
+ 276              	.LVL11:
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 277              		.loc 1 164 0
+ 278 011c 0760A0E1 		mov	r6, r7
+ 279 0120 01C0A0E3 		mov	ip, #1
+ 280 0124 1A00009A 		bls	.L75
+ 281 0128 000058E3 		cmp	r8, #0
+ 282 012c 0C00000A 		beq	.L26
+ 283 0130 010058E3 		cmp	r8, #1
+ 284 0134 0400000A 		beq	.L73
+ 285 0138 020058E3 		cmp	r8, #2
+ 286 013c 02C0A013 		movne	ip, #2
+ 287 0140 01C08CE2 		add	ip, ip, #1
+ 288              		.loc 1 187 0
+ 289 0144 0110C314 		strneb	r1, [r3], #1
+ 290              	.LVL12:
+ 291 0148 0110C3E4 		strb	r1, [r3], #1
+ 292              	.L73:
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 293              		.loc 1 164 0
+ 294 014c 07606CE0 		rsb	r6, ip, r7
+ 295 0150 01C08CE2 		add	ip, ip, #1
+ 296 0154 0C0054E1 		cmp	r4, ip
+ 297              		.loc 1 187 0
+ 298 0158 0110C3E4 		strb	r1, [r3], #1
+ 299 015c 0350A0E1 		mov	r5, r3
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 300              		.loc 1 164 0
+ 301 0160 0B00009A 		bls	.L75
+ 302              	.L26:
+ 303              		.loc 1 187 0
+ 304 0164 0350A0E1 		mov	r5, r3
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 305              		.loc 1 164 0
+ 306 0168 03608CE2 		add	r6, ip, #3
+ 307 016c 04C08CE2 		add	ip, ip, #4
+ 308              		.loc 1 187 0
+ 309 0170 0110C5E4 		strb	r1, [r5], #1
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 310              		.loc 1 164 0
+ 311 0174 0C0054E1 		cmp	r4, ip
+ 312              		.loc 1 187 0
+ 313 0178 0110C3E5 		strb	r1, [r3, #1]
+ 314 017c 0110C5E5 		strb	r1, [r5, #1]
+ 315 0180 0310C3E5 		strb	r1, [r3, #3]
+ 316 0184 043083E2 		add	r3, r3, #4
+ 317 0188 0350A0E1 		mov	r5, r3
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 318              		.loc 1 164 0
+ 319 018c 076066E0 		rsb	r6, r6, r7
+ 320 0190 F3FFFF8A 		bhi	.L26
+ 321              	.L75:
+ 322 0194 040052E1 		cmp	r2, r4
+ 323 0198 4300000A 		beq	.L21
+ 324              	.L25:
+ 325 019c 022064E0 		rsb	r2, r4, r2
+ 326 01a0 2271A0E1 		mov	r7, r2, lsr #2
+ 327 01a4 0781B0E1 		movs	r8, r7, asl #2
+ 328 01a8 2400000A 		beq	.L27
+ 329 01ac FFC001E2 		and	ip, r1, #255
+ 330 01b0 0C348CE1 		orr	r3, ip, ip, asl #8
+ 331 01b4 0C3883E1 		orr	r3, r3, ip, asl #16
+ 332 01b8 0C3C83E1 		orr	r3, r3, ip, asl #24
+ 333              		.loc 1 187 0
+ 334 01bc 040080E0 		add	r0, r0, r4
+ 335 01c0 01C047E2 		sub	ip, r7, #1
+ 336 01c4 010057E3 		cmp	r7, #1
+ 337 01c8 03400CE2 		and	r4, ip, #3
+ 338 01cc 043080E4 		str	r3, [r0], #4
+ 339 01d0 01C0A0E3 		mov	ip, #1
+ 340 01d4 1500009A 		bls	.L76
+ 341 01d8 000054E3 		cmp	r4, #0
+ 342 01dc 0A00000A 		beq	.L28
+ 343 01e0 010054E3 		cmp	r4, #1
+ 344 01e4 0400000A 		beq	.L71
+ 345 01e8 020054E3 		cmp	r4, #2
+ 346 01ec 02C0A013 		movne	ip, #2
+ 347 01f0 01C08CE2 		add	ip, ip, #1
+ 348 01f4 04308014 		strne	r3, [r0], #4
+ 349 01f8 043080E4 		str	r3, [r0], #4
+ 350              	.L71:
+ 351 01fc 01C08CE2 		add	ip, ip, #1
+ 352 0200 0C0057E1 		cmp	r7, ip
+ 353 0204 043080E4 		str	r3, [r0], #4
+ 354 0208 0800009A 		bls	.L76
+ 355              	.L28:
+ 356 020c 04C08CE2 		add	ip, ip, #4
+ 357 0210 0040A0E1 		mov	r4, r0
+ 358 0214 0C0057E1 		cmp	r7, ip
+ 359 0218 043084E4 		str	r3, [r4], #4
+ 360 021c 043080E5 		str	r3, [r0, #4]
+ 361 0220 043084E5 		str	r3, [r4, #4]
+ 362 0224 0C3080E5 		str	r3, [r0, #12]
+ 363 0228 100080E2 		add	r0, r0, #16
+ 364 022c F6FFFF8A 		bhi	.L28
+ 365              	.L76:
+ 366 0230 080052E1 		cmp	r2, r8
+ 367 0234 085085E0 		add	r5, r5, r8
+ 368 0238 066068E0 		rsb	r6, r8, r6
+ 369 023c 1A00000A 		beq	.L21
+ 370              	.L27:
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 371              		.loc 1 164 0
+ 372 0240 016086E2 		add	r6, r6, #1
+ 373 0244 066085E0 		add	r6, r5, r6
+ 374              		.loc 1 187 0
+ 375 0248 0530A0E1 		mov	r3, r5
+ 376 024c 0520E0E1 		mvn	r2, r5
+ 377 0250 020086E0 		add	r0, r6, r2
+ 378 0254 0110C3E4 		strb	r1, [r3], #1
+ 185:../cyfxtx.c   ****     while (count--)
+ 379              		.loc 1 185 0
+ 380 0258 060053E1 		cmp	r3, r6
+ 381 025c 035000E2 		and	r5, r0, #3
+ 382 0260 1100000A 		beq	.L21
+ 383 0264 000055E3 		cmp	r5, #0
+ 384 0268 0700000A 		beq	.L29
+ 385 026c 010055E3 		cmp	r5, #1
+ 386 0270 0200000A 		beq	.L69
+ 387 0274 020055E3 		cmp	r5, #2
+ 388              		.loc 1 187 0
+ 389 0278 0110C314 		strneb	r1, [r3], #1
+ 390 027c 0110C3E4 		strb	r1, [r3], #1
+ 391              	.L69:
+ 392 0280 0110C3E4 		strb	r1, [r3], #1
+ 185:../cyfxtx.c   ****     while (count--)
+ 393              		.loc 1 185 0
+ 394 0284 060053E1 		cmp	r3, r6
+ 395 0288 0700000A 		beq	.L21
+ 396              	.L29:
+ 397              		.loc 1 187 0
+ 398 028c 03C0A0E1 		mov	ip, r3
+ 399 0290 0110CCE4 		strb	r1, [ip], #1
+ 400 0294 0110C3E5 		strb	r1, [r3, #1]
+ 401 0298 0110CCE5 		strb	r1, [ip, #1]
+ 402 029c 0310C3E5 		strb	r1, [r3, #3]
+ 188:../cyfxtx.c   ****         ptr++;
+ 403              		.loc 1 188 0
+ 404 02a0 043083E2 		add	r3, r3, #4
+ 185:../cyfxtx.c   ****     while (count--)
+ 405              		.loc 1 185 0
+ 406 02a4 060053E1 		cmp	r3, r6
+ 407 02a8 F7FFFF1A 		bne	.L29
+ 408              	.L21:
+ 189:../cyfxtx.c   ****     }
+ 190:../cyfxtx.c   **** }
+ 409              		.loc 1 190 0
+ 410 02ac F001BDE8 		ldmfd	sp!, {r4, r5, r6, r7, r8}
+ 411 02b0 1EFF2FE1 		bx	lr
+ 412              	.LVL13:
+ 413              	.L30:
+ 164:../cyfxtx.c   **** CyU3PMemSet (
+ 414              		.loc 1 164 0
+ 415 02b4 0050A0E1 		mov	r5, r0
+ 416 02b8 B7FFFFEA 		b	.L25
+ 417              		.cfi_endproc
+ 418              	.LFE7:
+ 420              		.align	2
+ 421              		.global	CyU3PMemCopy
+ 423              	CyU3PMemCopy:
+ 424              	.LFB8:
+ 191:../cyfxtx.c   **** 
+ 192:../cyfxtx.c   **** void
+ 193:../cyfxtx.c   **** CyU3PMemCopy (
+ 194:../cyfxtx.c   ****         uint8_t *dest, 
+ 195:../cyfxtx.c   ****         uint8_t *src,
+ 196:../cyfxtx.c   ****         uint32_t count)
+ 197:../cyfxtx.c   **** {
+ 425              		.loc 1 197 0
+ 426              		.cfi_startproc
+ 427              		@ args = 0, pretend = 0, frame = 0
+ 428              		@ frame_needed = 0, uses_anonymous_args = 0
+ 429              		@ link register save eliminated.
+ 430              	.LVL14:
+ 198:../cyfxtx.c   ****     /* Loop unrolling for faster operation */
+ 199:../cyfxtx.c   ****     while (count >> 3)
+ 431              		.loc 1 199 0
+ 432 02bc A231B0E1 		movs	r3, r2, lsr #3
+ 197:../cyfxtx.c   **** {
+ 433              		.loc 1 197 0
+ 434 02c0 F0072DE9 		stmfd	sp!, {r4, r5, r6, r7, r8, r9, sl}
+ 435              	.LCFI5:
+ 436              		.cfi_def_cfa_offset 28
+ 437              		.loc 1 199 0
+ 438 02c4 1400000A 		beq	.L78
+ 439              		.cfi_offset 10, -4
+ 440              		.cfi_offset 9, -8
+ 441              		.cfi_offset 8, -12
+ 442              		.cfi_offset 7, -16
+ 443              		.cfi_offset 6, -20
+ 444              		.cfi_offset 5, -24
+ 445              		.cfi_offset 4, -28
+ 446              	.L84:
+ 200:../cyfxtx.c   ****     {
+ 201:../cyfxtx.c   ****         dest[0] = src[0];
+ 447              		.loc 1 201 0
+ 448 02c8 00C0D1E5 		ldrb	ip, [r1, #0]	@ zero_extendqisi2
+ 202:../cyfxtx.c   ****         dest[1] = src[1];
+ 203:../cyfxtx.c   ****         dest[2] = src[2];
+ 204:../cyfxtx.c   ****         dest[3] = src[3];
+ 205:../cyfxtx.c   ****         dest[4] = src[4];
+ 206:../cyfxtx.c   ****         dest[5] = src[5];
+ 207:../cyfxtx.c   ****         dest[6] = src[6];
+ 208:../cyfxtx.c   ****         dest[7] = src[7];
+ 209:../cyfxtx.c   **** 
+ 210:../cyfxtx.c   ****         count -= 8;
+ 449              		.loc 1 210 0
+ 450 02cc 082042E2 		sub	r2, r2, #8
+ 451              	.LVL15:
+ 201:../cyfxtx.c   ****         dest[0] = src[0];
+ 452              		.loc 1 201 0
+ 453 02d0 00C0C0E5 		strb	ip, [r0, #0]
+ 202:../cyfxtx.c   ****         dest[1] = src[1];
+ 454              		.loc 1 202 0
+ 455 02d4 0130D1E5 		ldrb	r3, [r1, #1]	@ zero_extendqisi2
+ 199:../cyfxtx.c   ****     while (count >> 3)
+ 456              		.loc 1 199 0
+ 457 02d8 A2C1B0E1 		movs	ip, r2, lsr #3
+ 202:../cyfxtx.c   ****         dest[1] = src[1];
+ 458              		.loc 1 202 0
+ 459 02dc 0130C0E5 		strb	r3, [r0, #1]
+ 203:../cyfxtx.c   ****         dest[2] = src[2];
+ 460              		.loc 1 203 0
+ 461 02e0 02C0D1E5 		ldrb	ip, [r1, #2]	@ zero_extendqisi2
+ 462 02e4 02C0C0E5 		strb	ip, [r0, #2]
+ 204:../cyfxtx.c   ****         dest[3] = src[3];
+ 463              		.loc 1 204 0
+ 464 02e8 0330D1E5 		ldrb	r3, [r1, #3]	@ zero_extendqisi2
+ 465 02ec 0330C0E5 		strb	r3, [r0, #3]
+ 205:../cyfxtx.c   ****         dest[4] = src[4];
+ 466              		.loc 1 205 0
+ 467 02f0 04C0D1E5 		ldrb	ip, [r1, #4]	@ zero_extendqisi2
+ 468 02f4 04C0C0E5 		strb	ip, [r0, #4]
+ 206:../cyfxtx.c   ****         dest[5] = src[5];
+ 469              		.loc 1 206 0
+ 470 02f8 0530D1E5 		ldrb	r3, [r1, #5]	@ zero_extendqisi2
+ 471 02fc 0530C0E5 		strb	r3, [r0, #5]
+ 207:../cyfxtx.c   ****         dest[6] = src[6];
+ 472              		.loc 1 207 0
+ 473 0300 06C0D1E5 		ldrb	ip, [r1, #6]	@ zero_extendqisi2
+ 474 0304 06C0C0E5 		strb	ip, [r0, #6]
+ 208:../cyfxtx.c   ****         dest[7] = src[7];
+ 475              		.loc 1 208 0
+ 476 0308 0730D1E5 		ldrb	r3, [r1, #7]	@ zero_extendqisi2
+ 211:../cyfxtx.c   ****         dest += 8;
+ 212:../cyfxtx.c   ****         src += 8;
+ 477              		.loc 1 212 0
+ 478 030c 081081E2 		add	r1, r1, #8
+ 479              	.LVL16:
+ 208:../cyfxtx.c   ****         dest[7] = src[7];
+ 480              		.loc 1 208 0
+ 481 0310 0730C0E5 		strb	r3, [r0, #7]
+ 211:../cyfxtx.c   ****         dest += 8;
+ 482              		.loc 1 211 0
+ 483 0314 080080E2 		add	r0, r0, #8
+ 484              	.LVL17:
+ 199:../cyfxtx.c   ****     while (count >> 3)
+ 485              		.loc 1 199 0
+ 486 0318 EAFFFF1A 		bne	.L84
+ 487              	.L78:
+ 488              	.LVL18:
+ 213:../cyfxtx.c   ****     }
+ 214:../cyfxtx.c   **** 
+ 215:../cyfxtx.c   ****     while (count--)
+ 489              		.loc 1 215 0 discriminator 1
+ 490 031c 000052E3 		cmp	r2, #0
+ 491 0320 6500000A 		beq	.L77
+ 193:../cyfxtx.c   **** CyU3PMemCopy (
+ 492              		.loc 1 193 0
+ 493 0324 005081E1 		orr	r5, r1, r0
+ 494 0328 030015E3 		tst	r5, #3
+ 495 032c 0070A013 		movne	r7, #0
+ 496 0330 0170A003 		moveq	r7, #1
+ 497 0334 04C081E2 		add	ip, r1, #4
+ 498 0338 043080E2 		add	r3, r0, #4
+ 499 033c 030052E3 		cmp	r2, #3
+ 500 0340 0070A093 		movls	r7, #0
+ 501 0344 01700782 		andhi	r7, r7, #1
+ 502 0348 030051E1 		cmp	r1, r3
+ 503 034c 0C005091 		cmpls	r0, ip
+ 504 0350 0050A093 		movls	r5, #0
+ 505 0354 0150A083 		movhi	r5, #1
+ 506 0358 054007E0 		and	r4, r7, r5
+ 507 035c 014024E2 		eor	r4, r4, #1
+ 508              		.loc 1 215 0
+ 509 0360 2271A0E1 		mov	r7, r2, lsr #2
+ 510 0364 000057E3 		cmp	r7, #0
+ 511 0368 01408403 		orreq	r4, r4, #1
+ 512 036c 000054E3 		cmp	r4, #0
+ 513 0370 01A042E2 		sub	sl, r2, #1
+ 193:../cyfxtx.c   **** CyU3PMemCopy (
+ 514              		.loc 1 193 0
+ 515 0374 0781A0E1 		mov	r8, r7, asl #2
+ 516              		.loc 1 215 0
+ 517 0378 2A00001A 		bne	.L81
+ 216:../cyfxtx.c   ****     {
+ 217:../cyfxtx.c   ****         *dest = *src;
+ 518              		.loc 1 217 0
+ 519 037c 006091E5 		ldr	r6, [r1, #0]
+ 520 0380 0140A0E3 		mov	r4, #1
+ 521 0384 015047E2 		sub	r5, r7, #1
+ 522 0388 040057E1 		cmp	r7, r4
+ 523 038c 035005E2 		and	r5, r5, #3
+ 524 0390 006080E5 		str	r6, [r0, #0]
+ 525              	.LVL19:
+ 526 0394 1E00009A 		bls	.L114
+ 527 0398 000055E3 		cmp	r5, #0
+ 528 039c 0D00000A 		beq	.L82
+ 529 03a0 010055E3 		cmp	r5, #1
+ 530 03a4 0600000A 		beq	.L112
+ 531 03a8 020055E3 		cmp	r5, #2
+ 532 03ac 04509C14 		ldrne	r5, [ip], #4
+ 533 03b0 0240A013 		movne	r4, #2
+ 534 03b4 04508314 		strne	r5, [r3], #4
+ 535 03b8 04509CE4 		ldr	r5, [ip], #4
+ 536 03bc 014084E2 		add	r4, r4, #1
+ 537 03c0 045083E4 		str	r5, [r3], #4
+ 538              	.L112:
+ 539 03c4 04509CE4 		ldr	r5, [ip], #4
+ 540 03c8 014084E2 		add	r4, r4, #1
+ 541 03cc 040057E1 		cmp	r7, r4
+ 542 03d0 045083E4 		str	r5, [r3], #4
+ 543 03d4 0E00009A 		bls	.L114
+ 544              	.L82:
+ 545 03d8 0C60A0E1 		mov	r6, ip
+ 546 03dc 049096E4 		ldr	r9, [r6], #4
+ 547 03e0 0350A0E1 		mov	r5, r3
+ 548 03e4 049085E4 		str	r9, [r5], #4
+ 549 03e8 04909CE5 		ldr	r9, [ip, #4]
+ 550 03ec 044084E2 		add	r4, r4, #4
+ 551 03f0 049083E5 		str	r9, [r3, #4]
+ 552 03f4 046096E5 		ldr	r6, [r6, #4]
+ 553 03f8 040057E1 		cmp	r7, r4
+ 554 03fc 046085E5 		str	r6, [r5, #4]
+ 555 0400 0C509CE5 		ldr	r5, [ip, #12]
+ 556 0404 10C08CE2 		add	ip, ip, #16
+ 557 0408 0C5083E5 		str	r5, [r3, #12]
+ 558 040c 103083E2 		add	r3, r3, #16
+ 559 0410 F0FFFF8A 		bhi	.L82
+ 560              	.L114:
+ 561 0414 080052E1 		cmp	r2, r8
+ 562 0418 080080E0 		add	r0, r0, r8
+ 563 041c 081081E0 		add	r1, r1, r8
+ 564 0420 0AA068E0 		rsb	sl, r8, sl
+ 565 0424 2400000A 		beq	.L77
+ 566              	.L81:
+ 567 0428 0120D1E4 		ldrb	r2, [r1], #1	@ zero_extendqisi2
+ 193:../cyfxtx.c   **** CyU3PMemCopy (
+ 568              		.loc 1 193 0
+ 569 042c 01308AE2 		add	r3, sl, #1
+ 570 0430 03C080E0 		add	ip, r0, r3
+ 571              		.loc 1 217 0
+ 572 0434 0030A0E1 		mov	r3, r0
+ 573 0438 0000E0E1 		mvn	r0, r0
+ 574 043c 00008CE0 		add	r0, ip, r0
+ 575 0440 0120C3E4 		strb	r2, [r3], #1
+ 215:../cyfxtx.c   ****     while (count--)
+ 576              		.loc 1 215 0
+ 577 0444 0C0053E1 		cmp	r3, ip
+ 578 0448 030000E2 		and	r0, r0, #3
+ 579 044c 1A00000A 		beq	.L77
+ 580 0450 000050E3 		cmp	r0, #0
+ 581 0454 0A00000A 		beq	.L83
+ 582 0458 010050E3 		cmp	r0, #1
+ 583 045c 0400000A 		beq	.L110
+ 584 0460 020050E3 		cmp	r0, #2
+ 585              		.loc 1 217 0
+ 586 0464 0120D114 		ldrneb	r2, [r1], #1	@ zero_extendqisi2
+ 587 0468 0120C314 		strneb	r2, [r3], #1
+ 588 046c 0120D1E4 		ldrb	r2, [r1], #1	@ zero_extendqisi2
+ 589 0470 0120C3E4 		strb	r2, [r3], #1
+ 590              	.L110:
+ 591 0474 0100D1E4 		ldrb	r0, [r1], #1	@ zero_extendqisi2
+ 592 0478 0100C3E4 		strb	r0, [r3], #1
+ 215:../cyfxtx.c   ****     while (count--)
+ 593              		.loc 1 215 0
+ 594 047c 0C0053E1 		cmp	r3, ip
+ 595 0480 0D00000A 		beq	.L77
+ 596              	.L83:
+ 597              		.loc 1 217 0
+ 598 0484 0100A0E1 		mov	r0, r1
+ 599 0488 0140D0E4 		ldrb	r4, [r0], #1	@ zero_extendqisi2
+ 600 048c 0320A0E1 		mov	r2, r3
+ 601 0490 0140C2E4 		strb	r4, [r2], #1
+ 602 0494 0140D1E5 		ldrb	r4, [r1, #1]	@ zero_extendqisi2
+ 603 0498 0140C3E5 		strb	r4, [r3, #1]
+ 604 049c 0100D0E5 		ldrb	r0, [r0, #1]	@ zero_extendqisi2
+ 605 04a0 0100C2E5 		strb	r0, [r2, #1]
+ 606 04a4 0320D1E5 		ldrb	r2, [r1, #3]	@ zero_extendqisi2
+ 607 04a8 041081E2 		add	r1, r1, #4
+ 608 04ac 0320C3E5 		strb	r2, [r3, #3]
+ 218:../cyfxtx.c   ****         dest++;
+ 609              		.loc 1 218 0
+ 610 04b0 043083E2 		add	r3, r3, #4
+ 215:../cyfxtx.c   ****     while (count--)
+ 611              		.loc 1 215 0
+ 612 04b4 0C0053E1 		cmp	r3, ip
+ 613 04b8 F1FFFF1A 		bne	.L83
+ 614              	.L77:
+ 219:../cyfxtx.c   ****         src++;
+ 220:../cyfxtx.c   ****     }
+ 221:../cyfxtx.c   **** }
+ 615              		.loc 1 221 0
+ 616 04bc F007BDE8 		ldmfd	sp!, {r4, r5, r6, r7, r8, r9, sl}
+ 617 04c0 1EFF2FE1 		bx	lr
+ 618              		.cfi_endproc
+ 619              	.LFE8:
+ 621              		.align	2
+ 622              		.global	CyU3PMemCmp
+ 624              	CyU3PMemCmp:
+ 625              	.LFB9:
+ 222:../cyfxtx.c   **** 
+ 223:../cyfxtx.c   **** int32_t 
+ 224:../cyfxtx.c   **** CyU3PMemCmp (
+ 225:../cyfxtx.c   ****         const void* s1,
+ 226:../cyfxtx.c   ****         const void* s2, 
+ 227:../cyfxtx.c   ****         uint32_t n)
+ 228:../cyfxtx.c   **** {
+ 626              		.loc 1 228 0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 0
+ 629              		@ frame_needed = 0, uses_anonymous_args = 0
+ 630              		@ link register save eliminated.
+ 631              	.LVL20:
+ 229:../cyfxtx.c   ****     const uint8_t *ptr1 = s1, *ptr2 = s2;
+ 230:../cyfxtx.c   **** 
+ 231:../cyfxtx.c   ****     while(n--)
+ 632              		.loc 1 231 0
+ 633 04c4 000052E3 		cmp	r2, #0
+ 634              	.LVL21:
+ 228:../cyfxtx.c   **** {
+ 635              		.loc 1 228 0
+ 636 04c8 70002DE9 		stmfd	sp!, {r4, r5, r6}
+ 637              	.LCFI6:
+ 638              		.cfi_def_cfa_offset 12
+ 232:../cyfxtx.c   ****     {
+ 233:../cyfxtx.c   ****         if(*ptr1 != *ptr2)
+ 234:../cyfxtx.c   ****         {
+ 235:../cyfxtx.c   ****             return *ptr1 - *ptr2;
+ 236:../cyfxtx.c   ****         }
+ 237:../cyfxtx.c   ****         
+ 238:../cyfxtx.c   ****         ptr1++;
+ 239:../cyfxtx.c   ****         ptr2++;
+ 240:../cyfxtx.c   ****     }  
+ 241:../cyfxtx.c   ****     return 0;
+ 639              		.loc 1 241 0
+ 640 04cc 0200A001 		moveq	r0, r2
+ 641              	.LVL22:
+ 231:../cyfxtx.c   ****     while(n--)
+ 642              		.loc 1 231 0
+ 643 04d0 2F00000A 		beq	.L116
+ 644              		.cfi_offset 6, -4
+ 645              		.cfi_offset 5, -8
+ 646              		.cfi_offset 4, -12
+ 233:../cyfxtx.c   ****         if(*ptr1 != *ptr2)
+ 647              		.loc 1 233 0
+ 648 04d4 0030D0E5 		ldrb	r3, [r0, #0]	@ zero_extendqisi2
+ 649 04d8 00C0D1E5 		ldrb	ip, [r1, #0]	@ zero_extendqisi2
+ 650 04dc 0C0053E1 		cmp	r3, ip
+ 651 04e0 2A00001A 		bne	.L117
+ 224:../cyfxtx.c   **** CyU3PMemCmp (
+ 652              		.loc 1 224 0
+ 653 04e4 014040E2 		sub	r4, r0, #1
+ 654 04e8 022084E0 		add	r2, r4, r2
+ 655 04ec 023060E0 		rsb	r3, r0, r2
+ 656 04f0 034013E2 		ands	r4, r3, #3
+ 657 04f4 0F00000A 		beq	.L119
+ 658              	.LVL23:
+ 233:../cyfxtx.c   ****         if(*ptr1 != *ptr2)
+ 659              		.loc 1 233 0
+ 660 04f8 0130F0E5 		ldrb	r3, [r0, #1]!	@ zero_extendqisi2
+ 661 04fc 01C0F1E5 		ldrb	ip, [r1, #1]!	@ zero_extendqisi2
+ 662              	.LVL24:
+ 663 0500 0C0053E1 		cmp	r3, ip
+ 664 0504 2100001A 		bne	.L117
+ 665 0508 010054E3 		cmp	r4, #1
+ 666 050c 0900000A 		beq	.L119
+ 667 0510 020054E3 		cmp	r4, #2
+ 668 0514 0300000A 		beq	.L140
+ 669 0518 0130F0E5 		ldrb	r3, [r0, #1]!	@ zero_extendqisi2
+ 670 051c 01C0F1E5 		ldrb	ip, [r1, #1]!	@ zero_extendqisi2
+ 671              	.LVL25:
+ 672 0520 0C0053E1 		cmp	r3, ip
+ 673 0524 1900001A 		bne	.L117
+ 674              	.LVL26:
+ 675              	.L140:
+ 676 0528 0130F0E5 		ldrb	r3, [r0, #1]!	@ zero_extendqisi2
+ 677 052c 01C0F1E5 		ldrb	ip, [r1, #1]!	@ zero_extendqisi2
+ 678 0530 0C0053E1 		cmp	r3, ip
+ 679 0534 1500001A 		bne	.L117
+ 680              	.L119:
+ 231:../cyfxtx.c   ****     while(n--)
+ 681              		.loc 1 231 0
+ 682 0538 020050E1 		cmp	r0, r2
+ 233:../cyfxtx.c   ****         if(*ptr1 != *ptr2)
+ 683              		.loc 1 233 0
+ 684 053c 0050A0E1 		mov	r5, r0
+ 685 0540 0140A0E1 		mov	r4, r1
+ 231:../cyfxtx.c   ****     while(n--)
+ 686              		.loc 1 231 0
+ 687 0544 1400000A 		beq	.L145
+ 233:../cyfxtx.c   ****         if(*ptr1 != *ptr2)
+ 688              		.loc 1 233 0
+ 689 0548 0130F5E5 		ldrb	r3, [r5, #1]!	@ zero_extendqisi2
+ 690 054c 01C0F4E5 		ldrb	ip, [r4, #1]!	@ zero_extendqisi2
+ 691 0550 0C0053E1 		cmp	r3, ip
+ 692 0554 0D00001A 		bne	.L117
+ 693 0558 0130F5E5 		ldrb	r3, [r5, #1]!	@ zero_extendqisi2
+ 694 055c 01C0F4E5 		ldrb	ip, [r4, #1]!	@ zero_extendqisi2
+ 695 0560 0C0053E1 		cmp	r3, ip
+ 696 0564 0900001A 		bne	.L117
+ 697 0568 0130D5E5 		ldrb	r3, [r5, #1]	@ zero_extendqisi2
+ 698 056c 01C0D4E5 		ldrb	ip, [r4, #1]	@ zero_extendqisi2
+ 699 0570 0C0053E1 		cmp	r3, ip
+ 700 0574 0500001A 		bne	.L117
+ 701 0578 0430D0E5 		ldrb	r3, [r0, #4]	@ zero_extendqisi2
+ 702 057c 04C0D1E5 		ldrb	ip, [r1, #4]	@ zero_extendqisi2
+ 703 0580 040080E2 		add	r0, r0, #4
+ 704 0584 0C0053E1 		cmp	r3, ip
+ 705 0588 041081E2 		add	r1, r1, #4
+ 706 058c E9FFFF0A 		beq	.L119
+ 707              	.L117:
+ 235:../cyfxtx.c   ****             return *ptr1 - *ptr2;
+ 708              		.loc 1 235 0
+ 709 0590 03006CE0 		rsb	r0, ip, r3
+ 710              	.L116:
+ 242:../cyfxtx.c   **** }
+ 711              		.loc 1 242 0
+ 712 0594 7000BDE8 		ldmfd	sp!, {r4, r5, r6}
+ 713 0598 1EFF2FE1 		bx	lr
+ 714              	.L145:
+ 241:../cyfxtx.c   ****     return 0;
+ 715              		.loc 1 241 0
+ 716 059c 0000A0E3 		mov	r0, #0
+ 717 05a0 FBFFFFEA 		b	.L116
+ 718              		.cfi_endproc
+ 719              	.LFE9:
+ 721              		.align	2
+ 722              		.global	CyU3PDmaBufferInit
+ 724              	CyU3PDmaBufferInit:
+ 725              	.LFB10:
+ 243:../cyfxtx.c   **** 
+ 244:../cyfxtx.c   **** /* This function shall be invoked by the API library 
+ 245:../cyfxtx.c   ****  * and should not be explicitly invoked.
+ 246:../cyfxtx.c   ****  * If other buffer sizes are required by the application code, this function must
+ 247:../cyfxtx.c   ****  * be modified to create other block pools.
+ 248:../cyfxtx.c   ****  */
+ 249:../cyfxtx.c   **** void
+ 250:../cyfxtx.c   **** CyU3PDmaBufferInit (
+ 251:../cyfxtx.c   ****         void)
+ 252:../cyfxtx.c   **** {
+ 726              		.loc 1 252 0
+ 727              		.cfi_startproc
+ 728              		@ args = 0, pretend = 0, frame = 8
+ 729              		@ frame_needed = 0, uses_anonymous_args = 0
+ 730 05a4 30402DE9 		stmfd	sp!, {r4, r5, lr}
+ 731              	.LCFI7:
+ 732              		.cfi_def_cfa_offset 12
+ 253:../cyfxtx.c   ****     uint32_t status, size;
+ 254:../cyfxtx.c   ****     uint32_t tmp;
+ 255:../cyfxtx.c   **** 
+ 256:../cyfxtx.c   ****     /* If buffer manager has already been initialized, just return. */
+ 257:../cyfxtx.c   ****     if ((glBufferManager.startAddr != 0) && (glBufferManager.regionSize != 0))
+ 733              		.loc 1 257 0
+ 734 05a8 34419FE5 		ldr	r4, .L160
+ 735              		.cfi_offset 14, -4
+ 736              		.cfi_offset 5, -8
+ 737              		.cfi_offset 4, -12
+ 252:../cyfxtx.c   **** {
+ 738              		.loc 1 252 0
+ 739 05ac 0CD04DE2 		sub	sp, sp, #12
+ 740              	.LCFI8:
+ 741              		.cfi_def_cfa_offset 24
+ 742              		.loc 1 257 0
+ 743 05b0 3C3094E5 		ldr	r3, [r4, #60]
+ 744 05b4 000053E3 		cmp	r3, #0
+ 745 05b8 0200000A 		beq	.L147
+ 746              		.loc 1 257 0 is_stmt 0 discriminator 1
+ 747 05bc 400094E5 		ldr	r0, [r4, #64]
+ 748 05c0 000050E3 		cmp	r0, #0
+ 749 05c4 0600001A 		bne	.L146
+ 750              	.L147:
+ 258:../cyfxtx.c   ****     {
+ 259:../cyfxtx.c   ****         return;
+ 260:../cyfxtx.c   ****     }
+ 261:../cyfxtx.c   **** 
+ 262:../cyfxtx.c   ****     /* Create a mutex variable for safe allocation. */
+ 263:../cyfxtx.c   ****     status = CyU3PMutexCreate (&glBufferManager.lock, CYU3P_NO_INHERIT);
+ 751              		.loc 1 263 0 is_stmt 1
+ 752 05c8 0010A0E3 		mov	r1, #0
+ 753 05cc 14019FE5 		ldr	r0, .L160+4
+ 754 05d0 0120A0E1 		mov	r2, r1
+ 755 05d4 3830A0E3 		mov	r3, #56
+ 756 05d8 FEFFFFEB 		bl	_txe_mutex_create
+ 757              	.LVL27:
+ 264:../cyfxtx.c   ****     if (status != CY_U3P_SUCCESS)
+ 758              		.loc 1 264 0
+ 759 05dc 000050E3 		cmp	r0, #0
+ 760 05e0 0100000A 		beq	.L159
+ 761              	.LVL28:
+ 762              	.L146:
+ 265:../cyfxtx.c   ****     {
+ 266:../cyfxtx.c   ****         return;
+ 267:../cyfxtx.c   ****     }
+ 268:../cyfxtx.c   **** 
+ 269:../cyfxtx.c   ****     /* No threads are running at this point in time. There is no need to
+ 270:../cyfxtx.c   ****        get the mutex. */
+ 271:../cyfxtx.c   **** 
+ 272:../cyfxtx.c   ****     /* Allocate the memory buffer to be used to track memory status.
+ 273:../cyfxtx.c   ****        We need one bit per 32 bytes of memory buffer space. Since a 32
+ 274:../cyfxtx.c   ****        bit array is being used, round up to the necessary number of
+ 275:../cyfxtx.c   ****        32 bit words. */
+ 276:../cyfxtx.c   ****     size = ((CY_U3P_BUFFER_HEAP_SIZE / 32) + 31) / 32;
+ 277:../cyfxtx.c   ****     glBufferManager.usedStatus = (uint32_t *)CyU3PMemAlloc (size * 4);
+ 278:../cyfxtx.c   ****     if (glBufferManager.usedStatus == 0)
+ 279:../cyfxtx.c   ****     {
+ 280:../cyfxtx.c   ****         CyU3PMutexDestroy (&glBufferManager.lock);
+ 281:../cyfxtx.c   ****         return;
+ 282:../cyfxtx.c   ****     }
+ 283:../cyfxtx.c   **** 
+ 284:../cyfxtx.c   ****     /* Initially mark all memory as available. If there are any status bits
+ 285:../cyfxtx.c   ****        beyond the valid memory range, mark these as unavailable. */
+ 286:../cyfxtx.c   ****     CyU3PMemSet ((uint8_t *)glBufferManager.usedStatus, 0, (size * 4));
+ 287:../cyfxtx.c   ****     if ((CY_U3P_BUFFER_HEAP_SIZE / 32) & 31)
+ 288:../cyfxtx.c   ****     {
+ 289:../cyfxtx.c   ****         tmp = 32 - ((CY_U3P_BUFFER_HEAP_SIZE / 32) & 31);
+ 290:../cyfxtx.c   ****         glBufferManager.usedStatus[size - 1] = ~((1 << tmp) - 1);
+ 291:../cyfxtx.c   ****     }
+ 292:../cyfxtx.c   **** 
+ 293:../cyfxtx.c   ****     /* Initialize the start address and region size variables. */
+ 294:../cyfxtx.c   ****     glBufferManager.startAddr  = CY_U3P_BUFFER_HEAP_BASE;
+ 295:../cyfxtx.c   ****     glBufferManager.regionSize = CY_U3P_BUFFER_HEAP_SIZE;
+ 296:../cyfxtx.c   ****     glBufferManager.statusSize = size;
+ 297:../cyfxtx.c   ****     glBufferManager.searchPos  = 0;
+ 298:../cyfxtx.c   **** }
+ 763              		.loc 1 298 0
+ 764 05e4 0CD08DE2 		add	sp, sp, #12
+ 765 05e8 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
+ 766              	.LVL29:
+ 767              	.L159:
+ 768              	.LBB6:
+ 769              	.LBB7:
+ 139:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 770              		.loc 1 139 0
+ 771 05ec FEFFFFEB 		bl	_tx_thread_identify
+ 772              	.LVL30:
+ 141:../cyfxtx.c   ****         status = CyU3PByteAlloc (&glMemBytePool, (void **)&ret_p, size, CY_U3P_MEM_ALLOC_TIMEOUT);
+ 773              		.loc 1 141 0
+ 774 05f0 04108DE2 		add	r1, sp, #4
+ 775 05f4 012BA0E3 		mov	r2, #1024
+ 139:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 776              		.loc 1 139 0
+ 777 05f8 003050E2 		subs	r3, r0, #0
+ 141:../cyfxtx.c   ****         status = CyU3PByteAlloc (&glMemBytePool, (void **)&ret_p, size, CY_U3P_MEM_ALLOC_TIMEOUT);
+ 778              		.loc 1 141 0
+ 779 05fc 0A30A013 		movne	r3, #10
+ 780 0600 E4009FE5 		ldr	r0, .L160+8
+ 145:../cyfxtx.c   ****         status = CyU3PByteAlloc (&glMemBytePool, (void **)&ret_p, size, CYU3P_NO_WAIT);
+ 781              		.loc 1 145 0
+ 782 0604 FEFFFFEB 		bl	_txe_byte_allocate
+ 783              	.LVL31:
+ 148:../cyfxtx.c   ****     if(status == CY_U3P_SUCCESS)
+ 784              		.loc 1 148 0
+ 785 0608 000050E3 		cmp	r0, #0
+ 786 060c 2F00001A 		bne	.L151
+ 787              	.LVL32:
+ 788              	.LBE7:
+ 789              	.LBE6:
+ 277:../cyfxtx.c   ****     glBufferManager.usedStatus = (uint32_t *)CyU3PMemAlloc (size * 4);
+ 790              		.loc 1 277 0
+ 791 0610 04309DE5 		ldr	r3, [sp, #4]
+ 278:../cyfxtx.c   ****     if (glBufferManager.usedStatus == 0)
+ 792              		.loc 1 278 0
+ 793 0614 000053E3 		cmp	r3, #0
+ 277:../cyfxtx.c   ****     glBufferManager.usedStatus = (uint32_t *)CyU3PMemAlloc (size * 4);
+ 794              		.loc 1 277 0
+ 795 0618 443084E5 		str	r3, [r4, #68]
+ 286:../cyfxtx.c   ****     CyU3PMemSet ((uint8_t *)glBufferManager.usedStatus, 0, (size * 4));
+ 796              		.loc 1 286 0
+ 797 061c 015BA013 		movne	r5, #1024
+ 278:../cyfxtx.c   ****     if (glBufferManager.usedStatus == 0)
+ 798              		.loc 1 278 0
+ 799 0620 2C00000A 		beq	.L154
+ 800              	.L153:
+ 801              	.LBB8:
+ 802              	.LBB9:
+ 170:../cyfxtx.c   ****     while (count >> 3)
+ 803              		.loc 1 170 0
+ 804 0624 205055E2 		subs	r5, r5, #32
+ 172:../cyfxtx.c   ****         ptr[0] = data;
+ 805              		.loc 1 172 0
+ 806 0628 0000C3E5 		strb	r0, [r3, #0]
+ 173:../cyfxtx.c   ****         ptr[1] = data;
+ 807              		.loc 1 173 0
+ 808 062c 0100C3E5 		strb	r0, [r3, #1]
+ 174:../cyfxtx.c   ****         ptr[2] = data;
+ 809              		.loc 1 174 0
+ 810 0630 0200C3E5 		strb	r0, [r3, #2]
+ 175:../cyfxtx.c   ****         ptr[3] = data;
+ 811              		.loc 1 175 0
+ 812 0634 0300C3E5 		strb	r0, [r3, #3]
+ 176:../cyfxtx.c   ****         ptr[4] = data;
+ 813              		.loc 1 176 0
+ 814 0638 0400C3E5 		strb	r0, [r3, #4]
+ 177:../cyfxtx.c   ****         ptr[5] = data;
+ 815              		.loc 1 177 0
+ 816 063c 0500C3E5 		strb	r0, [r3, #5]
+ 178:../cyfxtx.c   ****         ptr[6] = data;
+ 817              		.loc 1 178 0
+ 818 0640 0600C3E5 		strb	r0, [r3, #6]
+ 179:../cyfxtx.c   ****         ptr[7] = data;
+ 819              		.loc 1 179 0
+ 820 0644 0700C3E5 		strb	r0, [r3, #7]
+ 821              	.LVL33:
+ 172:../cyfxtx.c   ****         ptr[0] = data;
+ 822              		.loc 1 172 0
+ 823 0648 0800C3E5 		strb	r0, [r3, #8]
+ 173:../cyfxtx.c   ****         ptr[1] = data;
+ 824              		.loc 1 173 0
+ 825 064c 0900C3E5 		strb	r0, [r3, #9]
+ 174:../cyfxtx.c   ****         ptr[2] = data;
+ 826              		.loc 1 174 0
+ 827 0650 0A00C3E5 		strb	r0, [r3, #10]
+ 175:../cyfxtx.c   ****         ptr[3] = data;
+ 828              		.loc 1 175 0
+ 829 0654 0B00C3E5 		strb	r0, [r3, #11]
+ 176:../cyfxtx.c   ****         ptr[4] = data;
+ 830              		.loc 1 176 0
+ 831 0658 0C00C3E5 		strb	r0, [r3, #12]
+ 177:../cyfxtx.c   ****         ptr[5] = data;
+ 832              		.loc 1 177 0
+ 833 065c 0D00C3E5 		strb	r0, [r3, #13]
+ 178:../cyfxtx.c   ****         ptr[6] = data;
+ 834              		.loc 1 178 0
+ 835 0660 0E00C3E5 		strb	r0, [r3, #14]
+ 179:../cyfxtx.c   ****         ptr[7] = data;
+ 836              		.loc 1 179 0
+ 837 0664 0F00C3E5 		strb	r0, [r3, #15]
+ 172:../cyfxtx.c   ****         ptr[0] = data;
+ 838              		.loc 1 172 0
+ 839 0668 1000C3E5 		strb	r0, [r3, #16]
+ 173:../cyfxtx.c   ****         ptr[1] = data;
+ 840              		.loc 1 173 0
+ 841 066c 1100C3E5 		strb	r0, [r3, #17]
+ 174:../cyfxtx.c   ****         ptr[2] = data;
+ 842              		.loc 1 174 0
+ 843 0670 1200C3E5 		strb	r0, [r3, #18]
+ 175:../cyfxtx.c   ****         ptr[3] = data;
+ 844              		.loc 1 175 0
+ 845 0674 1300C3E5 		strb	r0, [r3, #19]
+ 176:../cyfxtx.c   ****         ptr[4] = data;
+ 846              		.loc 1 176 0
+ 847 0678 1400C3E5 		strb	r0, [r3, #20]
+ 177:../cyfxtx.c   ****         ptr[5] = data;
+ 848              		.loc 1 177 0
+ 849 067c 1500C3E5 		strb	r0, [r3, #21]
+ 178:../cyfxtx.c   ****         ptr[6] = data;
+ 850              		.loc 1 178 0
+ 851 0680 1600C3E5 		strb	r0, [r3, #22]
+ 179:../cyfxtx.c   ****         ptr[7] = data;
+ 852              		.loc 1 179 0
+ 853 0684 1700C3E5 		strb	r0, [r3, #23]
+ 172:../cyfxtx.c   ****         ptr[0] = data;
+ 854              		.loc 1 172 0
+ 855 0688 1800C3E5 		strb	r0, [r3, #24]
+ 173:../cyfxtx.c   ****         ptr[1] = data;
+ 856              		.loc 1 173 0
+ 857 068c 1900C3E5 		strb	r0, [r3, #25]
+ 174:../cyfxtx.c   ****         ptr[2] = data;
+ 858              		.loc 1 174 0
+ 859 0690 1A00C3E5 		strb	r0, [r3, #26]
+ 175:../cyfxtx.c   ****         ptr[3] = data;
+ 860              		.loc 1 175 0
+ 861 0694 1B00C3E5 		strb	r0, [r3, #27]
+ 176:../cyfxtx.c   ****         ptr[4] = data;
+ 862              		.loc 1 176 0
+ 863 0698 1C00C3E5 		strb	r0, [r3, #28]
+ 177:../cyfxtx.c   ****         ptr[5] = data;
+ 864              		.loc 1 177 0
+ 865 069c 1D00C3E5 		strb	r0, [r3, #29]
+ 178:../cyfxtx.c   ****         ptr[6] = data;
+ 866              		.loc 1 178 0
+ 867 06a0 1E00C3E5 		strb	r0, [r3, #30]
+ 179:../cyfxtx.c   ****         ptr[7] = data;
+ 868              		.loc 1 179 0
+ 869 06a4 1F00C3E5 		strb	r0, [r3, #31]
+ 182:../cyfxtx.c   ****         ptr += 8;
+ 870              		.loc 1 182 0
+ 871 06a8 203083E2 		add	r3, r3, #32
+ 872              	.LVL34:
+ 170:../cyfxtx.c   ****     while (count >> 3)
+ 873              		.loc 1 170 0
+ 874 06ac DCFFFF1A 		bne	.L153
+ 875              	.LVL35:
+ 876              	.LBE9:
+ 877              	.LBE8:
+ 294:../cyfxtx.c   ****     glBufferManager.startAddr  = CY_U3P_BUFFER_HEAP_BASE;
+ 878              		.loc 1 294 0
+ 879 06b0 38C09FE5 		ldr	ip, .L160+12
+ 295:../cyfxtx.c   ****     glBufferManager.regionSize = CY_U3P_BUFFER_HEAP_SIZE;
+ 880              		.loc 1 295 0
+ 881 06b4 0127A0E3 		mov	r2, #262144
+ 296:../cyfxtx.c   ****     glBufferManager.statusSize = size;
+ 882              		.loc 1 296 0
+ 883 06b8 011CA0E3 		mov	r1, #256
+ 294:../cyfxtx.c   ****     glBufferManager.startAddr  = CY_U3P_BUFFER_HEAP_BASE;
+ 884              		.loc 1 294 0
+ 885 06bc 3CC084E5 		str	ip, [r4, #60]
+ 295:../cyfxtx.c   ****     glBufferManager.regionSize = CY_U3P_BUFFER_HEAP_SIZE;
+ 886              		.loc 1 295 0
+ 887 06c0 402084E5 		str	r2, [r4, #64]
+ 296:../cyfxtx.c   ****     glBufferManager.statusSize = size;
+ 888              		.loc 1 296 0
+ 889 06c4 481084E5 		str	r1, [r4, #72]
+ 297:../cyfxtx.c   ****     glBufferManager.searchPos  = 0;
+ 890              		.loc 1 297 0
+ 891 06c8 4C5084E5 		str	r5, [r4, #76]
+ 892 06cc C4FFFFEA 		b	.L146
+ 893              	.LVL36:
+ 894              	.L151:
+ 277:../cyfxtx.c   ****     glBufferManager.usedStatus = (uint32_t *)CyU3PMemAlloc (size * 4);
+ 895              		.loc 1 277 0
+ 896 06d0 00E0A0E3 		mov	lr, #0
+ 897 06d4 44E084E5 		str	lr, [r4, #68]
+ 898              	.LVL37:
+ 899              	.L154:
+ 280:../cyfxtx.c   ****         CyU3PMutexDestroy (&glBufferManager.lock);
+ 900              		.loc 1 280 0
+ 901 06d8 08009FE5 		ldr	r0, .L160+4
+ 902              	.LVL38:
+ 903 06dc FEFFFFEB 		bl	_txe_mutex_delete
+ 281:../cyfxtx.c   ****         return;
+ 904              		.loc 1 281 0
+ 905 06e0 BFFFFFEA 		b	.L146
+ 906              	.L161:
+ 907              		.align	2
+ 908              	.L160:
+ 909 06e4 00000000 		.word	.LANCHOR0
+ 910 06e8 04000000 		.word	.LANCHOR0+4
+ 911 06ec 00000000 		.word	glMemBytePool
+ 912 06f0 00000440 		.word	1074003968
+ 913              		.cfi_endproc
+ 914              	.LFE10:
+ 916              		.align	2
+ 917              		.global	CyU3PDmaBufferDeInit
+ 919              	CyU3PDmaBufferDeInit:
+ 920              	.LFB11:
+ 299:../cyfxtx.c   **** 
+ 300:../cyfxtx.c   **** /* This function shall be invoked by the API library 
+ 301:../cyfxtx.c   ****  * and should not be explicitly invoked.
+ 302:../cyfxtx.c   ****  */
+ 303:../cyfxtx.c   **** void
+ 304:../cyfxtx.c   **** CyU3PDmaBufferDeInit (
+ 305:../cyfxtx.c   ****         void)
+ 306:../cyfxtx.c   **** {
+ 921              		.loc 1 306 0
+ 922              		.cfi_startproc
+ 923              		@ args = 0, pretend = 0, frame = 0
+ 924              		@ frame_needed = 0, uses_anonymous_args = 0
+ 925 06f4 70402DE9 		stmfd	sp!, {r4, r5, r6, lr}
+ 926              	.LCFI9:
+ 927              		.cfi_def_cfa_offset 16
+ 307:../cyfxtx.c   ****     uint32_t status;
+ 308:../cyfxtx.c   **** 
+ 309:../cyfxtx.c   ****     /* Get the mutex lock. */
+ 310:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 928              		.loc 1 310 0
+ 929              		.cfi_offset 14, -4
+ 930              		.cfi_offset 6, -8
+ 931              		.cfi_offset 5, -12
+ 932              		.cfi_offset 4, -16
+ 933 06f8 FEFFFFEB 		bl	_tx_thread_identify
+ 934 06fc 001050E2 		subs	r1, r0, #0
+ 311:../cyfxtx.c   ****     {
+ 312:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_WAIT_FOREVER);
+ 935              		.loc 1 312 0
+ 936 0700 0010E013 		mvnne	r1, #0
+ 937 0704 3C009FE5 		ldr	r0, .L166
+ 313:../cyfxtx.c   ****     }
+ 314:../cyfxtx.c   ****     else
+ 315:../cyfxtx.c   ****     {
+ 316:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_NO_WAIT);
+ 938              		.loc 1 316 0
+ 939 0708 FEFFFFEB 		bl	_txe_mutex_get
+ 317:../cyfxtx.c   ****     }
+ 318:../cyfxtx.c   **** 
+ 319:../cyfxtx.c   ****     if (status != CY_U3P_SUCCESS)
+ 940              		.loc 1 319 0
+ 941 070c 000050E3 		cmp	r0, #0
+ 316:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_NO_WAIT);
+ 942              		.loc 1 316 0
+ 943 0710 0040A0E1 		mov	r4, r0
+ 944              	.LVL39:
+ 945              		.loc 1 319 0
+ 946 0714 7080BD18 		ldmnefd	sp!, {r4, r5, r6, pc}
+ 947              	.LVL40:
+ 320:../cyfxtx.c   ****     {
+ 321:../cyfxtx.c   ****         return;
+ 322:../cyfxtx.c   ****     }
+ 323:../cyfxtx.c   **** 
+ 324:../cyfxtx.c   ****     /* Free memory and zero out variables. */
+ 325:../cyfxtx.c   ****     CyU3PMemFree (glBufferManager.usedStatus);
+ 948              		.loc 1 325 0
+ 949 0718 2C509FE5 		ldr	r5, .L166+4
+ 950              	.LBB12:
+ 951              	.LBB13:
+ 160:../cyfxtx.c   ****      CyU3PByteFree (mem_p);
+ 952              		.loc 1 160 0
+ 953 071c 440095E5 		ldr	r0, [r5, #68]
+ 954              	.LVL41:
+ 955 0720 FEFFFFEB 		bl	_txe_byte_release
+ 956              	.LVL42:
+ 957              	.LBE13:
+ 958              	.LBE12:
+ 326:../cyfxtx.c   ****     glBufferManager.usedStatus = 0;
+ 327:../cyfxtx.c   ****     glBufferManager.startAddr  = 0;
+ 328:../cyfxtx.c   ****     glBufferManager.regionSize = 0;
+ 329:../cyfxtx.c   ****     glBufferManager.statusSize = 0;
+ 330:../cyfxtx.c   **** 
+ 331:../cyfxtx.c   ****     /* Free up and destroy the mutex variable. */
+ 332:../cyfxtx.c   ****     CyU3PMutexPut (&glBufferManager.lock);
+ 959              		.loc 1 332 0
+ 960 0724 040085E2 		add	r0, r5, #4
+ 326:../cyfxtx.c   ****     glBufferManager.usedStatus = 0;
+ 961              		.loc 1 326 0
+ 962 0728 444085E5 		str	r4, [r5, #68]
+ 327:../cyfxtx.c   ****     glBufferManager.startAddr  = 0;
+ 963              		.loc 1 327 0
+ 964 072c 3C4085E5 		str	r4, [r5, #60]
+ 328:../cyfxtx.c   ****     glBufferManager.regionSize = 0;
+ 965              		.loc 1 328 0
+ 966 0730 404085E5 		str	r4, [r5, #64]
+ 329:../cyfxtx.c   ****     glBufferManager.statusSize = 0;
+ 967              		.loc 1 329 0
+ 968 0734 484085E5 		str	r4, [r5, #72]
+ 969              		.loc 1 332 0
+ 970 0738 FEFFFFEB 		bl	_txe_mutex_put
+ 333:../cyfxtx.c   ****     CyU3PMutexDestroy (&glBufferManager.lock);
+ 971              		.loc 1 333 0
+ 972 073c 040085E2 		add	r0, r5, #4
+ 334:../cyfxtx.c   **** }
+ 973              		.loc 1 334 0
+ 974 0740 7040BDE8 		ldmfd	sp!, {r4, r5, r6, lr}
+ 333:../cyfxtx.c   ****     CyU3PMutexDestroy (&glBufferManager.lock);
+ 975              		.loc 1 333 0
+ 976 0744 FEFFFFEA 		b	_txe_mutex_delete
+ 977              	.L167:
+ 978              		.align	2
+ 979              	.L166:
+ 980 0748 04000000 		.word	.LANCHOR0+4
+ 981 074c 00000000 		.word	.LANCHOR0
+ 982              		.cfi_endproc
+ 983              	.LFE11:
+ 985              		.align	2
+ 986              		.global	CyU3PDmaBufferAlloc
+ 988              	CyU3PDmaBufferAlloc:
+ 989              	.LFB13:
+ 335:../cyfxtx.c   **** 
+ 336:../cyfxtx.c   **** /* Helper function for the DMA buffer manager. Used to set/clear
+ 337:../cyfxtx.c   ****    a set of status bits from the alloc/free functions. */
+ 338:../cyfxtx.c   **** static void
+ 339:../cyfxtx.c   **** CyU3PDmaBufMgrSetStatus (
+ 340:../cyfxtx.c   ****         uint32_t startPos,
+ 341:../cyfxtx.c   ****         uint32_t numBits,
+ 342:../cyfxtx.c   ****         CyBool_t value)
+ 343:../cyfxtx.c   **** {
+ 344:../cyfxtx.c   ****     uint32_t wordnum  = (startPos >> 5);
+ 345:../cyfxtx.c   ****     uint32_t startbit, endbit, mask;
+ 346:../cyfxtx.c   **** 
+ 347:../cyfxtx.c   ****     startbit = (startPos & 31);
+ 348:../cyfxtx.c   ****     endbit   = CY_U3P_MIN (32, startbit + numBits);
+ 349:../cyfxtx.c   **** 
+ 350:../cyfxtx.c   ****     /* Compute a mask that has a 1 at all bit positions to be altered. */
+ 351:../cyfxtx.c   ****     mask  = (endbit == 32) ? 0xFFFFFFFFU : ((uint32_t)(1 << endbit) - 1);
+ 352:../cyfxtx.c   ****     mask -= ((1 << startbit) - 1);
+ 353:../cyfxtx.c   **** 
+ 354:../cyfxtx.c   ****     /* Repeatedly go through the array and update each 32 bit word as required. */
+ 355:../cyfxtx.c   ****     while (numBits)
+ 356:../cyfxtx.c   ****     {
+ 357:../cyfxtx.c   ****         if (value)
+ 358:../cyfxtx.c   ****         {
+ 359:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] |= mask;
+ 360:../cyfxtx.c   ****         }
+ 361:../cyfxtx.c   ****         else
+ 362:../cyfxtx.c   ****         {
+ 363:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] &= ~mask;
+ 364:../cyfxtx.c   ****         }
+ 365:../cyfxtx.c   **** 
+ 366:../cyfxtx.c   ****         wordnum++;
+ 367:../cyfxtx.c   ****         numBits -= (endbit - startbit);
+ 368:../cyfxtx.c   ****         if (numBits >= 32)
+ 369:../cyfxtx.c   ****         {
+ 370:../cyfxtx.c   ****             startbit = 0;
+ 371:../cyfxtx.c   ****             endbit   = 32;
+ 372:../cyfxtx.c   ****             mask     = 0xFFFFFFFFU;
+ 373:../cyfxtx.c   ****         }
+ 374:../cyfxtx.c   ****         else
+ 375:../cyfxtx.c   ****         {
+ 376:../cyfxtx.c   ****             startbit = 0;
+ 377:../cyfxtx.c   ****             endbit   = numBits;
+ 378:../cyfxtx.c   ****             mask     = ((uint32_t)(1 << numBits) - 1);
+ 379:../cyfxtx.c   ****         }
+ 380:../cyfxtx.c   ****     }
+ 381:../cyfxtx.c   **** }
+ 382:../cyfxtx.c   **** 
+ 383:../cyfxtx.c   **** /* This function shall be invoked from the DMA module for buffer allocation */
+ 384:../cyfxtx.c   **** void *
+ 385:../cyfxtx.c   **** CyU3PDmaBufferAlloc (
+ 386:../cyfxtx.c   ****         uint16_t size)
+ 387:../cyfxtx.c   **** {
+ 990              		.loc 1 387 0
+ 991              		.cfi_startproc
+ 992              		@ args = 0, pretend = 0, frame = 0
+ 993              		@ frame_needed = 0, uses_anonymous_args = 0
+ 994              	.LVL43:
+ 995 0750 F8452DE9 		stmfd	sp!, {r3, r4, r5, r6, r7, r8, sl, lr}
+ 996              	.LCFI10:
+ 997              		.cfi_def_cfa_offset 32
+ 998              		.loc 1 387 0
+ 999 0754 0040A0E1 		mov	r4, r0
+ 1000              		.cfi_offset 14, -4
+ 1001              		.cfi_offset 10, -8
+ 1002              		.cfi_offset 8, -12
+ 1003              		.cfi_offset 7, -16
+ 1004              		.cfi_offset 6, -20
+ 1005              		.cfi_offset 5, -24
+ 1006              		.cfi_offset 4, -28
+ 1007              		.cfi_offset 3, -32
+ 388:../cyfxtx.c   ****     uint32_t tmp;
+ 389:../cyfxtx.c   ****     uint32_t wordnum, bitnum;
+ 390:../cyfxtx.c   ****     uint32_t count, start = 0;
+ 391:../cyfxtx.c   ****     void *ptr = 0;
+ 392:../cyfxtx.c   **** 
+ 393:../cyfxtx.c   ****     /* Get the lock for the buffer manager. */
+ 394:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 1008              		.loc 1 394 0
+ 1009 0758 FEFFFFEB 		bl	_tx_thread_identify
+ 1010              	.LVL44:
+ 1011 075c 001050E2 		subs	r1, r0, #0
+ 395:../cyfxtx.c   ****     {
+ 396:../cyfxtx.c   ****         tmp = CyU3PMutexGet (&glBufferManager.lock, CY_U3P_BUFFER_ALLOC_TIMEOUT);
+ 1012              		.loc 1 396 0
+ 1013 0760 0A10A013 		movne	r1, #10
+ 1014 0764 68019FE5 		ldr	r0, .L200
+ 397:../cyfxtx.c   ****     }
+ 398:../cyfxtx.c   ****     else
+ 399:../cyfxtx.c   ****     {
+ 400:../cyfxtx.c   ****         tmp = CyU3PMutexGet (&glBufferManager.lock, CYU3P_NO_WAIT);
+ 1015              		.loc 1 400 0
+ 1016 0768 FEFFFFEB 		bl	_txe_mutex_get
+ 1017              	.LVL45:
+ 401:../cyfxtx.c   ****     }
+ 402:../cyfxtx.c   **** 
+ 403:../cyfxtx.c   ****     if (tmp != CY_U3P_SUCCESS)
+ 1018              		.loc 1 403 0
+ 1019 076c 000050E3 		cmp	r0, #0
+ 404:../cyfxtx.c   ****     {
+ 405:../cyfxtx.c   ****         return ptr;
+ 1020              		.loc 1 405 0
+ 1021 0770 0040A013 		movne	r4, #0
+ 403:../cyfxtx.c   ****     if (tmp != CY_U3P_SUCCESS)
+ 1022              		.loc 1 403 0
+ 1023 0774 2F00001A 		bne	.L171
+ 406:../cyfxtx.c   ****     }
+ 407:../cyfxtx.c   **** 
+ 408:../cyfxtx.c   ****     /* Make sure the buffer manager has been initialized. */
+ 409:../cyfxtx.c   ****     if ((glBufferManager.startAddr == 0) || (glBufferManager.regionSize == 0))
+ 1024              		.loc 1 409 0
+ 1025 0778 58A19FE5 		ldr	sl, .L200+4
+ 1026 077c 3C309AE5 		ldr	r3, [sl, #60]
+ 1027 0780 000053E3 		cmp	r3, #0
+ 1028 0784 4E00000A 		beq	.L172
+ 1029              		.loc 1 409 0 is_stmt 0 discriminator 1
+ 1030 0788 40109AE5 		ldr	r1, [sl, #64]
+ 1031 078c 000051E3 		cmp	r1, #0
+ 1032 0790 4B00000A 		beq	.L172
+ 410:../cyfxtx.c   ****     {
+ 411:../cyfxtx.c   ****         CyU3PMutexPut (&glBufferManager.lock);
+ 412:../cyfxtx.c   ****         return ptr;
+ 413:../cyfxtx.c   ****     }
+ 414:../cyfxtx.c   **** 
+ 415:../cyfxtx.c   ****     /* Find the number of 32 byte chunks required. The minimum size that can be handled is
+ 416:../cyfxtx.c   ****        64 bytes. */
+ 417:../cyfxtx.c   ****     size = (size <= 32) ? 2 : (size + 31) / 32;
+ 1033              		.loc 1 417 0 is_stmt 1
+ 1034 0794 200054E3 		cmp	r4, #32
+ 1035 0798 1F408482 		addhi	r4, r4, #31
+ 418:../cyfxtx.c   **** 
+ 419:../cyfxtx.c   ****     /* Search through the status array to find the first block that fits the need. */
+ 420:../cyfxtx.c   ****     wordnum = glBufferManager.searchPos;
+ 1036              		.loc 1 420 0
+ 1037 079c 4C109AE5 		ldr	r1, [sl, #76]
+ 1038 07a0 48E09AE5 		ldr	lr, [sl, #72]
+ 421:../cyfxtx.c   ****     bitnum  = 0;
+ 422:../cyfxtx.c   ****     count   = 0;
+ 423:../cyfxtx.c   ****     tmp     = 0;
+ 424:../cyfxtx.c   **** 
+ 425:../cyfxtx.c   ****     /* Stop searching once we have checked all of the words. */
+ 426:../cyfxtx.c   ****     while (tmp < glBufferManager.statusSize)
+ 427:../cyfxtx.c   ****     {
+ 428:../cyfxtx.c   ****         if ((glBufferManager.usedStatus[wordnum] & (1 << bitnum)) == 0)
+ 1039              		.loc 1 428 0
+ 1040 07a4 44509AE5 		ldr	r5, [sl, #68]
+ 390:../cyfxtx.c   ****     uint32_t count, start = 0;
+ 1041              		.loc 1 390 0
+ 1042 07a8 0080A0E3 		mov	r8, #0
+ 417:../cyfxtx.c   ****     size = (size <= 32) ? 2 : (size + 31) / 32;
+ 1043              		.loc 1 417 0
+ 1044 07ac A442A081 		movhi	r4, r4, lsr #5
+ 1045 07b0 01708482 		addhi	r7, r4, #1
+ 1046 07b4 0240A093 		movls	r4, #2
+ 1047 07b8 0370A093 		movls	r7, #3
+ 1048              	.LVL46:
+ 422:../cyfxtx.c   ****     count   = 0;
+ 1049              		.loc 1 422 0
+ 1050 07bc 0820A0E1 		mov	r2, r8
+ 421:../cyfxtx.c   ****     bitnum  = 0;
+ 1051              		.loc 1 421 0
+ 1052 07c0 0830A0E1 		mov	r3, r8
+ 1053              		.loc 1 428 0
+ 1054 07c4 0160A0E3 		mov	r6, #1
+ 1055              	.LVL47:
+ 1056              	.L197:
+ 426:../cyfxtx.c   ****     while (tmp < glBufferManager.statusSize)
+ 1057              		.loc 1 426 0 discriminator 1
+ 1058 07c8 0E0050E1 		cmp	r0, lr
+ 1059 07cc 1400002A 		bcs	.L198
+ 1060              	.L180:
+ 1061              		.loc 1 428 0
+ 1062 07d0 01C195E7 		ldr	ip, [r5, r1, asl #2]
+ 1063 07d4 16C31CE0 		ands	ip, ip, r6, asl r3
+ 429:../cyfxtx.c   ****         {
+ 430:../cyfxtx.c   ****             if (count == 0)
+ 431:../cyfxtx.c   ****             {
+ 432:../cyfxtx.c   ****                 start = (wordnum << 5) + bitnum + 1;
+ 433:../cyfxtx.c   ****             }
+ 434:../cyfxtx.c   ****             count++;
+ 435:../cyfxtx.c   ****             if (count == (size + 1))
+ 436:../cyfxtx.c   ****             {
+ 437:../cyfxtx.c   ****                 /* The last bit corresponding to the allocated memory is left as zero.
+ 438:../cyfxtx.c   ****                    This allows us to identify the end of the allocated block while freeing
+ 439:../cyfxtx.c   ****                    the memory. We need to search for one additional zero while allocating
+ 440:../cyfxtx.c   ****                    to account for this hack. */
+ 441:../cyfxtx.c   ****                 glBufferManager.searchPos = wordnum;
+ 442:../cyfxtx.c   ****                 break;
+ 443:../cyfxtx.c   ****             }
+ 444:../cyfxtx.c   ****         }
+ 445:../cyfxtx.c   ****         else
+ 446:../cyfxtx.c   ****         {
+ 447:../cyfxtx.c   ****             count = 0;
+ 1064              		.loc 1 447 0
+ 1065 07d8 0020A013 		movne	r2, #0
+ 1066              	.LVL48:
+ 428:../cyfxtx.c   ****         if ((glBufferManager.usedStatus[wordnum] & (1 << bitnum)) == 0)
+ 1067              		.loc 1 428 0
+ 1068 07dc 0500001A 		bne	.L176
+ 430:../cyfxtx.c   ****             if (count == 0)
+ 1069              		.loc 1 430 0
+ 1070 07e0 000052E3 		cmp	r2, #0
+ 432:../cyfxtx.c   ****                 start = (wordnum << 5) + bitnum + 1;
+ 1071              		.loc 1 432 0
+ 1072 07e4 01C083E2 		add	ip, r3, #1
+ 434:../cyfxtx.c   ****             count++;
+ 1073              		.loc 1 434 0
+ 1074 07e8 012082E2 		add	r2, r2, #1
+ 432:../cyfxtx.c   ****                 start = (wordnum << 5) + bitnum + 1;
+ 1075              		.loc 1 432 0
+ 1076 07ec 81828C00 		addeq	r8, ip, r1, asl #5
+ 1077              	.LVL49:
+ 435:../cyfxtx.c   ****             if (count == (size + 1))
+ 1078              		.loc 1 435 0
+ 1079 07f0 070052E1 		cmp	r2, r7
+ 1080 07f4 1100000A 		beq	.L199
+ 1081              	.LVL50:
+ 1082              	.L176:
+ 448:../cyfxtx.c   ****         }
+ 449:../cyfxtx.c   **** 
+ 450:../cyfxtx.c   ****         bitnum++;
+ 1083              		.loc 1 450 0
+ 1084 07f8 013083E2 		add	r3, r3, #1
+ 1085              	.LVL51:
+ 451:../cyfxtx.c   ****         if (bitnum == 32)
+ 1086              		.loc 1 451 0
+ 1087 07fc 200053E3 		cmp	r3, #32
+ 1088 0800 F0FFFF1A 		bne	.L197
+ 1089              	.LVL52:
+ 452:../cyfxtx.c   ****         {
+ 453:../cyfxtx.c   ****             bitnum = 0;
+ 454:../cyfxtx.c   ****             wordnum++;
+ 1090              		.loc 1 454 0
+ 1091 0804 011081E2 		add	r1, r1, #1
+ 1092              	.LVL53:
+ 455:../cyfxtx.c   ****             tmp++;
+ 456:../cyfxtx.c   ****             if (wordnum == glBufferManager.statusSize)
+ 1093              		.loc 1 456 0
+ 1094 0808 0E0051E1 		cmp	r1, lr
+ 453:../cyfxtx.c   ****             bitnum = 0;
+ 1095              		.loc 1 453 0
+ 1096 080c 0030A0E3 		mov	r3, #0
+ 455:../cyfxtx.c   ****             tmp++;
+ 1097              		.loc 1 455 0
+ 1098 0810 010080E2 		add	r0, r0, #1
+ 1099              	.LVL54:
+ 457:../cyfxtx.c   ****             {
+ 458:../cyfxtx.c   ****                 /* Wrap back to the top of the array. */
+ 459:../cyfxtx.c   ****                 wordnum = 0;
+ 460:../cyfxtx.c   ****                 count   = 0;
+ 1100              		.loc 1 460 0
+ 1101 0814 0320A001 		moveq	r2, r3
+ 1102              	.LVL55:
+ 459:../cyfxtx.c   ****                 wordnum = 0;
+ 1103              		.loc 1 459 0
+ 1104 0818 0310A001 		moveq	r1, r3
+ 1105              	.LVL56:
+ 426:../cyfxtx.c   ****     while (tmp < glBufferManager.statusSize)
+ 1106              		.loc 1 426 0
+ 1107 081c 0E0050E1 		cmp	r0, lr
+ 1108 0820 EAFFFF3A 		bcc	.L180
+ 1109              	.L198:
+ 1110              	.LVL57:
+ 461:../cyfxtx.c   ****             }
+ 462:../cyfxtx.c   ****         }
+ 463:../cyfxtx.c   ****     }
+ 464:../cyfxtx.c   **** 
+ 465:../cyfxtx.c   ****     if (count == (size + 1))
+ 1111              		.loc 1 465 0
+ 1112 0824 070052E1 		cmp	r2, r7
+ 391:../cyfxtx.c   ****     void *ptr = 0;
+ 1113              		.loc 1 391 0
+ 1114 0828 0040A013 		movne	r4, #0
+ 1115              		.loc 1 465 0
+ 1116 082c 0400000A 		beq	.L178
+ 1117              	.LVL58:
+ 1118              	.L181:
+ 466:../cyfxtx.c   ****     {
+ 467:../cyfxtx.c   ****         /* Mark the memory region identified as occupied and return the pointer. */
+ 468:../cyfxtx.c   ****         CyU3PDmaBufMgrSetStatus (start, size - 1, CyTrue);
+ 469:../cyfxtx.c   ****         ptr = (void *)(glBufferManager.startAddr + (start << 5));
+ 470:../cyfxtx.c   ****     }
+ 471:../cyfxtx.c   **** 
+ 472:../cyfxtx.c   ****     CyU3PMutexPut (&glBufferManager.lock);
+ 1119              		.loc 1 472 0
+ 1120 0830 9C009FE5 		ldr	r0, .L200
+ 1121 0834 FEFFFFEB 		bl	_txe_mutex_put
+ 1122              	.LVL59:
+ 1123              	.L171:
+ 473:../cyfxtx.c   ****     return (ptr);
+ 474:../cyfxtx.c   **** }
+ 1124              		.loc 1 474 0
+ 1125 0838 0400A0E1 		mov	r0, r4
+ 1126 083c F885BDE8 		ldmfd	sp!, {r3, r4, r5, r6, r7, r8, sl, pc}
+ 1127              	.LVL60:
+ 1128              	.L199:
+ 441:../cyfxtx.c   ****                 glBufferManager.searchPos = wordnum;
+ 1129              		.loc 1 441 0
+ 1130 0840 4C108AE5 		str	r1, [sl, #76]
+ 1131              	.LVL61:
+ 1132              	.L178:
+ 468:../cyfxtx.c   ****         CyU3PDmaBufMgrSetStatus (start, size - 1, CyTrue);
+ 1133              		.loc 1 468 0
+ 1134 0844 013044E2 		sub	r3, r4, #1
+ 1135              	.LVL62:
+ 1136              	.LBB16:
+ 1137              	.LBB17:
+ 347:../cyfxtx.c   ****     startbit = (startPos & 31);
+ 1138              		.loc 1 347 0
+ 1139 0848 1F2008E2 		and	r2, r8, #31
+ 348:../cyfxtx.c   ****     endbit   = CY_U3P_MIN (32, startbit + numBits);
+ 1140              		.loc 1 348 0
+ 1141 084c 031082E0 		add	r1, r2, r3
+ 1142              	.LVL63:
+ 1143 0850 200051E3 		cmp	r1, #32
+ 1144 0854 2010A023 		movcs	r1, #32
+ 352:../cyfxtx.c   ****     mask -= ((1 << startbit) - 1);
+ 1145              		.loc 1 352 0
+ 1146 0858 01E0A0E3 		mov	lr, #1
+ 351:../cyfxtx.c   ****     mask  = (endbit == 32) ? 0xFFFFFFFFU : ((uint32_t)(1 << endbit) - 1);
+ 1147              		.loc 1 351 0
+ 1148 085c 0040E0E3 		mvn	r4, #0
+ 1149 0860 200051E3 		cmp	r1, #32
+ 352:../cyfxtx.c   ****     mask -= ((1 << startbit) - 1);
+ 1150              		.loc 1 352 0
+ 1151 0864 1E02A0E1 		mov	r0, lr, asl r2
+ 1152              	.LVL64:
+ 351:../cyfxtx.c   ****     mask  = (endbit == 32) ? 0xFFFFFFFFU : ((uint32_t)(1 << endbit) - 1);
+ 1153              		.loc 1 351 0
+ 1154 0868 1441E011 		mvnne	r4, r4, asl r1
+ 344:../cyfxtx.c   ****     uint32_t wordnum  = (startPos >> 5);
+ 1155              		.loc 1 344 0
+ 1156 086c A8C2A0E1 		mov	ip, r8, lsr #5
+ 1157              	.LVL65:
+ 352:../cyfxtx.c   ****     mask -= ((1 << startbit) - 1);
+ 1158              		.loc 1 352 0
+ 1159 0870 0E0060E0 		rsb	r0, r0, lr
+ 1160 0874 040080E0 		add	r0, r0, r4
+ 1161              	.LVL66:
+ 385:../cyfxtx.c   **** CyU3PDmaBufferAlloc (
+ 1162              		.loc 1 385 0
+ 1163 0878 0C5185E0 		add	r5, r5, ip, asl #2
+ 1164              	.LVL67:
+ 1165              	.L187:
+ 367:../cyfxtx.c   ****         numBits -= (endbit - startbit);
+ 1166              		.loc 1 367 0
+ 1167 087c 02C061E0 		rsb	ip, r1, r2
+ 1168 0880 0C3083E0 		add	r3, r3, ip
+ 359:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] |= mask;
+ 1169              		.loc 1 359 0
+ 1170 0884 001095E5 		ldr	r1, [r5, #0]
+ 378:../cyfxtx.c   ****             mask     = ((uint32_t)(1 << numBits) - 1);
+ 1171              		.loc 1 378 0
+ 1172 0888 1E43A0E1 		mov	r4, lr, asl r3
+ 1173 088c 1F0053E3 		cmp	r3, #31
+ 1174 0890 012044E2 		sub	r2, r4, #1
+ 359:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] |= mask;
+ 1175              		.loc 1 359 0
+ 1176 0894 01C080E1 		orr	ip, r0, r1
+ 378:../cyfxtx.c   ****             mask     = ((uint32_t)(1 << numBits) - 1);
+ 1177              		.loc 1 378 0
+ 1178 0898 0200A091 		movls	r0, r2
+ 1179 089c 0000E083 		mvnhi	r0, #0
+ 1180 08a0 0310A091 		movls	r1, r3
+ 1181 08a4 2010A083 		movhi	r1, #32
+ 355:../cyfxtx.c   ****     while (numBits)
+ 1182              		.loc 1 355 0
+ 1183 08a8 000053E3 		cmp	r3, #0
+ 1184 08ac 0020A0E3 		mov	r2, #0
+ 359:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] |= mask;
+ 1185              		.loc 1 359 0
+ 1186 08b0 04C085E4 		str	ip, [r5], #4
+ 355:../cyfxtx.c   ****     while (numBits)
+ 1187              		.loc 1 355 0
+ 1188 08b4 F0FFFF1A 		bne	.L187
+ 1189              	.LBE17:
+ 1190              	.LBE16:
+ 469:../cyfxtx.c   ****         ptr = (void *)(glBufferManager.startAddr + (start << 5));
+ 1191              		.loc 1 469 0
+ 1192 08b8 3CE09AE5 		ldr	lr, [sl, #60]
+ 1193 08bc 88428EE0 		add	r4, lr, r8, asl #5
+ 1194              	.LVL68:
+ 1195 08c0 DAFFFFEA 		b	.L181
+ 1196              	.LVL69:
+ 1197              	.L172:
+ 411:../cyfxtx.c   ****         CyU3PMutexPut (&glBufferManager.lock);
+ 1198              		.loc 1 411 0
+ 1199 08c4 08009FE5 		ldr	r0, .L200
+ 1200              	.LVL70:
+ 1201 08c8 FEFFFFEB 		bl	_txe_mutex_put
+ 412:../cyfxtx.c   ****         return ptr;
+ 1202              		.loc 1 412 0
+ 1203 08cc 0040A0E3 		mov	r4, #0
+ 1204 08d0 D8FFFFEA 		b	.L171
+ 1205              	.L201:
+ 1206              		.align	2
+ 1207              	.L200:
+ 1208 08d4 04000000 		.word	.LANCHOR0+4
+ 1209 08d8 00000000 		.word	.LANCHOR0
+ 1210              		.cfi_endproc
+ 1211              	.LFE13:
+ 1213              		.align	2
+ 1214              		.global	CyU3PDmaBufferFree
+ 1216              	CyU3PDmaBufferFree:
+ 1217              	.LFB14:
+ 475:../cyfxtx.c   **** 
+ 476:../cyfxtx.c   **** /* This function shall be invoked from the DMA module for buffer de-allocation */
+ 477:../cyfxtx.c   **** int
+ 478:../cyfxtx.c   **** CyU3PDmaBufferFree (
+ 479:../cyfxtx.c   ****         void *buffer)
+ 480:../cyfxtx.c   **** {
+ 1218              		.loc 1 480 0
+ 1219              		.cfi_startproc
+ 1220              		@ args = 0, pretend = 0, frame = 0
+ 1221              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1222              	.LVL71:
+ 1223 08dc F8402DE9 		stmfd	sp!, {r3, r4, r5, r6, r7, lr}
+ 1224              	.LCFI11:
+ 1225              		.cfi_def_cfa_offset 24
+ 1226              		.loc 1 480 0
+ 1227 08e0 0040A0E1 		mov	r4, r0
+ 1228              		.cfi_offset 14, -4
+ 1229              		.cfi_offset 7, -8
+ 1230              		.cfi_offset 6, -12
+ 1231              		.cfi_offset 5, -16
+ 1232              		.cfi_offset 4, -20
+ 1233              		.cfi_offset 3, -24
+ 481:../cyfxtx.c   ****     uint32_t status, start, count;
+ 482:../cyfxtx.c   ****     uint32_t wordnum, bitnum;
+ 483:../cyfxtx.c   ****     int      retVal = -1;
+ 484:../cyfxtx.c   **** 
+ 485:../cyfxtx.c   ****     /* Get the lock for the buffer manager. */
+ 486:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 1234              		.loc 1 486 0
+ 1235 08e4 FEFFFFEB 		bl	_tx_thread_identify
+ 1236              	.LVL72:
+ 1237 08e8 001050E2 		subs	r1, r0, #0
+ 487:../cyfxtx.c   ****     {
+ 488:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CY_U3P_BUFFER_ALLOC_TIMEOUT);
+ 1238              		.loc 1 488 0
+ 1239 08ec 0A10A013 		movne	r1, #10
+ 1240 08f0 10019FE5 		ldr	r0, .L228
+ 489:../cyfxtx.c   ****     }
+ 490:../cyfxtx.c   ****     else
+ 491:../cyfxtx.c   ****     {
+ 492:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_NO_WAIT);
+ 1241              		.loc 1 492 0
+ 1242 08f4 FEFFFFEB 		bl	_txe_mutex_get
+ 1243              	.LVL73:
+ 493:../cyfxtx.c   ****     }
+ 494:../cyfxtx.c   **** 
+ 495:../cyfxtx.c   ****     if (status != CY_U3P_SUCCESS)
+ 1244              		.loc 1 495 0
+ 1245 08f8 000050E3 		cmp	r0, #0
+ 496:../cyfxtx.c   ****     {
+ 497:../cyfxtx.c   ****         return retVal;
+ 1246              		.loc 1 497 0
+ 1247 08fc 0040E013 		mvnne	r4, #0
+ 1248              	.LVL74:
+ 495:../cyfxtx.c   ****     if (status != CY_U3P_SUCCESS)
+ 1249              		.loc 1 495 0
+ 1250 0900 0600001A 		bne	.L205
+ 1251              	.LVL75:
+ 498:../cyfxtx.c   ****     }
+ 499:../cyfxtx.c   **** 
+ 500:../cyfxtx.c   ****     /* If the buffer address is within the range specified, count the number of consecutive ones an
+ 501:../cyfxtx.c   ****        clear them. */
+ 502:../cyfxtx.c   ****     start = (uint32_t)buffer;
+ 503:../cyfxtx.c   ****     if ((start > glBufferManager.startAddr) && (start < (glBufferManager.startAddr + glBufferManage
+ 1252              		.loc 1 503 0
+ 1253 0904 00E19FE5 		ldr	lr, .L228+4
+ 1254 0908 3C309EE5 		ldr	r3, [lr, #60]
+ 1255 090c 030054E1 		cmp	r4, r3
+ 1256 0910 0400008A 		bhi	.L226
+ 1257              	.L220:
+ 483:../cyfxtx.c   ****     int      retVal = -1;
+ 1258              		.loc 1 483 0
+ 1259 0914 0040E0E3 		mvn	r4, #0
+ 1260              	.LVL76:
+ 1261              	.L206:
+ 504:../cyfxtx.c   ****     {
+ 505:../cyfxtx.c   ****         start = ((start - glBufferManager.startAddr) >> 5);
+ 506:../cyfxtx.c   **** 
+ 507:../cyfxtx.c   ****         wordnum = (start >> 5);
+ 508:../cyfxtx.c   ****         bitnum  = (start & 0x1F);
+ 509:../cyfxtx.c   ****         count   = 0;
+ 510:../cyfxtx.c   **** 
+ 511:../cyfxtx.c   ****         while ((wordnum < glBufferManager.statusSize) && ((glBufferManager.usedStatus[wordnum] & (1
+ 512:../cyfxtx.c   ****         {
+ 513:../cyfxtx.c   ****             count++;
+ 514:../cyfxtx.c   ****             bitnum++;
+ 515:../cyfxtx.c   ****             if (bitnum == 32)
+ 516:../cyfxtx.c   ****             {
+ 517:../cyfxtx.c   ****                 bitnum = 0;
+ 518:../cyfxtx.c   ****                 wordnum++;
+ 519:../cyfxtx.c   ****             }
+ 520:../cyfxtx.c   ****         }
+ 521:../cyfxtx.c   **** 
+ 522:../cyfxtx.c   ****         CyU3PDmaBufMgrSetStatus (start, count, CyFalse);
+ 523:../cyfxtx.c   **** 
+ 524:../cyfxtx.c   ****         /* Start the next buffer search at the top of the heap. This can help reduce fragmentation 
+ 525:../cyfxtx.c   ****            most of the heap is allocated and then freed as a whole. */
+ 526:../cyfxtx.c   ****         glBufferManager.searchPos = 0;
+ 527:../cyfxtx.c   ****         retVal = 0;
+ 528:../cyfxtx.c   ****     }
+ 529:../cyfxtx.c   **** 
+ 530:../cyfxtx.c   ****     /* Free the lock before we go. */
+ 531:../cyfxtx.c   ****     CyU3PMutexPut (&glBufferManager.lock);
+ 1262              		.loc 1 531 0
+ 1263 0918 E8009FE5 		ldr	r0, .L228
+ 1264 091c FEFFFFEB 		bl	_txe_mutex_put
+ 1265              	.LVL77:
+ 1266              	.L205:
+ 532:../cyfxtx.c   ****     return retVal;
+ 533:../cyfxtx.c   **** }
+ 1267              		.loc 1 533 0
+ 1268 0920 0400A0E1 		mov	r0, r4
+ 1269 0924 F880BDE8 		ldmfd	sp!, {r3, r4, r5, r6, r7, pc}
+ 1270              	.LVL78:
+ 1271              	.L226:
+ 503:../cyfxtx.c   ****     if ((start > glBufferManager.startAddr) && (start < (glBufferManager.startAddr + glBufferManage
+ 1272              		.loc 1 503 0 discriminator 1
+ 1273 0928 40109EE5 		ldr	r1, [lr, #64]
+ 1274 092c 012083E0 		add	r2, r3, r1
+ 1275 0930 020054E1 		cmp	r4, r2
+ 1276 0934 F6FFFF2A 		bcs	.L220
+ 505:../cyfxtx.c   ****         start = ((start - glBufferManager.startAddr) >> 5);
+ 1277              		.loc 1 505 0
+ 1278 0938 044063E0 		rsb	r4, r3, r4
+ 1279              	.LVL79:
+ 1280 093c A432A0E1 		mov	r3, r4, lsr #5
+ 1281              	.LVL80:
+ 508:../cyfxtx.c   ****         bitnum  = (start & 0x1F);
+ 1282              		.loc 1 508 0
+ 1283 0940 1F1003E2 		and	r1, r3, #31
+ 507:../cyfxtx.c   ****         wordnum = (start >> 5);
+ 1284              		.loc 1 507 0
+ 1285 0944 2445A0E1 		mov	r4, r4, lsr #10
+ 1286              	.LVL81:
+ 508:../cyfxtx.c   ****         bitnum  = (start & 0x1F);
+ 1287              		.loc 1 508 0
+ 1288 0948 48609EE5 		ldr	r6, [lr, #72]
+ 511:../cyfxtx.c   ****         while ((wordnum < glBufferManager.statusSize) && ((glBufferManager.usedStatus[wordnum] & (1
+ 1289              		.loc 1 511 0
+ 1290 094c 44509EE5 		ldr	r5, [lr, #68]
+ 508:../cyfxtx.c   ****         bitnum  = (start & 0x1F);
+ 1291              		.loc 1 508 0
+ 1292 0950 0130A0E1 		mov	r3, r1
+ 1293              	.LVL82:
+ 507:../cyfxtx.c   ****         wordnum = (start >> 5);
+ 1294              		.loc 1 507 0
+ 1295 0954 0420A0E1 		mov	r2, r4
+ 511:../cyfxtx.c   ****         while ((wordnum < glBufferManager.statusSize) && ((glBufferManager.usedStatus[wordnum] & (1
+ 1296              		.loc 1 511 0
+ 1297 0958 0170A0E3 		mov	r7, #1
+ 1298 095c 070000EA 		b	.L225
+ 1299              	.LVL83:
+ 1300              	.L227:
+ 511:../cyfxtx.c   ****         while ((wordnum < glBufferManager.statusSize) && ((glBufferManager.usedStatus[wordnum] & (1
+ 1301              		.loc 1 511 0 is_stmt 0 discriminator 2
+ 1302 0960 02C195E7 		ldr	ip, [r5, r2, asl #2]
+ 1303 0964 17C31CE0 		ands	ip, ip, r7, asl r3
+ 514:../cyfxtx.c   ****             bitnum++;
+ 1304              		.loc 1 514 0 is_stmt 1 discriminator 2
+ 1305 0968 013083E2 		add	r3, r3, #1
+ 1306              	.LVL84:
+ 511:../cyfxtx.c   ****         while ((wordnum < glBufferManager.statusSize) && ((glBufferManager.usedStatus[wordnum] & (1
+ 1307              		.loc 1 511 0 discriminator 2
+ 1308 096c 0500000A 		beq	.L209
+ 515:../cyfxtx.c   ****             if (bitnum == 32)
+ 1309              		.loc 1 515 0
+ 1310 0970 200053E3 		cmp	r3, #32
+ 513:../cyfxtx.c   ****             count++;
+ 1311              		.loc 1 513 0
+ 1312 0974 010080E2 		add	r0, r0, #1
+ 1313              	.LVL85:
+ 518:../cyfxtx.c   ****                 wordnum++;
+ 1314              		.loc 1 518 0
+ 1315 0978 01208202 		addeq	r2, r2, #1
+ 1316              	.LVL86:
+ 517:../cyfxtx.c   ****                 bitnum = 0;
+ 1317              		.loc 1 517 0
+ 1318 097c 0030A003 		moveq	r3, #0
+ 1319              	.LVL87:
+ 1320              	.L225:
+ 511:../cyfxtx.c   ****         while ((wordnum < glBufferManager.statusSize) && ((glBufferManager.usedStatus[wordnum] & (1
+ 1321              		.loc 1 511 0 discriminator 1
+ 1322 0980 060052E1 		cmp	r2, r6
+ 1323 0984 F5FFFF3A 		bcc	.L227
+ 1324              	.LVL88:
+ 1325              	.L209:
+ 1326              	.LBB20:
+ 1327              	.LBB21:
+ 348:../cyfxtx.c   ****     endbit   = CY_U3P_MIN (32, startbit + numBits);
+ 1328              		.loc 1 348 0
+ 1329 0988 013080E0 		add	r3, r0, r1
+ 1330 098c 200053E3 		cmp	r3, #32
+ 1331 0990 2030A023 		movcs	r3, #32
+ 1332              	.LVL89:
+ 351:../cyfxtx.c   ****     mask  = (endbit == 32) ? 0xFFFFFFFFU : ((uint32_t)(1 << endbit) - 1);
+ 1333              		.loc 1 351 0
+ 1334 0994 200053E3 		cmp	r3, #32
+ 1335 0998 0060E0E3 		mvn	r6, #0
+ 1336 099c 1663E011 		mvnne	r6, r6, asl r3
+ 1337              	.LVL90:
+ 355:../cyfxtx.c   ****     while (numBits)
+ 1338              		.loc 1 355 0
+ 1339 09a0 000050E3 		cmp	r0, #0
+ 1340 09a4 1400000A 		beq	.L212
+ 352:../cyfxtx.c   ****     mask -= ((1 << startbit) - 1);
+ 1341              		.loc 1 352 0
+ 1342 09a8 01C0A0E3 		mov	ip, #1
+ 1343 09ac 1C21A0E1 		mov	r2, ip, asl r1
+ 1344              	.LVL91:
+ 1345 09b0 0C2062E0 		rsb	r2, r2, ip
+ 478:../cyfxtx.c   **** CyU3PDmaBufferFree (
+ 1346              		.loc 1 478 0
+ 1347 09b4 044185E0 		add	r4, r5, r4, asl #2
+ 1348              	.LVL92:
+ 352:../cyfxtx.c   ****     mask -= ((1 << startbit) - 1);
+ 1349              		.loc 1 352 0
+ 1350 09b8 062082E0 		add	r2, r2, r6
+ 378:../cyfxtx.c   ****             mask     = ((uint32_t)(1 << numBits) - 1);
+ 1351              		.loc 1 378 0
+ 1352 09bc 0C50A0E1 		mov	r5, ip
+ 1353              	.LVL93:
+ 1354              	.L217:
+ 367:../cyfxtx.c   ****         numBits -= (endbit - startbit);
+ 1355              		.loc 1 367 0
+ 1356 09c0 011063E0 		rsb	r1, r3, r1
+ 1357 09c4 010080E0 		add	r0, r0, r1
+ 363:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] &= ~mask;
+ 1358              		.loc 1 363 0
+ 1359 09c8 003094E5 		ldr	r3, [r4, #0]
+ 378:../cyfxtx.c   ****             mask     = ((uint32_t)(1 << numBits) - 1);
+ 1360              		.loc 1 378 0
+ 1361 09cc 15C0A0E1 		mov	ip, r5, asl r0
+ 1362 09d0 1F0050E3 		cmp	r0, #31
+ 1363 09d4 01104CE2 		sub	r1, ip, #1
+ 363:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] &= ~mask;
+ 1364              		.loc 1 363 0
+ 1365 09d8 02C0C3E1 		bic	ip, r3, r2
+ 378:../cyfxtx.c   ****             mask     = ((uint32_t)(1 << numBits) - 1);
+ 1366              		.loc 1 378 0
+ 1367 09dc 0120A091 		movls	r2, r1
+ 1368 09e0 0020E083 		mvnhi	r2, #0
+ 1369 09e4 0030A091 		movls	r3, r0
+ 1370 09e8 2030A083 		movhi	r3, #32
+ 355:../cyfxtx.c   ****     while (numBits)
+ 1371              		.loc 1 355 0
+ 1372 09ec 000050E3 		cmp	r0, #0
+ 1373 09f0 0010A0E3 		mov	r1, #0
+ 363:../cyfxtx.c   ****             glBufferManager.usedStatus[wordnum] &= ~mask;
+ 1374              		.loc 1 363 0
+ 1375 09f4 04C084E4 		str	ip, [r4], #4
+ 355:../cyfxtx.c   ****     while (numBits)
+ 1376              		.loc 1 355 0
+ 1377 09f8 F0FFFF1A 		bne	.L217
+ 1378              	.L212:
+ 1379              	.LBE21:
+ 1380              	.LBE20:
+ 526:../cyfxtx.c   ****         glBufferManager.searchPos = 0;
+ 1381              		.loc 1 526 0
+ 1382 09fc 0040A0E3 		mov	r4, #0
+ 1383 0a00 4C408EE5 		str	r4, [lr, #76]
+ 1384              	.LVL94:
+ 1385 0a04 C3FFFFEA 		b	.L206
+ 1386              	.L229:
+ 1387              		.align	2
+ 1388              	.L228:
+ 1389 0a08 04000000 		.word	.LANCHOR0+4
+ 1390 0a0c 00000000 		.word	.LANCHOR0
+ 1391              		.cfi_endproc
+ 1392              	.LFE14:
+ 1394              		.align	2
+ 1395              		.global	CyU3PFreeHeaps
+ 1397              	CyU3PFreeHeaps:
+ 1398              	.LFB15:
+ 534:../cyfxtx.c   **** 
+ 535:../cyfxtx.c   **** void
+ 536:../cyfxtx.c   **** CyU3PFreeHeaps (
+ 537:../cyfxtx.c   **** 	void)
+ 538:../cyfxtx.c   **** {
+ 1399              		.loc 1 538 0
+ 1400              		.cfi_startproc
+ 1401              		@ args = 0, pretend = 0, frame = 0
+ 1402              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1403 0a10 38402DE9 		stmfd	sp!, {r3, r4, r5, lr}
+ 1404              	.LCFI12:
+ 1405              		.cfi_def_cfa_offset 16
+ 1406              	.LBB26:
+ 1407              	.LBB27:
+ 310:../cyfxtx.c   ****     if (CyU3PThreadIdentify ())
+ 1408              		.loc 1 310 0
+ 1409              		.cfi_offset 14, -4
+ 1410              		.cfi_offset 5, -8
+ 1411              		.cfi_offset 4, -12
+ 1412              		.cfi_offset 3, -16
+ 1413 0a14 FEFFFFEB 		bl	_tx_thread_identify
+ 1414 0a18 001050E2 		subs	r1, r0, #0
+ 312:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_WAIT_FOREVER);
+ 1415              		.loc 1 312 0
+ 1416 0a1c 0010E013 		mvnne	r1, #0
+ 1417 0a20 50009FE5 		ldr	r0, .L236
+ 316:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_NO_WAIT);
+ 1418              		.loc 1 316 0
+ 1419 0a24 FEFFFFEB 		bl	_txe_mutex_get
+ 319:../cyfxtx.c   ****     if (status != CY_U3P_SUCCESS)
+ 1420              		.loc 1 319 0
+ 1421 0a28 000050E3 		cmp	r0, #0
+ 316:../cyfxtx.c   ****         status = CyU3PMutexGet (&glBufferManager.lock, CYU3P_NO_WAIT);
+ 1422              		.loc 1 316 0
+ 1423 0a2c 0050A0E1 		mov	r5, r0
+ 1424              	.LVL95:
+ 1425 0a30 44409F15 		ldrne	r4, .L236+4
+ 319:../cyfxtx.c   ****     if (status != CY_U3P_SUCCESS)
+ 1426              		.loc 1 319 0
+ 1427 0a34 0A00001A 		bne	.L233
+ 1428              	.LVL96:
+ 325:../cyfxtx.c   ****     CyU3PMemFree (glBufferManager.usedStatus);
+ 1429              		.loc 1 325 0
+ 1430 0a38 3C409FE5 		ldr	r4, .L236+4
+ 1431              	.LBB28:
+ 1432              	.LBB29:
+ 160:../cyfxtx.c   ****      CyU3PByteFree (mem_p);
+ 1433              		.loc 1 160 0
+ 1434 0a3c 440094E5 		ldr	r0, [r4, #68]
+ 1435              	.LVL97:
+ 1436 0a40 FEFFFFEB 		bl	_txe_byte_release
+ 1437              	.LVL98:
+ 1438              	.LBE29:
+ 1439              	.LBE28:
+ 332:../cyfxtx.c   ****     CyU3PMutexPut (&glBufferManager.lock);
+ 1440              		.loc 1 332 0
+ 1441 0a44 040084E2 		add	r0, r4, #4
+ 326:../cyfxtx.c   ****     glBufferManager.usedStatus = 0;
+ 1442              		.loc 1 326 0
+ 1443 0a48 445084E5 		str	r5, [r4, #68]
+ 327:../cyfxtx.c   ****     glBufferManager.startAddr  = 0;
+ 1444              		.loc 1 327 0
+ 1445 0a4c 3C5084E5 		str	r5, [r4, #60]
+ 328:../cyfxtx.c   ****     glBufferManager.regionSize = 0;
+ 1446              		.loc 1 328 0
+ 1447 0a50 405084E5 		str	r5, [r4, #64]
+ 329:../cyfxtx.c   ****     glBufferManager.statusSize = 0;
+ 1448              		.loc 1 329 0
+ 1449 0a54 485084E5 		str	r5, [r4, #72]
+ 332:../cyfxtx.c   ****     CyU3PMutexPut (&glBufferManager.lock);
+ 1450              		.loc 1 332 0
+ 1451 0a58 FEFFFFEB 		bl	_txe_mutex_put
+ 333:../cyfxtx.c   ****     CyU3PMutexDestroy (&glBufferManager.lock);
+ 1452              		.loc 1 333 0
+ 1453 0a5c 040084E2 		add	r0, r4, #4
+ 1454 0a60 FEFFFFEB 		bl	_txe_mutex_delete
+ 1455              	.L233:
+ 1456              	.LBE27:
+ 1457              	.LBE26:
+ 539:../cyfxtx.c   ****     /* Free up the mem and buffer heaps. */
+ 540:../cyfxtx.c   ****     CyU3PDmaBufferDeInit ();
+ 541:../cyfxtx.c   ****     CyU3PBytePoolDestroy (&glMemBytePool);
+ 1458              		.loc 1 541 0
+ 1459 0a64 14009FE5 		ldr	r0, .L236+8
+ 1460 0a68 FEFFFFEB 		bl	_txe_byte_pool_delete
+ 542:../cyfxtx.c   ****     glMemPoolInit = CyFalse;
+ 1461              		.loc 1 542 0
+ 1462 0a6c 0030A0E3 		mov	r3, #0
+ 1463 0a70 003084E5 		str	r3, [r4, #0]
+ 543:../cyfxtx.c   **** }
+ 1464              		.loc 1 543 0
+ 1465 0a74 3880BDE8 		ldmfd	sp!, {r3, r4, r5, pc}
+ 1466              	.L237:
+ 1467              		.align	2
+ 1468              	.L236:
+ 1469 0a78 04000000 		.word	.LANCHOR0+4
+ 1470 0a7c 00000000 		.word	.LANCHOR0
+ 1471 0a80 00000000 		.word	glMemBytePool
+ 1472              		.cfi_endproc
+ 1473              	.LFE15:
+ 1475              		.global	glMemPoolInit
+ 1476              		.global	glBufferManager
+ 1477              		.comm	glMemBytePool,52,4
+ 1478              		.bss
+ 1479              		.align	2
+ 1480              		.set	.LANCHOR0,. + 0
+ 1483              	glMemPoolInit:
+ 1484 0000 00000000 		.space	4
+ 1487              	glBufferManager:
+ 1488 0004 00000000 		.space	76
+ 1488      00000000 
+ 1488      00000000 
+ 1488      00000000 
+ 1488      00000000 
+ 1489              		.text
+ 1490              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 cyfxtx.c
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:21     .text:00000000 $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:24     .text:00000000 CyU3PUndefinedHandler
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:40     .text:00000004 CyU3PPrefetchHandler
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:55     .text:00000008 CyU3PAbortHandler
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:70     .text:0000000c tx_application_define
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:87     .text:00000010 CyU3PMemInit
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:126    .text:00000050 $d
+                            *COM*:00000034 glMemBytePool
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:132    .text:0000005c $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:135    .text:0000005c CyU3PMemAlloc
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:180    .text:00000098 $d
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:184    .text:0000009c $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:187    .text:0000009c CyU3PMemFree
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:204    .text:000000a0 CyU3PMemSet
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:423    .text:000002bc CyU3PMemCopy
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:624    .text:000004c4 CyU3PMemCmp
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:724    .text:000005a4 CyU3PDmaBufferInit
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:909    .text:000006e4 $d
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:916    .text:000006f4 $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:919    .text:000006f4 CyU3PDmaBufferDeInit
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:980    .text:00000748 $d
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:985    .text:00000750 $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:988    .text:00000750 CyU3PDmaBufferAlloc
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1208   .text:000008d4 $d
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1213   .text:000008dc $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1216   .text:000008dc CyU3PDmaBufferFree
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1389   .text:00000a08 $d
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1394   .text:00000a10 $a
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1397   .text:00000a10 CyU3PFreeHeaps
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1469   .text:00000a78 $d
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1483   .bss:00000000 glMemPoolInit
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1487   .bss:00000004 glBufferManager
+C:\Users\wcheng\AppData\Local\Temp\cctLvjHY.s:1479   .bss:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+CyU3PApplicationDefine
+_txe_byte_pool_create
+_tx_thread_identify
+_txe_byte_allocate
+_txe_byte_release
+_txe_mutex_create
+_txe_mutex_delete
+_txe_mutex_get
+_txe_mutex_put
+_txe_byte_pool_delete

@@ -1,0 +1,78 @@
+   1              	# 1 "../cyfx_gcc_startup.S"
+   1              	#  Copyright Cypress Semiconductor Corporation, 2010-2012,
+   0              	
+   0              	
+   0              	
+   2              	#  All Rights Reserved
+   3              	#  UNPUBLISHED, LICENSED SOFTWARE.
+   4              	#
+   5              	#  CONFIDENTIAL AND PROPRIETARY INFORMATION
+   6              	#  WHICH IS THE PROPERTY OF CYPRESS.
+   7              	#
+   8              	#  Use of this file is governed
+   9              	#  by the license agreement included in the file
+  10              	#
+  11              	#     <install>/license/license.txt
+  12              	#
+  13              	#  where <install> is the Cypress software
+  14              	#  installation root directory path.
+  15              	#
+  16              	
+  17              	# Cypress FX3 Firmware Startup code. The actual firmware entry point is
+  18              	# provided by the FX3 API library and sets up the stacks and vectors.
+  19              	# The CyU3PToolChainInit only needs to perform application specific initialization.
+  20              	
+  21              	# This file is taken from the FX3 SDK version 1.2.2. When upgrading to a later
+  22              	# SDK version, please ensure that the corresponding startup file is used as the
+  23              	# base version.
+  24              	
+  25              	.section .text
+  26              	.code 32
+  27              	
+  28              	# Jump function implementation.
+  29              	.global jump
+  30              	jump:
+  31 0000 10FF2FE1 	    bx  R0
+  32              	
+  33              	.global CyU3PToolChainInit
+  34              	CyU3PToolChainInit:
+  35              	
+  36              	# Clear the BSS segment and then jump to main.
+  37              	__main:
+  38 0004 0000A0E3 		mov	R0, #0
+  39 0008 14109FE5 		ldr	R1, =_bss_start
+  40 000c 14209FE5 		ldr	R2, =_bss_end
+  41 0010 020051E1 	1:	cmp	R1, R2
+  42 0014 04008134 		strlo	R0, [R1], #4
+  43 0018 FCFFFF3A 		blo	1b
+  44              	
+  45 001c FEFFFFEA 		b	main
+  46              	
+  47              	# Stacks are setup in the FX3 API library. We currently do not use a heap
+  48              	# in this application. Therefore, no stack or heap initialization is required.
+  49              	.global __user_initial_stackheap
+  50              	__user_initial_stackheap:
+  51              	
+  52              	.if  INTER == TRUE
+  53              	    bx      lr                 
+  54              	.else
+  55 0020 0EF0A0E1 	    mov     pc, lr             
+  56              	.endif
+  57              	
+  58 0024 00000000 	.end
+  58      00000000 
+DEFINED SYMBOLS
+../cyfx_gcc_startup.S:30     .text:00000000 jump
+../cyfx_gcc_startup.S:31     .text:00000000 $a
+../cyfx_gcc_startup.S:34     .text:00000004 CyU3PToolChainInit
+../cyfx_gcc_startup.S:37     .text:00000004 __main
+../cyfx_gcc_startup.S:50     .text:00000020 __user_initial_stackheap
+../cyfx_gcc_startup.S:58     .text:00000024 $d
+                   .debug_aranges:0000000c $d
+
+UNDEFINED SYMBOLS
+_bss_start
+_bss_end
+main
+INTER
+TRUE
