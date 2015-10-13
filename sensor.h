@@ -72,7 +72,8 @@
 #define ManuBWBReg	    		0x09	// Blue when wb mode set to manual(4).
 #define ManuRWBReg     	    	0x0a	// Red when wb mode set to manual(4).
 
-#define AExReferleveReg		    0x04	// reference level Temp
+#define AExReferleveReg0	    0x04	// reference level for linear
+#define AExReferleveReg1		0x0c    // reference level for WDR
 #define AExModeReg	        	0x02	// AEx mode. 0:auto 1:manual.
 #define AExAGCReg	        	0x03    // AGC level. 0 ~ 0xff. read only when AEx mode is auto, otherwise, write only.
 #define DigZoomReg              0x2a    // digital zoom 1 ~ 25 (no autofocus system support)

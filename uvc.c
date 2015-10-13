@@ -192,12 +192,17 @@ volatile static CyBool_t gpif_initialized = CyFalse;    /* Whether the GPIF init
 volatile static uint16_t prodCount = 0, consCount = 0;  /* Count of buffers received and committed during
                                                            the current video frame. */
 volatile static CyBool_t stiflag = CyFalse;             /* Whether the image is still image */
-#define isWBMamu   0  // Is white balance control manual mode.
+#ifndef CAM720
+volatile static CyBool_t WDRflag = CyTrue;              /* the flag for WDR mode. It's initialized based on the CtrlParArry[0][13]: 3=set; others=clear. */
+#else
+volatile static CyBool_t WDRflag = CyFalse;
+#endif
+//#define isWBMamu   0  // Is white balance control manual mode.
 
 /************ control parameters array ***********
  *  the first D is the index of functionality, the second D is the index of parameters.
  *    e.g.
- *     1th D: brightness, contrast, hue, saturation, sharpness, gamma, WBT, ~, BLC, main freq, ...
+ *     1th D: backlight compensation, brightness, contrast, hue, saturation, sharpness, gamma, WBT, ~, BLC, main freq, ...
  *     2ed D: RegAdd1, RegAdd2, length, Min1, Min2, Max1, Max2, Res1, Res2, InfoReq1, InfoReq2, DefReq1, DefReq2,
  *            curVal1, curVal2 (index:14th), device address, checked flag, command available flag
  **************************************************/
@@ -238,7 +243,7 @@ static uint8_t CtrlParArry[32][24]={
 		{DayNightLevReg      , DayNightLevReg       , 2,    0,    0,  100,    0, 1, 0, 3, 0,  16, 0,  16,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // day to night start level. 0 ~ 0x64
 		{NightDayLevReg      , NightDayLevReg       , 2,    0,    0,  100,    0, 1, 0, 3, 0,  16, 0,  16,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // night to day start level. 0 ~ 0x64
 		{AExModeReg          , AExAGCReg            , 4,    0,    0,  127,    0, 1, 0, 3, 0,   0,32,   0,  32, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE mode setting & AGC level: 0:auto 1~18:manual; 0 ~ 0xff:level. read(auto), write(menu).
-		{AExReferleveReg     , AExReferleveReg      , 2,    0,    0,   64,    0, 1, 0, 3, 0,  32, 0,  32,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE reference level 0 ~ 0x40
+		{AExReferleveReg0    , AExReferleveReg1     , 2,    0,    0,   64,    0, 1, 0, 3, 0,  32, 0,  32,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE reference level 0 ~ 0x40
 		{0                   , 0                    , 2,    0,    0,   25,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{SensorModeReg       , SensorModeReg        , 2,    0,    0,    6,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{0/*StillImg*/       , 0                    , 2,    0,    0,    3,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
@@ -657,6 +662,17 @@ inline void ControlHandle(uint8_t CtrlID){
 							 CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
 							 CyU3PDebugPrint (4, "ExpM&AGC gotten from host. %d %d; %d %d\r\n", glEp0Buffer[0], glEp0Buffer[1], glEp0Buffer[2], glEp0Buffer[3]);
 							 break;
+						 case ExtExRefCtlID10:
+							 dataIdx = 0;
+							 CtrlParArry[CtrlID][13] = Data0;
+							 CtrlParArry[CtrlID][16] = CyTrue;
+							 CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
+							 if(WDRflag)
+								 cmdSet(cmdQuptr, CtrlID, RegAdd1, devAdd, Data0, dataIdx);  //First
+							 else
+								 cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, Data0, dataIdx);  //First
+							 CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
+							 CyU3PDebugPrint (4, "Exe level. %d %d; %d %d\r\n", Data0, WDRflag, glEp0Buffer[2], glEp0Buffer[3]);
 						 case ExtCamMCtlID12:
 							 /*
 							 dataIdx = 0;
@@ -833,11 +849,15 @@ inline void ControlHandle(uint8_t CtrlID){
 							 break;
 					 	 case BLCCtlID0:
 							 CtrlParArry[CtrlID][13] = Data0;
+							 if(Data0 == 3)
+								 WDRflag = CyTrue; //WDR mode
+							 else
+								 WDRflag = CyFalse;
 							 CtrlParArry[CtrlID][16] = CyTrue;
 							 if(CamMode == 1) //mode 720p
 							 {
 								 if(Data0 < 2){
-					 				 //Data0 += 4;
+					 				 ;//Data0 += 4;
 					 			 }else{
 									CyU3PDebugPrint (4, "back light compensation setting is not correct. %d %d\r\n", CamMode, getData);
 									Data0 = 0; //set to default.
@@ -848,6 +868,7 @@ inline void ControlHandle(uint8_t CtrlID){
 							 CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
 							 cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, Data0, dataIdx);  //First
 							 CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
+							 CyU3PDebugPrint (4, "BLC set. %d %d; %d %d\r\n", Data0, WDRflag, glEp0Buffer[2], glEp0Buffer[3]);
 
 					 		 break;
 						 default:
