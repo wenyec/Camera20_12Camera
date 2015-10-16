@@ -25,7 +25,7 @@
 #define  WIDEDATA    0x08
 #define  STOP        0x00
 /* end of the optical zoom define */
-#define  EXUAOFFSET  0x20
+#define  EXUAOFFSET  0x24
 
 /************* control handler **************/
 typedef enum UVCCtrlID{
@@ -67,13 +67,13 @@ typedef enum ExtCtrlID{
 }ExtCtrlID_t;
 
 typedef enum ExtCtrlID1{
-	Ext1BLCRangeCtlID0 = 0x20,      // back light compensation range
-	Ext1BLCWeightCtlID1,           // back light compensation wieght factor
-	Ext1BLCGridCtlID2,
+	Ext1CtlID0 = 0x20,
+	Ext1CtlID1,
+	Ext1CtlID2,
 	Ext1CtlID3,
-	Ext1CtlID4,
-	Ext1CtlID5,
-	Ext1CtlID6,
+	Ext1BLCRangeCtlID4,   // back light compensation range
+	Ext1BLCWeightCtlID5,  // back light compensation wieght factor
+	Ext1BLCGridCtlID6,    // back light compensation grid state
 	Ext1CtlID7,
 	Ext1CtlID8,
 	Ext1CtlID9,

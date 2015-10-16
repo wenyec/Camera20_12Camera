@@ -1788,38 +1788,38 @@
  1269              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 sensor.c
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:21     .text:00000000 $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:23     .text:00000000 SensorRead2B.clone.1
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:151    .text:000000d8 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:156    .text:000000e0 $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:159    .text:000000e0 SensorWrite2B
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:296    .text:000001b0 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:300    .text:000001b4 $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:303    .text:000001b4 SensorWrite
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:403    .text:00000254 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:408    .text:0000025c $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:411    .text:0000025c SensorRead2B
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:565    .text:00000360 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:571    .text:0000036c $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:574    .text:0000036c SensorRead
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:680    .text:00000414 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:685    .text:0000041c $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:688    .text:0000041c SensorReset
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:786    .text:000004d0 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:792    .text:000004dc $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:795    .text:000004dc SensorInit
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:836    .text:00000520 $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:840    .text:00000524 $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:843    .text:00000524 SensorI2cBusTest
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:882    .text:00000560 SensorGetControl
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:919    .text:0000059c $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:923    .text:000005a0 $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:926    .text:000005a0 SensorSetControl
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:1066   .text:0000065c $d
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:1074   .text:00000660 $a
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:1077   .text:00000660 SensorGetIrisControl
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:1110   .text:00000688 SensorSetIrisControl
-C:\Users\wcheng\AppData\Local\Temp\ccoVo6yj.s:1240   .rodata.str1.4:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:21     .text:00000000 $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:23     .text:00000000 SensorRead2B.clone.1
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:151    .text:000000d8 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:156    .text:000000e0 $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:159    .text:000000e0 SensorWrite2B
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:296    .text:000001b0 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:300    .text:000001b4 $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:303    .text:000001b4 SensorWrite
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:403    .text:00000254 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:408    .text:0000025c $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:411    .text:0000025c SensorRead2B
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:565    .text:00000360 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:571    .text:0000036c $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:574    .text:0000036c SensorRead
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:680    .text:00000414 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:685    .text:0000041c $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:688    .text:0000041c SensorReset
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:786    .text:000004d0 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:792    .text:000004dc $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:795    .text:000004dc SensorInit
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:836    .text:00000520 $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:840    .text:00000524 $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:843    .text:00000524 SensorI2cBusTest
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:882    .text:00000560 SensorGetControl
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:919    .text:0000059c $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:923    .text:000005a0 $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:926    .text:000005a0 SensorSetControl
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:1066   .text:0000065c $d
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:1074   .text:00000660 $a
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:1077   .text:00000660 SensorGetIrisControl
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:1110   .text:00000688 SensorSetIrisControl
+C:\Users\wcheng\AppData\Local\Temp\ccOzGe6j.s:1240   .rodata.str1.4:00000000 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

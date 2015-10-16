@@ -18,41 +18,50 @@
 #include "cmdqu.h"
 
 static uint16_t DelayArray[64] = {
-		700, //BLC
-		260, //Brightness
-		260, //Contrast
-		260, //0
-		700, //MainFreq
-		260, //Hue
-		260, //Saturation
-		260, //Sharpness
-		260, //0
-		260, //WBMode
-		260, //0
-		260, //WBComp
-		260, //0
-		260, //0
-		260, //DigZoom
-		260, //0
-		700, //Shutter
-		700, //SenseUp
-		400, //MirrMode
-		300, //NoiRedu3DMod
-		300, //NoiRedu3DLev
-		300, //DayNightMod
-		300, //DayNightDly
-		260, //DayNightLev
-		260, //NightDayLev
-		700, //AExModee
-		700, //AExReferleve
-		260, //0
-		700, //SensorMode
-		260, //0
-		500, //SevePars
-		260, //0
-		260,
-		260,
-		260,
+		700, //0: BLC
+		260, //1: Brightness
+		260, //2: Contrast
+		260, //3: 0
+		700, //4: MainFreq
+		260, //5: Hue
+		260, //6: Saturation
+		260, //7: Sharpness
+		260, //8: 0
+		260, //9: WBMode
+		260, //A: 0
+		260, //B: WBComp
+		260, //C: 0
+		260, //D: 0
+		260, //E: DigZoom
+		260, //F: 0
+		700, //10: Shutter
+		700, //11: SenseUp
+		400, //12: MirrMode
+		300, //13: NoiRedu3DMod
+		300, //14: NoiRedu3DLev
+		300, //15: DayNightMod
+		300, //16: DayNightDly
+		260, //17: DayNightLev
+		260, //18: NightDayLev
+		700, //19: AExModee
+		700, //1A: AExReferleve
+		260, //1B: 0
+		700, //1C: SensorMode
+		260, //1D: 0
+		500, //1E: SevePars
+		260, //1F: 0
+		260, //20: Iris auto (AF Lens)
+		260, //21: Iris auto (non AF Lens)
+		260, //22: Iris value (DC manual)
+		260, //23: Iris value (DC manual)
+		260, //24: BLCRange
+		260, //25: BLCWeight
+		260, //26: BLCGrid
+		260, //27: 0
+		260, //28: 0
+		260, //29: 0
+		260, //2A: 0
+		260, //2B: 0
 		0
 
 };
