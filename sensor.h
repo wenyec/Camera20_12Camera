@@ -137,10 +137,11 @@
 extern CyU3PReturnStatus_t
 SensorWrite2B (
         uint8_t slaveAddr,
+        uint8_t boaodAddr,
         uint8_t highAddr,
         uint8_t lowAddr,
-        uint8_t highData,
-        uint8_t lowData);
+        uint8_t numData,
+        uint8_t *buf);
 
 /* Function    : SensorWrite
    Description : Write arbitrary amount of data to image sensor over I2C interface.

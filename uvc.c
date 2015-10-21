@@ -359,12 +359,14 @@ void I2CCmdHandler(){
 		}
 	}else if(CmdType == 1){
 		if(1||(CmdRegLen == 4)){//TODO cmdque mutual
+			buf[0] = I2CCMDArry[9];
+			buf[1] = I2CCMDArry[10];
 			if(0 && (I2CCMDArry[3]&I2C_WR_MASK)==0x82 && (I2CCMDArry[4]==0x30) && (I2CCMDArry[5]==0x10)){
 				CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);
 				cmdSet(cmdQuptr, 0x23, 0x10, 0x30, STOP, 0);
 				CyU3PMutexPut(cmdQuptr->ringMux);
 			}
-			else SensorWrite2B(I2CCMDArry[2]&I2C_WR_MASK, I2CCMDArry[3]&I2C_WR_MASK, I2CCMDArry[4], I2CCMDArry[5], I2CCMDArry[9]);
+			else SensorWrite2B(I2CCMDArry[2]&I2C_WR_MASK, I2CCMDArry[3]&I2C_WR_MASK, I2CCMDArry[4], I2CCMDArry[5], I2CCMDArry[8], buf);
 		}else{//not support currently
 			CyU3PDebugPrint (4, "The I2C command length is not supported. value %d\r\n", CmdRegLen);
 		}

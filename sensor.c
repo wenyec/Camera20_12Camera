@@ -54,14 +54,15 @@ static void SensorI2CAccessDelay(CyU3PReturnStatus_t status) {
 /* Write to an I2C slave with two bytes of data. */
 CyU3PReturnStatus_t SensorWrite2B(
 	uint8_t slaveAddr,
+	uint8_t boradAddr,
 	uint8_t highAddr,
 	uint8_t lowAddr, 
-	uint8_t highData, 
-	uint8_t lowData) {
+	uint8_t numData,
+	uint8_t *buf) {
 	
 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
 	CyU3PI2cPreamble_t preamble;
-	uint8_t buf[2];
+	uint8_t inbuf[2];
 
 	/* Validate the I2C slave address. */
 	if ((slaveAddr != SENSOR_ADDR_WR) && (slaveAddr != I2C_MEMORY_ADDR_WR)) {
@@ -69,22 +70,22 @@ CyU3PReturnStatus_t SensorWrite2B(
 		return 1;
 	}
 	preamble.buffer[0] = slaveAddr;						/************** command block ***************************************/
-	preamble.buffer[1] = highAddr;
-	preamble.buffer[2] = lowAddr;
+	preamble.buffer[1] = boradAddr;
+	preamble.buffer[2] = highAddr;
 	preamble.ctrlMask = 0x0000;
 	preamble.length = 3; /*  Three byte preamble. */
-	buf[0] = highData;
+	inbuf[0] = lowAddr;
 
-	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0);
+	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, inbuf, 1, 0);
 #ifdef DbgInfo
 	CyU3PDebugPrint(4, "sensor write2B(0) %d %d %d\r\n", lowAddr, buf[0], lowData); //additional debug
 #endif
 	SensorI2CAccessDelay(apiRetStatus);
 
-	buf[0] = lowData;								/****************** data block *****************************************/
+	//buf[0] = lowData;								/****************** data block *****************************************/
 	preamble.ctrlMask = 0x0000;
 	preamble.length = 1;
-	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0);
+	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, numData, 0);
 #ifdef DbgInfo
 	CyU3PDebugPrint(4, "sensor write2B(1) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
 #endif
@@ -298,7 +299,9 @@ uint8_t SensorGetControl(uint8_t IDext, uint8_t devAdd)  //for register w/r, the
 
 uint8_t SensorSetControl(uint8_t IDext, uint8_t devAdd, uint8_t value) //for register w/r, the IDext is Reg. addrss.
 {
-	SensorWrite2B(SENSOR_ADDR_WR, I2C_DSPBOARD_ADDR_WR, devAdd, IDext, value);
+	uint8_t buf[2];
+	buf[0] = value;
+	SensorWrite2B(SENSOR_ADDR_WR, I2C_DSPBOARD_ADDR_WR, devAdd, IDext, 1, buf);
 //#ifdef USB_DEBUG_PRINT
 	CyU3PDebugPrint (4, "The Set control regAdd 0x%x 0x%x\r\n", IDext, value); // additional debug
 //#endif
@@ -327,7 +330,9 @@ uint8_t SensorGetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t boardID)  //
 
 uint8_t SensorSetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t value, uint8_t boardID) //for register w/r, the IDext is Reg. addrss.
 {
-	SensorWrite2B(SENSOR_ADDR_WR, boardID, devAdd, IDext, value);
+	uint8_t buf[2];
+	buf[0] = value;
+	SensorWrite2B(SENSOR_ADDR_WR, boardID, devAdd, IDext, 1, buf);
 #ifdef USB_DEBUG_PRINT
 	CyU3PDebugPrint (4, "The Set control ID 0x%x 0x%x 0x%x\r\n", boardID, IDext, value); // additional debug
 #endif
