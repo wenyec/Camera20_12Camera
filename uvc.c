@@ -348,7 +348,7 @@ void I2CCmdHandler(){
 		/* end of the test */
 #endif
 		if(1||(CmdRegLen == 4)){
-			SensorRead2B(I2CCMDArry[2]|I2C_RD_MASK, I2CCMDArry[3]|I2C_RD_MASK, I2CCMDArry[4], I2CCMDArry[5], buf);
+			SensorRead2B(I2CCMDArry[2]|I2C_RD_MASK, I2CCMDArry[3]|I2C_RD_MASK, I2CCMDArry[4], I2CCMDArry[5], I2CCMDArry[8], buf);
 			I2CCMDArry[9] = buf[0];
 			if(CmdDataLen == 2){
 				I2CCMDArry[10] = buf[1];

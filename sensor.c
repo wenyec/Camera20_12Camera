@@ -128,6 +128,7 @@ CyU3PReturnStatus_t SensorRead2B(
 		uint8_t highAddr,
 		uint8_t lowAddr, 
 		uint8_t RegAdd,
+		uint8_t numData,
 		uint8_t *buf) {
 	
 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
@@ -144,7 +145,7 @@ CyU3PReturnStatus_t SensorRead2B(
 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
 	buf[0] = RegAdd;
 #ifdef DbgInfo
-	CyU3PDebugPrint(4, "sensor read2B(0) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
+	CyU3PDebugPrint(4, "sensor read2B(0) %d %d %d %d %d\r\n", lowAddr, RegAdd, numData, buf[0], buf[1]); //additional debug
 #endif
 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for reading
 	/*** test I2C bus ready ****/
@@ -160,7 +161,7 @@ CyU3PReturnStatus_t SensorRead2B(
 	preamble.length = 1;
 	preamble.ctrlMask = 0x0000;
 
-	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, 1, 0);//send data block read one byte
+	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, numData, 0);//send data block read one byte
 	/*** test I2C bus ready ****/
 	if(apiRetStatus != CY_U3P_SUCCESS){
 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
@@ -265,7 +266,7 @@ uint8_t SensorI2cBusTest(void) {
 	uint8_t buf[2];
 
 	/* Reading sensor ID */
-	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, buf) == CY_U3P_SUCCESS) {
+	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, 1, buf) == CY_U3P_SUCCESS) {
 		if ((buf[0] == 0x56) /*&& (buf[1] == 0x02)*/) {
 			return CY_U3P_SUCCESS;
 		}
@@ -284,7 +285,7 @@ uint8_t SensorI2cBusTest(void) {
 uint8_t SensorGetControl(uint8_t IDext, uint8_t devAdd)  //for register w/r, the IDext is Reg. addrss.
 {
 	uint8_t buf[2];
-	SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_RD, devAdd, IDext, buf);
+	SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_RD, devAdd, IDext, 1, buf);
 //#ifdef USB_DEBUG_PRINT
 	CyU3PDebugPrint (4, "The Get control ID 0x%x %d\r\n", IDext, buf[0]); // additional debug
 //#endif
@@ -315,7 +316,7 @@ uint8_t SensorSetControl(uint8_t IDext, uint8_t devAdd, uint8_t value) //for reg
 uint8_t SensorGetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t boardID)  //for register w/r, the IDext is Reg. addrss.
 {
 	uint8_t buf[2];
-	SensorRead2B(SENSOR_ADDR_RD, boardID, devAdd, IDext, buf);
+	SensorRead2B(SENSOR_ADDR_RD, boardID, devAdd, IDext, 1, buf);
 #ifdef USB_DEBUG_PRINT
 	CyU3PDebugPrint (4, "The Get control ID 0x%x 0x%x %d\r\n", boardID, IDext, buf[0]); // additional debug
 #endif

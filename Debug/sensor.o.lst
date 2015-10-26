@@ -156,71 +156,72 @@
  128:../sensor.c   **** 		uint8_t highAddr,
  129:../sensor.c   **** 		uint8_t lowAddr, 
  130:../sensor.c   **** 		uint8_t RegAdd,
- 131:../sensor.c   **** 		uint8_t *buf) {
- 132:../sensor.c   **** 	
- 133:../sensor.c   **** 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
- 134:../sensor.c   **** 	CyU3PI2cPreamble_t preamble;
- 135:../sensor.c   **** 
- 136:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
- 137:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
- 138:../sensor.c   **** 		return 1;
- 139:../sensor.c   **** 	}
- 140:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
- 141:../sensor.c   **** 	preamble.buffer[1] = highAddr; //highAddr;
-  37              		.loc 1 141 0
+ 131:../sensor.c   **** 		uint8_t numData,
+ 132:../sensor.c   **** 		uint8_t *buf) {
+ 133:../sensor.c   **** 	
+ 134:../sensor.c   **** 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
+ 135:../sensor.c   **** 	CyU3PI2cPreamble_t preamble;
+ 136:../sensor.c   **** 
+ 137:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
+ 138:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
+ 139:../sensor.c   **** 		return 1;
+ 140:../sensor.c   **** 	}
+ 141:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+ 142:../sensor.c   **** 	preamble.buffer[1] = highAddr; //highAddr;
+  37              		.loc 1 142 0
   38 0008 0D00CDE5 		strb	r0, [sp, #13]
- 142:../sensor.c   **** 	preamble.buffer[2] = lowAddr; //lowAddr;
-  39              		.loc 1 142 0
+ 143:../sensor.c   **** 	preamble.buffer[2] = lowAddr; //lowAddr;
+  39              		.loc 1 143 0
   40 000c 0E10CDE5 		strb	r1, [sp, #14]
- 140:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
-  41              		.loc 1 140 0
+ 141:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+  41              		.loc 1 141 0
   42 0010 70E0A0E3 		mov	lr, #112
   43              		.cfi_offset 14, -4
   44              		.cfi_offset 5, -8
   45              		.cfi_offset 4, -12
- 143:../sensor.c   **** 	preamble.length = 3;
- 144:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
- 145:../sensor.c   **** 	buf[0] = RegAdd;
-  46              		.loc 1 145 0
+ 144:../sensor.c   **** 	preamble.length = 3;
+ 145:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
+ 146:../sensor.c   **** 	buf[0] = RegAdd;
+  46              		.loc 1 146 0
   47 0014 0020C3E5 		strb	r2, [r3, #0]
- 146:../sensor.c   **** #ifdef DbgInfo
- 147:../sensor.c   **** 	CyU3PDebugPrint(4, "sensor read2B(0) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
- 148:../sensor.c   **** #endif
- 149:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
-  48              		.loc 1 149 0
+ 147:../sensor.c   **** #ifdef DbgInfo
+ 148:../sensor.c   **** 	CyU3PDebugPrint(4, "sensor read2B(0) %d %d %d %d %d\r\n", lowAddr, RegAdd, numData, buf[0], buf[1]
+ 149:../sensor.c   **** #endif
+ 150:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
+  48              		.loc 1 150 0
   49 0018 0310A0E1 		mov	r1, r3
   50              	.LVL1:
   51 001c 0120A0E3 		mov	r2, #1
   52              	.LVL2:
- 144:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
-  53              		.loc 1 144 0
+ 145:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
+  53              		.loc 1 145 0
   54 0020 00C0A0E3 		mov	ip, #0	@ movhi
  126:../sensor.c   **** CyU3PReturnStatus_t SensorRead2B(
   55              		.loc 1 126 0
   56 0024 0340A0E1 		mov	r4, r3
-  57              		.loc 1 149 0
+  57              		.loc 1 150 0
   58 0028 0C008DE2 		add	r0, sp, #12
   59              	.LVL3:
   60 002c 0030A0E3 		mov	r3, #0
   61              	.LVL4:
- 143:../sensor.c   **** 	preamble.length = 3;
-  62              		.loc 1 143 0
+ 144:../sensor.c   **** 	preamble.length = 3;
+  62              		.loc 1 144 0
   63 0030 0350A0E3 		mov	r5, #3
- 140:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
-  64              		.loc 1 140 0
+ 141:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+  64              		.loc 1 141 0
   65 0034 0CE0CDE5 		strb	lr, [sp, #12]
- 143:../sensor.c   **** 	preamble.length = 3;
-  66              		.loc 1 143 0
+ 144:../sensor.c   **** 	preamble.length = 3;
+  66              		.loc 1 144 0
   67 0038 1450CDE5 		strb	r5, [sp, #20]
- 144:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
-  68              		.loc 1 144 0
+ 145:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
+  68              		.loc 1 145 0
   69 003c B6C1CDE1 		strh	ip, [sp, #22]	@ movhi
-  70              		.loc 1 149 0
+  70              		.loc 1 150 0
   71 0040 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
   72              	.LVL5:
- 150:../sensor.c   **** 	/*** test I2C bus ready ****/
- 151:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
-  73              		.loc 1 151 0
+ 151:../sensor.c   **** 	/*** test I2C bus ready ****/
+ 152:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
+  73              		.loc 1 152 0
   74 0044 002050E2 		subs	r2, r0, #0
   75 0048 1B00001A 		bne	.L7
   76              	.LVL6:
@@ -235,45 +236,45 @@
   84              	.L3:
   85              	.LBE7:
   86              	.LBE6:
- 152:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(T) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
- 153:../sensor.c   **** 	}
- 154:../sensor.c   **** 
- 155:../sensor.c   **** #ifdef DbgInfo
- 156:../sensor.c   **** 	CyU3PDebugPrint(4, "sensor read2B(1) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
- 157:../sensor.c   **** #endif
- 158:../sensor.c   **** 	SensorI2CAccessDelay(apiRetStatus);
- 159:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
- 160:../sensor.c   **** 	preamble.length = 1;
-  87              		.loc 1 160 0
+ 153:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(T) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
+ 154:../sensor.c   **** 	}
+ 155:../sensor.c   **** 
+ 156:../sensor.c   **** #ifdef DbgInfo
+ 157:../sensor.c   **** 	CyU3PDebugPrint(4, "sensor read2B(1) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
+ 158:../sensor.c   **** #endif
+ 159:../sensor.c   **** 	SensorI2CAccessDelay(apiRetStatus);
+ 160:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
+ 161:../sensor.c   **** 	preamble.length = 1;
+  87              		.loc 1 161 0
   88 0054 01C0A0E3 		mov	ip, #1
- 159:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
-  89              		.loc 1 159 0
+ 160:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
+  89              		.loc 1 160 0
   90 0058 71E0A0E3 		mov	lr, #113
- 161:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
-  91              		.loc 1 161 0
+ 162:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
+  91              		.loc 1 162 0
   92 005c 0050A0E3 		mov	r5, #0	@ movhi
- 162:../sensor.c   **** 
- 163:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, 1, 0);//send data block read one byte
-  93              		.loc 1 163 0
+ 163:../sensor.c   **** 
+ 164:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, numData, 0);//send data block read one byte
+  93              		.loc 1 164 0
   94 0060 0C008DE2 		add	r0, sp, #12
   95 0064 0410A0E1 		mov	r1, r4
   96 0068 0C20A0E1 		mov	r2, ip
   97 006c 0030A0E3 		mov	r3, #0
- 161:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
-  98              		.loc 1 161 0
+ 162:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
+  98              		.loc 1 162 0
   99 0070 B651CDE1 		strh	r5, [sp, #22]	@ movhi
- 159:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
- 100              		.loc 1 159 0
+ 160:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
+ 100              		.loc 1 160 0
  101 0074 0CE0CDE5 		strb	lr, [sp, #12]
- 160:../sensor.c   **** 	preamble.length = 1;
- 102              		.loc 1 160 0
+ 161:../sensor.c   **** 	preamble.length = 1;
+ 102              		.loc 1 161 0
  103 0078 14C0CDE5 		strb	ip, [sp, #20]
- 104              		.loc 1 163 0
+ 104              		.loc 1 164 0
  105 007c FEFFFFEB 		bl	CyU3PI2cReceiveBytes
  106              	.LVL9:
- 164:../sensor.c   **** 	/*** test I2C bus ready ****/
- 165:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
- 107              		.loc 1 165 0
+ 165:../sensor.c   **** 	/*** test I2C bus ready ****/
+ 166:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
+ 107              		.loc 1 166 0
  108 0080 005050E2 		subs	r5, r0, #0
  109 0084 0400001A 		bne	.L8
  110              	.LVL10:
@@ -288,21 +289,21 @@
  118              	.L5:
  119              	.LBE9:
  120              	.LBE8:
- 166:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
- 167:../sensor.c   **** 	}
- 168:../sensor.c   **** 	SensorI2CAccessDelay(apiRetStatus);
- 169:../sensor.c   **** #ifdef DbgInfo
- 170:../sensor.c   **** 	CyU3PDebugPrint(4, "sensor read2B(2) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]); //additional de
- 171:../sensor.c   **** #endif
- 172:../sensor.c   **** 	return apiRetStatus;
- 173:../sensor.c   **** }
- 121              		.loc 1 173 0
+ 167:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
+ 168:../sensor.c   **** 	}
+ 169:../sensor.c   **** 	SensorI2CAccessDelay(apiRetStatus);
+ 170:../sensor.c   **** #ifdef DbgInfo
+ 171:../sensor.c   **** 	CyU3PDebugPrint(4, "sensor read2B(2) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]); //additional de
+ 172:../sensor.c   **** #endif
+ 173:../sensor.c   **** 	return apiRetStatus;
+ 174:../sensor.c   **** }
+ 121              		.loc 1 174 0
  122 0090 0500A0E1 		mov	r0, r5
  123 0094 1CD08DE2 		add	sp, sp, #28
  124 0098 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
  125              	.L8:
- 166:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
- 126              		.loc 1 166 0
+ 167:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
+ 126              		.loc 1 167 0
  127 009c 01C0D4E5 		ldrb	ip, [r4, #1]	@ zero_extendqisi2
  128 00a0 0030D4E5 		ldrb	r3, [r4, #0]	@ zero_extendqisi2
  129 00a4 2C109FE5 		ldr	r1, .L9
@@ -314,8 +315,8 @@
  135 00b8 F4FFFFEA 		b	.L5
  136              	.LVL14:
  137              	.L7:
- 152:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(T) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
- 138              		.loc 1 152 0
+ 153:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(T) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
+ 138              		.loc 1 153 0
  139 00bc 01C0D4E5 		ldrb	ip, [r4, #1]	@ zero_extendqisi2
  140 00c0 0030D4E5 		ldrb	r3, [r4, #0]	@ zero_extendqisi2
  141 00c4 10109FE5 		ldr	r1, .L9+4
@@ -636,1183 +637,1183 @@
  408              		.global	SensorRead2B
  410              	SensorRead2B:
  411              	.LFB3:
- 131:../sensor.c   **** 		uint8_t *buf) {
- 412              		.loc 1 131 0
+ 132:../sensor.c   **** 		uint8_t *buf) {
+ 412              		.loc 1 132 0
  413              		.cfi_startproc
- 414              		@ args = 4, pretend = 0, frame = 16
+ 414              		@ args = 8, pretend = 0, frame = 16
  415              		@ frame_needed = 0, uses_anonymous_args = 0
  416              	.LVL50:
- 417 0258 F0402DE9 		stmfd	sp!, {r4, r5, r6, r7, lr}
+ 417 0258 F0412DE9 		stmfd	sp!, {r4, r5, r6, r7, r8, lr}
  418              	.LCFI6:
- 419              		.cfi_def_cfa_offset 20
- 136:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
- 420              		.loc 1 136 0
+ 419              		.cfi_def_cfa_offset 24
+ 137:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
+ 420              		.loc 1 137 0
  421 025c A10050E3 		cmp	r0, #161
  422 0260 71005013 		cmpne	r0, #113
- 131:../sensor.c   **** 		uint8_t *buf) {
- 423              		.loc 1 131 0
- 424 0264 1CD04DE2 		sub	sp, sp, #28
+ 132:../sensor.c   **** 		uint8_t *buf) {
+ 423              		.loc 1 132 0
+ 424 0264 18D04DE2 		sub	sp, sp, #24
  425              	.LCFI7:
  426              		.cfi_def_cfa_offset 48
- 131:../sensor.c   **** 		uint8_t *buf) {
- 427              		.loc 1 131 0
+ 132:../sensor.c   **** 		uint8_t *buf) {
+ 427              		.loc 1 132 0
  428 0268 0040A0E1 		mov	r4, r0
  429              		.cfi_offset 14, -4
- 430              		.cfi_offset 7, -8
- 431              		.cfi_offset 6, -12
- 432              		.cfi_offset 5, -16
- 433              		.cfi_offset 4, -20
- 136:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
- 434              		.loc 1 136 0
- 435 026c 00C0A003 		moveq	ip, #0
- 436 0270 01C0A013 		movne	ip, #1
- 131:../sensor.c   **** 		uint8_t *buf) {
- 437              		.loc 1 131 0
- 438 0274 0160A0E1 		mov	r6, r1
- 439 0278 02E0A0E1 		mov	lr, r2
- 440 027c 30509DE5 		ldr	r5, [sp, #48]
- 136:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
- 441              		.loc 1 136 0
- 442 0280 2100001A 		bne	.L34
- 145:../sensor.c   **** 	buf[0] = RegAdd;
- 443              		.loc 1 145 0
- 444 0284 0030C5E5 		strb	r3, [r5, #0]
- 140:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
- 445              		.loc 1 140 0
- 446 0288 0170C0E3 		bic	r7, r0, #1
- 149:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
- 447              		.loc 1 149 0
- 448 028c 0120A0E3 		mov	r2, #1
- 449              	.LVL51:
- 142:../sensor.c   **** 	preamble.buffer[2] = lowAddr; //lowAddr;
- 450              		.loc 1 142 0
- 451 0290 0EE0CDE5 		strb	lr, [sp, #14]
- 149:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
- 452              		.loc 1 149 0
- 453 0294 0C008DE2 		add	r0, sp, #12
- 454              	.LVL52:
- 143:../sensor.c   **** 	preamble.length = 3;
- 455              		.loc 1 143 0
- 456 0298 03E0A0E3 		mov	lr, #3
- 149:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
- 457              		.loc 1 149 0
- 458 029c 0510A0E1 		mov	r1, r5
- 459              	.LVL53:
- 460 02a0 0C30A0E1 		mov	r3, ip
- 461              	.LVL54:
- 140:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
- 462              		.loc 1 140 0
- 463 02a4 0C70CDE5 		strb	r7, [sp, #12]
- 141:../sensor.c   **** 	preamble.buffer[1] = highAddr; //highAddr;
+ 430              		.cfi_offset 8, -8
+ 431              		.cfi_offset 7, -12
+ 432              		.cfi_offset 6, -16
+ 433              		.cfi_offset 5, -20
+ 434              		.cfi_offset 4, -24
+ 137:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
+ 435              		.loc 1 137 0
+ 436 026c 00C0A003 		moveq	ip, #0
+ 437 0270 01C0A013 		movne	ip, #1
+ 132:../sensor.c   **** 		uint8_t *buf) {
+ 438              		.loc 1 132 0
+ 439 0274 0160A0E1 		mov	r6, r1
+ 440 0278 02E0A0E1 		mov	lr, r2
+ 441 027c 34509DE5 		ldr	r5, [sp, #52]
+ 442 0280 3080DDE5 		ldrb	r8, [sp, #48]	@ zero_extendqisi2
+ 137:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
+ 443              		.loc 1 137 0
+ 444 0284 2100001A 		bne	.L34
+ 146:../sensor.c   **** 	buf[0] = RegAdd;
+ 445              		.loc 1 146 0
+ 446 0288 0030C5E5 		strb	r3, [r5, #0]
+ 141:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+ 447              		.loc 1 141 0
+ 448 028c 0170C0E3 		bic	r7, r0, #1
+ 150:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
+ 449              		.loc 1 150 0
+ 450 0290 0120A0E3 		mov	r2, #1
+ 451              	.LVL51:
+ 143:../sensor.c   **** 	preamble.buffer[2] = lowAddr; //lowAddr;
+ 452              		.loc 1 143 0
+ 453 0294 0EE0CDE5 		strb	lr, [sp, #14]
+ 150:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
+ 454              		.loc 1 150 0
+ 455 0298 0C008DE2 		add	r0, sp, #12
+ 456              	.LVL52:
+ 144:../sensor.c   **** 	preamble.length = 3;
+ 457              		.loc 1 144 0
+ 458 029c 03E0A0E3 		mov	lr, #3
+ 150:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
+ 459              		.loc 1 150 0
+ 460 02a0 0510A0E1 		mov	r1, r5
+ 461              	.LVL53:
+ 462 02a4 0C30A0E1 		mov	r3, ip
+ 463              	.LVL54:
+ 141:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
  464              		.loc 1 141 0
- 465 02a8 0D60CDE5 		strb	r6, [sp, #13]
- 143:../sensor.c   **** 	preamble.length = 3;
- 466              		.loc 1 143 0
- 467 02ac 14E0CDE5 		strb	lr, [sp, #20]
- 144:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
+ 465 02a8 0C70CDE5 		strb	r7, [sp, #12]
+ 142:../sensor.c   **** 	preamble.buffer[1] = highAddr; //highAddr;
+ 466              		.loc 1 142 0
+ 467 02ac 0D60CDE5 		strb	r6, [sp, #13]
+ 144:../sensor.c   **** 	preamble.length = 3;
  468              		.loc 1 144 0
- 469 02b0 B6C1CDE1 		strh	ip, [sp, #22]	@ movhi
- 149:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
- 470              		.loc 1 149 0
- 471 02b4 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
- 472              	.LVL55:
- 151:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
- 473              		.loc 1 151 0
- 474 02b8 002050E2 		subs	r2, r0, #0
- 475 02bc 1700001A 		bne	.L35
- 476              	.LVL56:
- 477              	.LBB30:
- 478              	.LBB31:
+ 469 02b0 14E0CDE5 		strb	lr, [sp, #20]
+ 145:../sensor.c   **** 	preamble.ctrlMask = 0x0000; /*  Send start bit after third byte of preamble. */
+ 470              		.loc 1 145 0
+ 471 02b4 B6C1CDE1 		strh	ip, [sp, #22]	@ movhi
+ 150:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, 1, 0); //send command block to prepare for re
+ 472              		.loc 1 150 0
+ 473 02b8 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
+ 474              	.LVL55:
+ 152:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
+ 475              		.loc 1 152 0
+ 476 02bc 002050E2 		subs	r2, r0, #0
+ 477 02c0 1700001A 		bne	.L35
+ 478              	.LVL56:
+ 479              	.LBB30:
+ 480              	.LBB31:
   46:../sensor.c   **** 		CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
- 479              		.loc 1 46 0
- 480 02c0 7D0EA0E3 		mov	r0, #2000
- 481              	.LVL57:
- 482 02c4 FEFFFFEB 		bl	CyU3PBusyWait
- 483              	.LVL58:
- 484              	.L32:
- 485              	.LBE31:
- 486              	.LBE30:
- 160:../sensor.c   **** 	preamble.length = 1;
- 487              		.loc 1 160 0
- 488 02c8 01E0A0E3 		mov	lr, #1
- 159:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
- 489              		.loc 1 159 0
+ 481              		.loc 1 46 0
+ 482 02c4 7D0EA0E3 		mov	r0, #2000
+ 483              	.LVL57:
+ 484 02c8 FEFFFFEB 		bl	CyU3PBusyWait
+ 485              	.LVL58:
+ 486              	.L32:
+ 487              	.LBE31:
+ 488              	.LBE30:
+ 160:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;
+ 489              		.loc 1 160 0
  490 02cc 0C40CDE5 		strb	r4, [sp, #12]
- 163:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, 1, 0);//send data block read one byte
- 491              		.loc 1 163 0
- 492 02d0 0C008DE2 		add	r0, sp, #12
- 161:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 493              		.loc 1 161 0
+ 161:../sensor.c   **** 	preamble.length = 1;
+ 491              		.loc 1 161 0
+ 492 02d0 01E0A0E3 		mov	lr, #1
+ 162:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
+ 493              		.loc 1 162 0
  494 02d4 0040A0E3 		mov	r4, #0	@ movhi
- 163:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, 1, 0);//send data block read one byte
- 495              		.loc 1 163 0
- 496 02d8 0510A0E1 		mov	r1, r5
- 497 02dc 0E20A0E1 		mov	r2, lr
- 498 02e0 0030A0E3 		mov	r3, #0
- 161:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 499              		.loc 1 161 0
- 500 02e4 B641CDE1 		strh	r4, [sp, #22]	@ movhi
- 160:../sensor.c   **** 	preamble.length = 1;
- 501              		.loc 1 160 0
- 502 02e8 14E0CDE5 		strb	lr, [sp, #20]
- 163:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, 1, 0);//send data block read one byte
- 503              		.loc 1 163 0
- 504 02ec FEFFFFEB 		bl	CyU3PI2cReceiveBytes
- 505              	.LVL59:
- 165:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
- 506              		.loc 1 165 0
- 507 02f0 004050E2 		subs	r4, r0, #0
- 508 02f4 1000001A 		bne	.L36
- 509              	.LVL60:
- 510              	.LBB32:
- 511              	.LBB33:
+ 164:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, numData, 0);//send data block read one byte
+ 495              		.loc 1 164 0
+ 496 02d8 0C008DE2 		add	r0, sp, #12
+ 497 02dc 0510A0E1 		mov	r1, r5
+ 498 02e0 0820A0E1 		mov	r2, r8
+ 499 02e4 0030A0E3 		mov	r3, #0
+ 162:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
+ 500              		.loc 1 162 0
+ 501 02e8 B641CDE1 		strh	r4, [sp, #22]	@ movhi
+ 161:../sensor.c   **** 	preamble.length = 1;
+ 502              		.loc 1 161 0
+ 503 02ec 14E0CDE5 		strb	lr, [sp, #20]
+ 164:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, numData, 0);//send data block read one byte
+ 504              		.loc 1 164 0
+ 505 02f0 FEFFFFEB 		bl	CyU3PI2cReceiveBytes
+ 506              	.LVL59:
+ 166:../sensor.c   **** 	if(apiRetStatus != CY_U3P_SUCCESS){
+ 507              		.loc 1 166 0
+ 508 02f4 004050E2 		subs	r4, r0, #0
+ 509 02f8 1000001A 		bne	.L36
+ 510              	.LVL60:
+ 511              	.LBB32:
+ 512              	.LBB33:
   46:../sensor.c   **** 		CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
- 512              		.loc 1 46 0
- 513 02f8 7D0EA0E3 		mov	r0, #2000
- 514              	.LVL61:
- 515 02fc FEFFFFEB 		bl	CyU3PBusyWait
- 516              	.LVL62:
- 517              	.L30:
- 518              	.LBE33:
- 519              	.LBE32:
- 520              		.loc 1 173 0
- 521 0300 0400A0E1 		mov	r0, r4
- 522 0304 1CD08DE2 		add	sp, sp, #28
- 523 0308 F080BDE8 		ldmfd	sp!, {r4, r5, r6, r7, pc}
- 524              	.LVL63:
- 525              	.L34:
- 137:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
- 526              		.loc 1 137 0
- 527 030c 0400A0E3 		mov	r0, #4
- 528              	.LVL64:
- 529 0310 44109FE5 		ldr	r1, .L37
- 530              	.LVL65:
- 531 0314 FEFFFFEB 		bl	CyU3PDebugPrint
- 532              	.LVL66:
- 138:../sensor.c   **** 		return 1;
- 533              		.loc 1 138 0
- 534 0318 0140A0E3 		mov	r4, #1
- 535 031c F7FFFFEA 		b	.L30
- 536              	.LVL67:
- 537              	.L35:
- 152:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(T) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
- 538              		.loc 1 152 0
- 539 0320 01C0D5E5 		ldrb	ip, [r5, #1]	@ zero_extendqisi2
- 540 0324 0030D5E5 		ldrb	r3, [r5, #0]	@ zero_extendqisi2
- 541 0328 30109FE5 		ldr	r1, .L37+4
- 542 032c 0400A0E3 		mov	r0, #4
- 543              	.LVL68:
- 544 0330 00C08DE5 		str	ip, [sp, #0]
- 545 0334 FEFFFFEB 		bl	CyU3PDebugPrint
- 546              	.LVL69:
- 547 0338 E2FFFFEA 		b	.L32
- 548              	.LVL70:
- 549              	.L36:
- 166:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
- 550              		.loc 1 166 0
- 551 033c 01C0D5E5 		ldrb	ip, [r5, #1]	@ zero_extendqisi2
- 552 0340 0030D5E5 		ldrb	r3, [r5, #0]	@ zero_extendqisi2
- 553 0344 18109FE5 		ldr	r1, .L37+8
- 554 0348 0420A0E1 		mov	r2, r4
- 555 034c 0400A0E3 		mov	r0, #4
- 556              	.LVL71:
- 557 0350 00C08DE5 		str	ip, [sp, #0]
- 558 0354 FEFFFFEB 		bl	CyU3PDebugPrint
- 559              	.LVL72:
- 560 0358 E8FFFFEA 		b	.L30
- 561              	.L38:
- 562              		.align	2
- 563              	.L37:
- 564 035c 38000000 		.word	.LC2
- 565 0360 00000000 		.word	.LC0
- 566 0364 1C000000 		.word	.LC1
- 567              		.cfi_endproc
- 568              	.LFE3:
- 570              		.align	2
- 571              		.global	SensorRead
- 573              	SensorRead:
- 574              	.LFB4:
- 174:../sensor.c   **** 
- 175:../sensor.c   **** CyU3PReturnStatus_t SensorRead(uint8_t slaveAddr, uint8_t highAddr,
- 176:../sensor.c   **** 		uint8_t lowAddr, uint8_t count, uint8_t *buf) {
- 575              		.loc 1 176 0
- 576              		.cfi_startproc
- 577              		@ args = 4, pretend = 0, frame = 16
- 578              		@ frame_needed = 0, uses_anonymous_args = 0
- 579              	.LVL73:
- 177:../sensor.c   **** 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
- 178:../sensor.c   **** 	CyU3PI2cPreamble_t preamble;
- 179:../sensor.c   **** 
- 180:../sensor.c   **** 	/* Validate the parameters. */
- 181:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
- 580              		.loc 1 181 0
- 581 0368 A10050E3 		cmp	r0, #161
- 582 036c 71005013 		cmpne	r0, #113
- 176:../sensor.c   **** 		uint8_t lowAddr, uint8_t count, uint8_t *buf) {
- 583              		.loc 1 176 0
- 584 0370 30402DE9 		stmfd	sp!, {r4, r5, lr}
- 585              	.LCFI8:
- 586              		.cfi_def_cfa_offset 12
- 587 0374 00C0A0E1 		mov	ip, r0
- 588 0378 14D04DE2 		sub	sp, sp, #20
- 589              	.LCFI9:
- 590              		.cfi_def_cfa_offset 32
- 591              		.loc 1 181 0
- 592 037c 00E0A003 		moveq	lr, #0
- 593 0380 01E0A013 		movne	lr, #1
- 594              		.cfi_offset 14, -4
- 595              		.cfi_offset 5, -8
- 596              		.cfi_offset 4, -12
- 597 0384 1C00001A 		bne	.L43
- 182:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
- 183:../sensor.c   **** 		return 1;
- 184:../sensor.c   **** 	}
- 185:../sensor.c   **** 	if (count > 64) {
- 598              		.loc 1 185 0
- 599 0388 400053E3 		cmp	r3, #64
- 600 038c 1500008A 		bhi	.L44
- 186:../sensor.c   **** 		CyU3PDebugPrint(4, "ERROR: SensorWrite count > 64\n");
- 187:../sensor.c   **** 		return 1;
- 188:../sensor.c   **** 	}
- 189:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
- 190:../sensor.c   **** 	preamble.buffer[1] = 0x55;//highAddr;
- 191:../sensor.c   **** 	preamble.buffer[2] = 0xaa;//lowAddr;
- 192:../sensor.c   **** 	preamble.buffer[3] = slaveAddr;
- 193:../sensor.c   **** 	preamble.length = 4;
- 601              		.loc 1 193 0
- 602 0390 0440A0E3 		mov	r4, #4
- 194:../sensor.c   **** 	preamble.ctrlMask = 0x0004; /*  Send start bit after third byte of preamble. */
- 195:../sensor.c   **** 
- 196:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, count, 0);
- 603              		.loc 1 196 0
- 604 0394 0320A0E1 		mov	r2, r3
- 605              	.LVL74:
- 606 0398 0E30A0E1 		mov	r3, lr
- 607              	.LVL75:
- 190:../sensor.c   **** 	preamble.buffer[1] = 0x55;//highAddr;
- 608              		.loc 1 190 0
- 609 039c 55E0A0E3 		mov	lr, #85
- 189:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
- 610              		.loc 1 189 0
- 611 03a0 0150C0E3 		bic	r5, r0, #1
- 190:../sensor.c   **** 	preamble.buffer[1] = 0x55;//highAddr;
- 612              		.loc 1 190 0
- 613 03a4 05E0CDE5 		strb	lr, [sp, #5]
- 614              		.loc 1 196 0
- 615 03a8 04008DE0 		add	r0, sp, r4
- 616              	.LVL76:
- 191:../sensor.c   **** 	preamble.buffer[2] = 0xaa;//lowAddr;
- 617              		.loc 1 191 0
- 618 03ac 55E0E0E3 		mvn	lr, #85
- 619              		.loc 1 196 0
- 620 03b0 20109DE5 		ldr	r1, [sp, #32]
- 621              	.LVL77:
- 193:../sensor.c   **** 	preamble.length = 4;
- 622              		.loc 1 193 0
- 623 03b4 0C40CDE5 		strb	r4, [sp, #12]
- 194:../sensor.c   **** 	preamble.ctrlMask = 0x0004; /*  Send start bit after third byte of preamble. */
- 624              		.loc 1 194 0
- 625 03b8 BE40CDE1 		strh	r4, [sp, #14]	@ movhi
- 189:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
- 626              		.loc 1 189 0
- 627 03bc 0450CDE5 		strb	r5, [sp, #4]
- 191:../sensor.c   **** 	preamble.buffer[2] = 0xaa;//lowAddr;
- 628              		.loc 1 191 0
- 629 03c0 06E0CDE5 		strb	lr, [sp, #6]
- 192:../sensor.c   **** 	preamble.buffer[3] = slaveAddr;
- 630              		.loc 1 192 0
- 631 03c4 07C0CDE5 		strb	ip, [sp, #7]
- 632              		.loc 1 196 0
- 633 03c8 FEFFFFEB 		bl	CyU3PI2cReceiveBytes
- 634              	.LVL78:
- 635              	.LBB36:
- 636              	.LBB37:
+ 513              		.loc 1 46 0
+ 514 02fc 7D0EA0E3 		mov	r0, #2000
+ 515              	.LVL61:
+ 516 0300 FEFFFFEB 		bl	CyU3PBusyWait
+ 517              	.LVL62:
+ 518              	.L30:
+ 519              	.LBE33:
+ 520              	.LBE32:
+ 521              		.loc 1 174 0
+ 522 0304 0400A0E1 		mov	r0, r4
+ 523 0308 18D08DE2 		add	sp, sp, #24
+ 524 030c F081BDE8 		ldmfd	sp!, {r4, r5, r6, r7, r8, pc}
+ 525              	.LVL63:
+ 526              	.L34:
+ 138:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
+ 527              		.loc 1 138 0
+ 528 0310 0400A0E3 		mov	r0, #4
+ 529              	.LVL64:
+ 530 0314 44109FE5 		ldr	r1, .L37
+ 531              	.LVL65:
+ 532 0318 FEFFFFEB 		bl	CyU3PDebugPrint
+ 533              	.LVL66:
+ 139:../sensor.c   **** 		return 1;
+ 534              		.loc 1 139 0
+ 535 031c 0140A0E3 		mov	r4, #1
+ 536 0320 F7FFFFEA 		b	.L30
+ 537              	.LVL67:
+ 538              	.L35:
+ 153:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(T) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
+ 539              		.loc 1 153 0
+ 540 0324 01C0D5E5 		ldrb	ip, [r5, #1]	@ zero_extendqisi2
+ 541 0328 0030D5E5 		ldrb	r3, [r5, #0]	@ zero_extendqisi2
+ 542 032c 30109FE5 		ldr	r1, .L37+4
+ 543 0330 0400A0E3 		mov	r0, #4
+ 544              	.LVL68:
+ 545 0334 00C08DE5 		str	ip, [sp, #0]
+ 546 0338 FEFFFFEB 		bl	CyU3PDebugPrint
+ 547              	.LVL69:
+ 548 033c E2FFFFEA 		b	.L32
+ 549              	.LVL70:
+ 550              	.L36:
+ 167:../sensor.c   **** 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
+ 551              		.loc 1 167 0
+ 552 0340 01C0D5E5 		ldrb	ip, [r5, #1]	@ zero_extendqisi2
+ 553 0344 0030D5E5 		ldrb	r3, [r5, #0]	@ zero_extendqisi2
+ 554 0348 18109FE5 		ldr	r1, .L37+8
+ 555 034c 0420A0E1 		mov	r2, r4
+ 556 0350 0400A0E3 		mov	r0, #4
+ 557              	.LVL71:
+ 558 0354 00C08DE5 		str	ip, [sp, #0]
+ 559 0358 FEFFFFEB 		bl	CyU3PDebugPrint
+ 560              	.LVL72:
+ 561 035c E8FFFFEA 		b	.L30
+ 562              	.L38:
+ 563              		.align	2
+ 564              	.L37:
+ 565 0360 38000000 		.word	.LC2
+ 566 0364 00000000 		.word	.LC0
+ 567 0368 1C000000 		.word	.LC1
+ 568              		.cfi_endproc
+ 569              	.LFE3:
+ 571              		.align	2
+ 572              		.global	SensorRead
+ 574              	SensorRead:
+ 575              	.LFB4:
+ 175:../sensor.c   **** 
+ 176:../sensor.c   **** CyU3PReturnStatus_t SensorRead(uint8_t slaveAddr, uint8_t highAddr,
+ 177:../sensor.c   **** 		uint8_t lowAddr, uint8_t count, uint8_t *buf) {
+ 576              		.loc 1 177 0
+ 577              		.cfi_startproc
+ 578              		@ args = 4, pretend = 0, frame = 16
+ 579              		@ frame_needed = 0, uses_anonymous_args = 0
+ 580              	.LVL73:
+ 178:../sensor.c   **** 	CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
+ 179:../sensor.c   **** 	CyU3PI2cPreamble_t preamble;
+ 180:../sensor.c   **** 
+ 181:../sensor.c   **** 	/* Validate the parameters. */
+ 182:../sensor.c   **** 	if ((slaveAddr != SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
+ 581              		.loc 1 182 0
+ 582 036c A10050E3 		cmp	r0, #161
+ 583 0370 71005013 		cmpne	r0, #113
+ 177:../sensor.c   **** 		uint8_t lowAddr, uint8_t count, uint8_t *buf) {
+ 584              		.loc 1 177 0
+ 585 0374 30402DE9 		stmfd	sp!, {r4, r5, lr}
+ 586              	.LCFI8:
+ 587              		.cfi_def_cfa_offset 12
+ 588 0378 00C0A0E1 		mov	ip, r0
+ 589 037c 14D04DE2 		sub	sp, sp, #20
+ 590              	.LCFI9:
+ 591              		.cfi_def_cfa_offset 32
+ 592              		.loc 1 182 0
+ 593 0380 00E0A003 		moveq	lr, #0
+ 594 0384 01E0A013 		movne	lr, #1
+ 595              		.cfi_offset 14, -4
+ 596              		.cfi_offset 5, -8
+ 597              		.cfi_offset 4, -12
+ 598 0388 1C00001A 		bne	.L43
+ 183:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
+ 184:../sensor.c   **** 		return 1;
+ 185:../sensor.c   **** 	}
+ 186:../sensor.c   **** 	if (count > 64) {
+ 599              		.loc 1 186 0
+ 600 038c 400053E3 		cmp	r3, #64
+ 601 0390 1500008A 		bhi	.L44
+ 187:../sensor.c   **** 		CyU3PDebugPrint(4, "ERROR: SensorWrite count > 64\n");
+ 188:../sensor.c   **** 		return 1;
+ 189:../sensor.c   **** 	}
+ 190:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+ 191:../sensor.c   **** 	preamble.buffer[1] = 0x55;//highAddr;
+ 192:../sensor.c   **** 	preamble.buffer[2] = 0xaa;//lowAddr;
+ 193:../sensor.c   **** 	preamble.buffer[3] = slaveAddr;
+ 194:../sensor.c   **** 	preamble.length = 4;
+ 602              		.loc 1 194 0
+ 603 0394 0440A0E3 		mov	r4, #4
+ 195:../sensor.c   **** 	preamble.ctrlMask = 0x0004; /*  Send start bit after third byte of preamble. */
+ 196:../sensor.c   **** 
+ 197:../sensor.c   **** 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, count, 0);
+ 604              		.loc 1 197 0
+ 605 0398 0320A0E1 		mov	r2, r3
+ 606              	.LVL74:
+ 607 039c 0E30A0E1 		mov	r3, lr
+ 608              	.LVL75:
+ 191:../sensor.c   **** 	preamble.buffer[1] = 0x55;//highAddr;
+ 609              		.loc 1 191 0
+ 610 03a0 55E0A0E3 		mov	lr, #85
+ 190:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+ 611              		.loc 1 190 0
+ 612 03a4 0150C0E3 		bic	r5, r0, #1
+ 191:../sensor.c   **** 	preamble.buffer[1] = 0x55;//highAddr;
+ 613              		.loc 1 191 0
+ 614 03a8 05E0CDE5 		strb	lr, [sp, #5]
+ 615              		.loc 1 197 0
+ 616 03ac 04008DE0 		add	r0, sp, r4
+ 617              	.LVL76:
+ 192:../sensor.c   **** 	preamble.buffer[2] = 0xaa;//lowAddr;
+ 618              		.loc 1 192 0
+ 619 03b0 55E0E0E3 		mvn	lr, #85
+ 620              		.loc 1 197 0
+ 621 03b4 20109DE5 		ldr	r1, [sp, #32]
+ 622              	.LVL77:
+ 194:../sensor.c   **** 	preamble.length = 4;
+ 623              		.loc 1 194 0
+ 624 03b8 0C40CDE5 		strb	r4, [sp, #12]
+ 195:../sensor.c   **** 	preamble.ctrlMask = 0x0004; /*  Send start bit after third byte of preamble. */
+ 625              		.loc 1 195 0
+ 626 03bc BE40CDE1 		strh	r4, [sp, #14]	@ movhi
+ 190:../sensor.c   **** 	preamble.buffer[0] = slaveAddr & I2C_SLAVEADDR_MASK; /*  Mask out the transfer type bit. */
+ 627              		.loc 1 190 0
+ 628 03c0 0450CDE5 		strb	r5, [sp, #4]
+ 192:../sensor.c   **** 	preamble.buffer[2] = 0xaa;//lowAddr;
+ 629              		.loc 1 192 0
+ 630 03c4 06E0CDE5 		strb	lr, [sp, #6]
+ 193:../sensor.c   **** 	preamble.buffer[3] = slaveAddr;
+ 631              		.loc 1 193 0
+ 632 03c8 07C0CDE5 		strb	ip, [sp, #7]
+ 633              		.loc 1 197 0
+ 634 03cc FEFFFFEB 		bl	CyU3PI2cReceiveBytes
+ 635              	.LVL78:
+ 636              	.LBB36:
+ 637              	.LBB37:
   44:../sensor.c   **** 	if (status == CY_U3P_SUCCESS)
- 637              		.loc 1 44 0
- 638 03cc 004050E2 		subs	r4, r0, #0
- 639 03d0 0100001A 		bne	.L41
+ 638              		.loc 1 44 0
+ 639 03d0 004050E2 		subs	r4, r0, #0
+ 640 03d4 0100001A 		bne	.L41
   46:../sensor.c   **** 		CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
- 640              		.loc 1 46 0
- 641 03d4 7D0EA0E3 		mov	r0, #2000
- 642              	.LVL79:
- 643 03d8 FEFFFFEB 		bl	CyU3PBusyWait
- 644              	.LVL80:
- 645              	.L41:
- 646              	.LBE37:
- 647              	.LBE36:
- 197:../sensor.c   **** 	SensorI2CAccessDelay(apiRetStatus);
- 198:../sensor.c   **** 
- 199:../sensor.c   **** 	return apiRetStatus;
- 200:../sensor.c   **** }
- 648              		.loc 1 200 0
- 649 03dc 0400A0E1 		mov	r0, r4
- 650 03e0 14D08DE2 		add	sp, sp, #20
- 651 03e4 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
- 652              	.LVL81:
- 653              	.L44:
- 186:../sensor.c   **** 		CyU3PDebugPrint(4, "ERROR: SensorWrite count > 64\n");
- 654              		.loc 1 186 0
- 655 03e8 0400A0E3 		mov	r0, #4
- 656              	.LVL82:
- 657 03ec 1C109FE5 		ldr	r1, .L45
- 658              	.LVL83:
- 659 03f0 FEFFFFEB 		bl	CyU3PDebugPrint
- 660              	.LVL84:
- 187:../sensor.c   **** 		return 1;
- 661              		.loc 1 187 0
- 662 03f4 0140A0E3 		mov	r4, #1
- 663 03f8 F7FFFFEA 		b	.L41
- 664              	.LVL85:
- 665              	.L43:
- 182:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
- 666              		.loc 1 182 0
- 667 03fc 0400A0E3 		mov	r0, #4
- 668              	.LVL86:
- 669 0400 0C109FE5 		ldr	r1, .L45+4
- 670              	.LVL87:
- 671 0404 FEFFFFEB 		bl	CyU3PDebugPrint
- 672              	.LVL88:
- 183:../sensor.c   **** 		return 1;
- 673              		.loc 1 183 0
- 674 0408 0140A0E3 		mov	r4, #1
- 675 040c F2FFFFEA 		b	.L41
- 676              	.L46:
- 677              		.align	2
- 678              	.L45:
- 679 0410 5C000000 		.word	.LC3
- 680 0414 38000000 		.word	.LC2
- 681              		.cfi_endproc
- 682              	.LFE4:
- 684              		.align	2
- 685              		.global	SensorReset
- 687              	SensorReset:
- 688              	.LFB5:
- 201:../sensor.c   **** 
- 202:../sensor.c   **** /*
- 203:../sensor.c   ****  * Reset the image sensor using GPIO.
- 204:../sensor.c   ****  */
- 205:../sensor.c   **** void SensorReset(void) {
- 689              		.loc 1 205 0
- 690              		.cfi_startproc
- 691              		@ args = 0, pretend = 0, frame = 0
- 692              		@ frame_needed = 0, uses_anonymous_args = 0
- 693 0418 10402DE9 		stmfd	sp!, {r4, lr}
- 694              	.LCFI10:
- 695              		.cfi_def_cfa_offset 8
- 206:../sensor.c   **** 	CyU3PReturnStatus_t apiRetStatus;
- 207:../sensor.c   **** 	uint16_t preTick, posTick;
- 208:../sensor.c   **** 	/* Drive the GPIO low to reset the sensor. */
- 209:../sensor.c   **** 	//apiRetStatus = CyU3PGpioSetValue(SENSOR_POWER_GPIO, CyFalse);
- 210:../sensor.c   **** 	apiRetStatus = CyU3PGpioSetValue(SENSOR_RESET_GPIO, CyFalse);
- 696              		.loc 1 210 0
- 697 041c 1600A0E3 		mov	r0, #22
- 698 0420 0010A0E3 		mov	r1, #0
- 699              		.cfi_offset 14, -4
- 700              		.cfi_offset 4, -8
- 701 0424 FEFFFFEB 		bl	CyU3PGpioSetValue
- 702              	.LVL89:
- 211:../sensor.c   **** 	if (apiRetStatus != CY_U3P_SUCCESS) {
- 703              		.loc 1 211 0
- 704 0428 002050E2 		subs	r2, r0, #0
- 705 042c 2200001A 		bne	.L49
- 212:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
- 213:../sensor.c   **** 				apiRetStatus);
- 214:../sensor.c   **** 		return;
- 215:../sensor.c   **** 	}
- 216:../sensor.c   **** 	CyU3PDebugPrint(4, "GPIO Set Value\r\n");
- 706              		.loc 1 216 0
- 707 0430 94109FE5 		ldr	r1, .L50
- 708 0434 0400A0E3 		mov	r0, #4
- 709              	.LVL90:
- 710 0438 FEFFFFEB 		bl	CyU3PDebugPrint
- 711              	.LVL91:
- 217:../sensor.c   **** 	/* Wait for some time to allow proper reset. */
- 218:../sensor.c   **** 	uint8_t i = 0;
- 219:../sensor.c   **** 	while (i++ < 2){
- 220:../sensor.c   **** 		preTick = CyU3PGetTime();
- 712              		.loc 1 220 0
- 713 043c FEFFFFEB 		bl	_tx_time_get
- 714 0440 0040A0E1 		mov	r4, r0
- 715              	.LVL92:
- 221:../sensor.c   **** 		CyU3PThreadSleep(500);  // change the value into 100 from 10.
- 716              		.loc 1 221 0
- 717 0444 7D0FA0E3 		mov	r0, #500
- 718              	.LVL93:
- 719 0448 FEFFFFEB 		bl	_tx_thread_sleep
- 222:../sensor.c   **** 		posTick = CyU3PGetTime();
- 720              		.loc 1 222 0
- 721 044c FEFFFFEB 		bl	_tx_time_get
- 722              	.LVL94:
- 223:../sensor.c   **** 		CyU3PDebugPrint(4, "The ticks %d %d \r\n", preTick, posTick); //additional debug
- 723              		.loc 1 223 0
- 724 0450 0448A0E1 		mov	r4, r4, asl #16
- 725              	.LVL95:
- 726 0454 2428A0E1 		mov	r2, r4, lsr #16
- 727 0458 70109FE5 		ldr	r1, .L50+4
- 728 045c 0008A0E1 		mov	r0, r0, asl #16
- 729              	.LVL96:
- 730 0460 2038A0E1 		mov	r3, r0, lsr #16
- 731 0464 0400A0E3 		mov	r0, #4
- 732 0468 FEFFFFEB 		bl	CyU3PDebugPrint
- 733              	.LVL97:
- 220:../sensor.c   **** 		preTick = CyU3PGetTime();
- 734              		.loc 1 220 0
- 735 046c FEFFFFEB 		bl	_tx_time_get
- 736 0470 0040A0E1 		mov	r4, r0
- 737              	.LVL98:
- 221:../sensor.c   **** 		CyU3PThreadSleep(500);  // change the value into 100 from 10.
- 738              		.loc 1 221 0
- 739 0474 7D0FA0E3 		mov	r0, #500
- 740              	.LVL99:
- 741 0478 FEFFFFEB 		bl	_tx_thread_sleep
- 222:../sensor.c   **** 		posTick = CyU3PGetTime();
- 742              		.loc 1 222 0
- 743 047c FEFFFFEB 		bl	_tx_time_get
- 744              	.LVL100:
- 745              		.loc 1 223 0
- 746 0480 0428A0E1 		mov	r2, r4, asl #16
- 747 0484 2228A0E1 		mov	r2, r2, lsr #16
- 748 0488 40109FE5 		ldr	r1, .L50+4
- 749 048c 0038A0E1 		mov	r3, r0, asl #16
- 750 0490 2338A0E1 		mov	r3, r3, lsr #16
- 751 0494 0400A0E3 		mov	r0, #4
- 752              	.LVL101:
- 753 0498 FEFFFFEB 		bl	CyU3PDebugPrint
- 754              	.LVL102:
- 224:../sensor.c   **** 		//;//CyU3PDebugPrint(4, "cpu pause \r\n");
- 225:../sensor.c   **** 	}
- 226:../sensor.c   **** 
- 227:../sensor.c   **** 	/* Drive the GPIO high to bring the sensor out of reset. */
- 228:../sensor.c   **** 	//apiRetStatus = CyU3PGpioSetValue(SENSOR_POWER_GPIO, CyTrue);
- 229:../sensor.c   **** 	apiRetStatus = CyU3PGpioSetValue(SENSOR_RESET_GPIO, CyTrue);
- 755              		.loc 1 229 0
- 756 049c 1600A0E3 		mov	r0, #22
- 757 04a0 0110A0E3 		mov	r1, #1
- 758 04a4 FEFFFFEB 		bl	CyU3PGpioSetValue
- 759              	.LVL103:
- 230:../sensor.c   **** 	if (apiRetStatus != CY_U3P_SUCCESS) {
- 760              		.loc 1 230 0
- 761 04a8 002050E2 		subs	r2, r0, #0
- 762 04ac 0200001A 		bne	.L49
- 763              	.LVL104:
- 231:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
- 232:../sensor.c   **** 				apiRetStatus);
- 233:../sensor.c   **** 		return;
- 234:../sensor.c   **** 	}
- 235:../sensor.c   **** /* pause the cpu */
- 236:../sensor.c   **** 	while (i++ < 4){
- 237:../sensor.c   **** 		CyU3PThreadSleep(600);  // change the value into 100 from 10.
- 764              		.loc 1 237 0 discriminator 1
- 765 04b0 960FA0E3 		mov	r0, #600
- 766              	.LVL105:
- 238:../sensor.c   **** 		//;//CyU3PDebugPrint(4, "cpu pause \r\n");
- 239:../sensor.c   **** 	}
- 240:../sensor.c   **** 
- 241:../sensor.c   **** 	return;
- 242:../sensor.c   **** }
- 767              		.loc 1 242 0 discriminator 1
- 768 04b4 1040BDE8 		ldmfd	sp!, {r4, lr}
- 237:../sensor.c   **** 		CyU3PThreadSleep(600);  // change the value into 100 from 10.
- 769              		.loc 1 237 0 discriminator 1
- 770 04b8 FEFFFFEA 		b	_tx_thread_sleep
- 771              	.LVL106:
- 772              	.L49:
- 231:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
- 773              		.loc 1 231 0
- 774 04bc 10109FE5 		ldr	r1, .L50+8
- 775 04c0 0400A0E3 		mov	r0, #4
- 776              	.LVL107:
- 777              		.loc 1 242 0
- 778 04c4 1040BDE8 		ldmfd	sp!, {r4, lr}
- 231:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
- 779              		.loc 1 231 0
- 780 04c8 FEFFFFEA 		b	CyU3PDebugPrint
- 781              	.LVL108:
- 782              	.L51:
- 783              		.align	2
- 784              	.L50:
- 785 04cc A4000000 		.word	.LC5
- 786 04d0 B8000000 		.word	.LC6
- 787 04d4 7C000000 		.word	.LC4
- 788              		.cfi_endproc
- 789              	.LFE5:
- 791              		.align	2
- 792              		.global	SensorInit
- 794              	SensorInit:
- 795              	.LFB6:
- 243:../sensor.c   **** 
- 244:../sensor.c   **** /* Image sensor initialization sequence. */
- 245:../sensor.c   **** void SensorInit(void) {
- 796              		.loc 1 245 0
- 797              		.cfi_startproc
- 798              		@ args = 0, pretend = 0, frame = 8
- 799              		@ frame_needed = 0, uses_anonymous_args = 0
- 800 04d8 04E02DE5 		str	lr, [sp, #-4]!
- 801              	.LCFI11:
- 802              		.cfi_def_cfa_offset 4
- 803 04dc 0CD04DE2 		sub	sp, sp, #12
- 804              	.LCFI12:
- 805              		.cfi_def_cfa_offset 16
- 806              	.LBB40:
- 807              	.LBB41:
- 246:../sensor.c   **** 	if (SensorI2cBusTest() != CY_U3P_SUCCESS) /* Verify that the sensor is connected. */
- 247:../sensor.c   **** 	{
- 248:../sensor.c   **** 		CyU3PDebugPrint(4, "Error: Reading Sensor ID failed!\r\n");
- 249:../sensor.c   **** 		return;
- 250:../sensor.c   **** 	}
- 251:../sensor.c   **** 
- 252:../sensor.c   **** 	/* Generic settings (which are common for all resolutions) for bringing up the image sensor to str
- 253:../sensor.c   **** 	 video data should be populated here.
- 254:../sensor.c   **** 	 */
- 255:../sensor.c   **** 
- 256:../sensor.c   **** 	/* Update sensor configuration based on desired video stream parameters. Using 720p 30fps as defau
- 257:../sensor.c   **** 	//SensorScaling_HD720p_30fps();
- 258:../sensor.c   **** }
- 259:../sensor.c   **** 
- 260:../sensor.c   **** /*
- 261:../sensor.c   ****    Verify that the sensor can be accessed over the I2C bus from FX3.
- 262:../sensor.c   ****  */
- 263:../sensor.c   **** uint8_t SensorI2cBusTest(void) {
- 264:../sensor.c   **** 	/* The sensor ID register can be read here to verify sensor connectivity. */
- 265:../sensor.c   **** 	uint8_t buf[2];
- 266:../sensor.c   **** 
- 267:../sensor.c   **** 	/* Reading sensor ID */
- 268:../sensor.c   **** 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, buf) == CY_U3P_SUC
- 808              		.loc 1 268 0
- 809 04e0 5200A0E3 		mov	r0, #82
- 810 04e4 3010A0E3 		mov	r1, #48
- 811 04e8 F220A0E3 		mov	r2, #242
- 812 04ec 04308DE2 		add	r3, sp, #4
- 813              		.cfi_offset 14, -4
- 814 04f0 C2FEFFEB 		bl	SensorRead2B.clone.1
- 815 04f4 000050E3 		cmp	r0, #0
- 816 04f8 0200001A 		bne	.L53
- 269:../sensor.c   **** 		if ((buf[0] == 0x56) /*&& (buf[1] == 0x02)*/) {
- 817              		.loc 1 269 0
- 818 04fc 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
- 819 0500 560053E3 		cmp	r3, #86
- 820 0504 0200000A 		beq	.L52
- 821              	.L53:
- 822              	.LBE41:
- 823              	.LBE40:
- 248:../sensor.c   **** 		CyU3PDebugPrint(4, "Error: Reading Sensor ID failed!\r\n");
- 824              		.loc 1 248 0
- 825 0508 0400A0E3 		mov	r0, #4
- 826 050c 08109FE5 		ldr	r1, .L55
- 827 0510 FEFFFFEB 		bl	CyU3PDebugPrint
- 828              	.L52:
- 258:../sensor.c   **** }
- 829              		.loc 1 258 0
- 830 0514 0CD08DE2 		add	sp, sp, #12
- 831 0518 04F09DE4 		ldmfd	sp!, {pc}
- 832              	.L56:
- 833              		.align	2
- 834              	.L55:
- 835 051c CC000000 		.word	.LC7
- 836              		.cfi_endproc
- 837              	.LFE6:
- 839              		.align	2
- 840              		.global	SensorI2cBusTest
- 842              	SensorI2cBusTest:
- 843              	.LFB7:
- 263:../sensor.c   **** uint8_t SensorI2cBusTest(void) {
- 844              		.loc 1 263 0
- 845              		.cfi_startproc
- 846              		@ args = 0, pretend = 0, frame = 8
- 847              		@ frame_needed = 0, uses_anonymous_args = 0
- 848 0520 04E02DE5 		str	lr, [sp, #-4]!
- 849              	.LCFI13:
- 850              		.cfi_def_cfa_offset 4
- 851 0524 0CD04DE2 		sub	sp, sp, #12
- 852              	.LCFI14:
- 853              		.cfi_def_cfa_offset 16
- 268:../sensor.c   **** 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, buf) == CY_U3P_SUC
- 854              		.loc 1 268 0
- 855 0528 5200A0E3 		mov	r0, #82
- 856 052c 3010A0E3 		mov	r1, #48
- 857 0530 F220A0E3 		mov	r2, #242
- 858 0534 04308DE2 		add	r3, sp, #4
- 859              		.cfi_offset 14, -4
- 860 0538 B0FEFFEB 		bl	SensorRead2B.clone.1
- 861 053c 000050E3 		cmp	r0, #0
- 270:../sensor.c   **** 			return CY_U3P_SUCCESS;
- 271:../sensor.c   **** 		}
- 272:../sensor.c   **** 	}
- 273:../sensor.c   **** #ifdef USB_DEBUG_PRINT
- 274:../sensor.c   **** 	CyU3PDebugPrint (4, "The Sensor test 0x%x 0x%x\r\n", buf[0], buf[1]); // additional debug
- 275:../sensor.c   **** #endif
- 276:../sensor.c   **** 	return 1;
- 862              		.loc 1 276 0
- 863 0540 0100A013 		movne	r0, #1
- 268:../sensor.c   **** 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, buf) == CY_U3P_SUC
- 864              		.loc 1 268 0
- 865 0544 0200001A 		bne	.L58
- 263:../sensor.c   **** uint8_t SensorI2cBusTest(void) {
- 866              		.loc 1 263 0
- 867 0548 0400DDE5 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
- 270:../sensor.c   **** 			return CY_U3P_SUCCESS;
- 868              		.loc 1 270 0
- 869 054c 560050E2 		subs	r0, r0, #86
- 870 0550 0100A013 		movne	r0, #1
- 871              	.L58:
- 277:../sensor.c   **** }
- 872              		.loc 1 277 0
- 873 0554 0CD08DE2 		add	sp, sp, #12
- 874 0558 04F09DE4 		ldmfd	sp!, {pc}
- 875              		.cfi_endproc
- 876              	.LFE7:
- 878              		.align	2
- 879              		.global	SensorGetControl
- 881              	SensorGetControl:
- 882              	.LFB8:
- 278:../sensor.c   **** 
- 279:../sensor.c   **** /*************************************************************
- 280:../sensor.c   ****  *  the modularized control get routine. IDext is the control ID.
- 281:../sensor.c   ****  *
- 282:../sensor.c   ****  * ********************************************************* */
- 283:../sensor.c   **** 
- 284:../sensor.c   **** uint8_t SensorGetControl(uint8_t IDext, uint8_t devAdd)  //for register w/r, the IDext is Reg. addr
- 285:../sensor.c   **** {
- 883              		.loc 1 285 0
- 884              		.cfi_startproc
- 885              		@ args = 0, pretend = 0, frame = 8
- 886              		@ frame_needed = 0, uses_anonymous_args = 0
- 887              	.LVL109:
- 888 055c 10402DE9 		stmfd	sp!, {r4, lr}
- 889              	.LCFI15:
- 890              		.cfi_def_cfa_offset 8
- 891 0560 08D04DE2 		sub	sp, sp, #8
- 892              	.LCFI16:
- 893              		.cfi_def_cfa_offset 16
- 894              		.loc 1 285 0
- 895 0564 0040A0E1 		mov	r4, r0
- 896              		.cfi_offset 14, -4
- 897              		.cfi_offset 4, -8
- 286:../sensor.c   **** 	uint8_t buf[2];
- 287:../sensor.c   **** 	SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_RD, devAdd, IDext, buf);
- 898              		.loc 1 287 0
- 899 0568 0020A0E1 		mov	r2, r0
- 900 056c 04308DE2 		add	r3, sp, #4
- 901 0570 5300A0E3 		mov	r0, #83
- 902              	.LVL110:
- 903 0574 A1FEFFEB 		bl	SensorRead2B.clone.1
- 904              	.LVL111:
- 288:../sensor.c   **** //#ifdef USB_DEBUG_PRINT
- 289:../sensor.c   **** 	CyU3PDebugPrint (4, "The Get control ID 0x%x %d\r\n", IDext, buf[0]); // additional debug
- 905              		.loc 1 289 0
- 906 0578 18109FE5 		ldr	r1, .L61
- 907 057c 0420A0E1 		mov	r2, r4
- 908 0580 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
- 909 0584 0400A0E3 		mov	r0, #4
- 910 0588 FEFFFFEB 		bl	CyU3PDebugPrint
- 290:../sensor.c   **** //#endif
- 291:../sensor.c   **** 	return buf[0];
- 292:../sensor.c   **** };
- 911              		.loc 1 292 0
- 912 058c 0400DDE5 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
- 913 0590 08D08DE2 		add	sp, sp, #8
- 914 0594 1080BDE8 		ldmfd	sp!, {r4, pc}
- 915              	.L62:
- 916              		.align	2
- 917              	.L61:
- 918 0598 F0000000 		.word	.LC8
- 919              		.cfi_endproc
- 920              	.LFE8:
- 922              		.align	2
- 923              		.global	SensorSetControl
- 925              	SensorSetControl:
- 926              	.LFB9:
- 293:../sensor.c   **** 
- 294:../sensor.c   **** /* *********************************************************
- 295:../sensor.c   ****  * the modularized control Set routine. IDuvc: the control ID;
- 296:../sensor.c   ****  * value: set value, range check.
- 297:../sensor.c   ****  *
- 298:../sensor.c   ****  ************************************************************ */
- 299:../sensor.c   **** 
- 300:../sensor.c   **** uint8_t SensorSetControl(uint8_t IDext, uint8_t devAdd, uint8_t value) //for register w/r, the IDex
- 301:../sensor.c   **** {
- 927              		.loc 1 301 0
- 928              		.cfi_startproc
- 929              		@ args = 0, pretend = 0, frame = 24
- 930              		@ frame_needed = 0, uses_anonymous_args = 0
- 931              	.LVL112:
- 932 059c 30402DE9 		stmfd	sp!, {r4, r5, lr}
- 933              	.LCFI17:
- 934              		.cfi_def_cfa_offset 12
- 935              	.LBB48:
- 936              	.LBB51:
+ 641              		.loc 1 46 0
+ 642 03d8 7D0EA0E3 		mov	r0, #2000
+ 643              	.LVL79:
+ 644 03dc FEFFFFEB 		bl	CyU3PBusyWait
+ 645              	.LVL80:
+ 646              	.L41:
+ 647              	.LBE37:
+ 648              	.LBE36:
+ 198:../sensor.c   **** 	SensorI2CAccessDelay(apiRetStatus);
+ 199:../sensor.c   **** 
+ 200:../sensor.c   **** 	return apiRetStatus;
+ 201:../sensor.c   **** }
+ 649              		.loc 1 201 0
+ 650 03e0 0400A0E1 		mov	r0, r4
+ 651 03e4 14D08DE2 		add	sp, sp, #20
+ 652 03e8 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
+ 653              	.LVL81:
+ 654              	.L44:
+ 187:../sensor.c   **** 		CyU3PDebugPrint(4, "ERROR: SensorWrite count > 64\n");
+ 655              		.loc 1 187 0
+ 656 03ec 0400A0E3 		mov	r0, #4
+ 657              	.LVL82:
+ 658 03f0 1C109FE5 		ldr	r1, .L45
+ 659              	.LVL83:
+ 660 03f4 FEFFFFEB 		bl	CyU3PDebugPrint
+ 661              	.LVL84:
+ 188:../sensor.c   **** 		return 1;
+ 662              		.loc 1 188 0
+ 663 03f8 0140A0E3 		mov	r4, #1
+ 664 03fc F7FFFFEA 		b	.L41
+ 665              	.LVL85:
+ 666              	.L43:
+ 183:../sensor.c   **** 		CyU3PDebugPrint(4, "I2C Slave address is not valid!\n");
+ 667              		.loc 1 183 0
+ 668 0400 0400A0E3 		mov	r0, #4
+ 669              	.LVL86:
+ 670 0404 0C109FE5 		ldr	r1, .L45+4
+ 671              	.LVL87:
+ 672 0408 FEFFFFEB 		bl	CyU3PDebugPrint
+ 673              	.LVL88:
+ 184:../sensor.c   **** 		return 1;
+ 674              		.loc 1 184 0
+ 675 040c 0140A0E3 		mov	r4, #1
+ 676 0410 F2FFFFEA 		b	.L41
+ 677              	.L46:
+ 678              		.align	2
+ 679              	.L45:
+ 680 0414 5C000000 		.word	.LC3
+ 681 0418 38000000 		.word	.LC2
+ 682              		.cfi_endproc
+ 683              	.LFE4:
+ 685              		.align	2
+ 686              		.global	SensorReset
+ 688              	SensorReset:
+ 689              	.LFB5:
+ 202:../sensor.c   **** 
+ 203:../sensor.c   **** /*
+ 204:../sensor.c   ****  * Reset the image sensor using GPIO.
+ 205:../sensor.c   ****  */
+ 206:../sensor.c   **** void SensorReset(void) {
+ 690              		.loc 1 206 0
+ 691              		.cfi_startproc
+ 692              		@ args = 0, pretend = 0, frame = 0
+ 693              		@ frame_needed = 0, uses_anonymous_args = 0
+ 694 041c 10402DE9 		stmfd	sp!, {r4, lr}
+ 695              	.LCFI10:
+ 696              		.cfi_def_cfa_offset 8
+ 207:../sensor.c   **** 	CyU3PReturnStatus_t apiRetStatus;
+ 208:../sensor.c   **** 	uint16_t preTick, posTick;
+ 209:../sensor.c   **** 	/* Drive the GPIO low to reset the sensor. */
+ 210:../sensor.c   **** 	//apiRetStatus = CyU3PGpioSetValue(SENSOR_POWER_GPIO, CyFalse);
+ 211:../sensor.c   **** 	apiRetStatus = CyU3PGpioSetValue(SENSOR_RESET_GPIO, CyFalse);
+ 697              		.loc 1 211 0
+ 698 0420 1600A0E3 		mov	r0, #22
+ 699 0424 0010A0E3 		mov	r1, #0
+ 700              		.cfi_offset 14, -4
+ 701              		.cfi_offset 4, -8
+ 702 0428 FEFFFFEB 		bl	CyU3PGpioSetValue
+ 703              	.LVL89:
+ 212:../sensor.c   **** 	if (apiRetStatus != CY_U3P_SUCCESS) {
+ 704              		.loc 1 212 0
+ 705 042c 002050E2 		subs	r2, r0, #0
+ 706 0430 2200001A 		bne	.L49
+ 213:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
+ 214:../sensor.c   **** 				apiRetStatus);
+ 215:../sensor.c   **** 		return;
+ 216:../sensor.c   **** 	}
+ 217:../sensor.c   **** 	CyU3PDebugPrint(4, "GPIO Set Value\r\n");
+ 707              		.loc 1 217 0
+ 708 0434 94109FE5 		ldr	r1, .L50
+ 709 0438 0400A0E3 		mov	r0, #4
+ 710              	.LVL90:
+ 711 043c FEFFFFEB 		bl	CyU3PDebugPrint
+ 712              	.LVL91:
+ 218:../sensor.c   **** 	/* Wait for some time to allow proper reset. */
+ 219:../sensor.c   **** 	uint8_t i = 0;
+ 220:../sensor.c   **** 	while (i++ < 2){
+ 221:../sensor.c   **** 		preTick = CyU3PGetTime();
+ 713              		.loc 1 221 0
+ 714 0440 FEFFFFEB 		bl	_tx_time_get
+ 715 0444 0040A0E1 		mov	r4, r0
+ 716              	.LVL92:
+ 222:../sensor.c   **** 		CyU3PThreadSleep(500);  // change the value into 100 from 10.
+ 717              		.loc 1 222 0
+ 718 0448 7D0FA0E3 		mov	r0, #500
+ 719              	.LVL93:
+ 720 044c FEFFFFEB 		bl	_tx_thread_sleep
+ 223:../sensor.c   **** 		posTick = CyU3PGetTime();
+ 721              		.loc 1 223 0
+ 722 0450 FEFFFFEB 		bl	_tx_time_get
+ 723              	.LVL94:
+ 224:../sensor.c   **** 		CyU3PDebugPrint(4, "The ticks %d %d \r\n", preTick, posTick); //additional debug
+ 724              		.loc 1 224 0
+ 725 0454 0448A0E1 		mov	r4, r4, asl #16
+ 726              	.LVL95:
+ 727 0458 2428A0E1 		mov	r2, r4, lsr #16
+ 728 045c 70109FE5 		ldr	r1, .L50+4
+ 729 0460 0008A0E1 		mov	r0, r0, asl #16
+ 730              	.LVL96:
+ 731 0464 2038A0E1 		mov	r3, r0, lsr #16
+ 732 0468 0400A0E3 		mov	r0, #4
+ 733 046c FEFFFFEB 		bl	CyU3PDebugPrint
+ 734              	.LVL97:
+ 221:../sensor.c   **** 		preTick = CyU3PGetTime();
+ 735              		.loc 1 221 0
+ 736 0470 FEFFFFEB 		bl	_tx_time_get
+ 737 0474 0040A0E1 		mov	r4, r0
+ 738              	.LVL98:
+ 222:../sensor.c   **** 		CyU3PThreadSleep(500);  // change the value into 100 from 10.
+ 739              		.loc 1 222 0
+ 740 0478 7D0FA0E3 		mov	r0, #500
+ 741              	.LVL99:
+ 742 047c FEFFFFEB 		bl	_tx_thread_sleep
+ 223:../sensor.c   **** 		posTick = CyU3PGetTime();
+ 743              		.loc 1 223 0
+ 744 0480 FEFFFFEB 		bl	_tx_time_get
+ 745              	.LVL100:
+ 746              		.loc 1 224 0
+ 747 0484 0428A0E1 		mov	r2, r4, asl #16
+ 748 0488 2228A0E1 		mov	r2, r2, lsr #16
+ 749 048c 40109FE5 		ldr	r1, .L50+4
+ 750 0490 0038A0E1 		mov	r3, r0, asl #16
+ 751 0494 2338A0E1 		mov	r3, r3, lsr #16
+ 752 0498 0400A0E3 		mov	r0, #4
+ 753              	.LVL101:
+ 754 049c FEFFFFEB 		bl	CyU3PDebugPrint
+ 755              	.LVL102:
+ 225:../sensor.c   **** 		//;//CyU3PDebugPrint(4, "cpu pause \r\n");
+ 226:../sensor.c   **** 	}
+ 227:../sensor.c   **** 
+ 228:../sensor.c   **** 	/* Drive the GPIO high to bring the sensor out of reset. */
+ 229:../sensor.c   **** 	//apiRetStatus = CyU3PGpioSetValue(SENSOR_POWER_GPIO, CyTrue);
+ 230:../sensor.c   **** 	apiRetStatus = CyU3PGpioSetValue(SENSOR_RESET_GPIO, CyTrue);
+ 756              		.loc 1 230 0
+ 757 04a0 1600A0E3 		mov	r0, #22
+ 758 04a4 0110A0E3 		mov	r1, #1
+ 759 04a8 FEFFFFEB 		bl	CyU3PGpioSetValue
+ 760              	.LVL103:
+ 231:../sensor.c   **** 	if (apiRetStatus != CY_U3P_SUCCESS) {
+ 761              		.loc 1 231 0
+ 762 04ac 002050E2 		subs	r2, r0, #0
+ 763 04b0 0200001A 		bne	.L49
+ 764              	.LVL104:
+ 232:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
+ 233:../sensor.c   **** 				apiRetStatus);
+ 234:../sensor.c   **** 		return;
+ 235:../sensor.c   **** 	}
+ 236:../sensor.c   **** /* pause the cpu */
+ 237:../sensor.c   **** 	while (i++ < 4){
+ 238:../sensor.c   **** 		CyU3PThreadSleep(600);  // change the value into 100 from 10.
+ 765              		.loc 1 238 0 discriminator 1
+ 766 04b4 960FA0E3 		mov	r0, #600
+ 767              	.LVL105:
+ 239:../sensor.c   **** 		//;//CyU3PDebugPrint(4, "cpu pause \r\n");
+ 240:../sensor.c   **** 	}
+ 241:../sensor.c   **** 
+ 242:../sensor.c   **** 	return;
+ 243:../sensor.c   **** }
+ 768              		.loc 1 243 0 discriminator 1
+ 769 04b8 1040BDE8 		ldmfd	sp!, {r4, lr}
+ 238:../sensor.c   **** 		CyU3PThreadSleep(600);  // change the value into 100 from 10.
+ 770              		.loc 1 238 0 discriminator 1
+ 771 04bc FEFFFFEA 		b	_tx_thread_sleep
+ 772              	.LVL106:
+ 773              	.L49:
+ 232:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
+ 774              		.loc 1 232 0
+ 775 04c0 10109FE5 		ldr	r1, .L50+8
+ 776 04c4 0400A0E3 		mov	r0, #4
+ 777              	.LVL107:
+ 778              		.loc 1 243 0
+ 779 04c8 1040BDE8 		ldmfd	sp!, {r4, lr}
+ 232:../sensor.c   **** 		CyU3PDebugPrint(4, "GPIO Set Value Error, Error Code = %d\n",
+ 780              		.loc 1 232 0
+ 781 04cc FEFFFFEA 		b	CyU3PDebugPrint
+ 782              	.LVL108:
+ 783              	.L51:
+ 784              		.align	2
+ 785              	.L50:
+ 786 04d0 A4000000 		.word	.LC5
+ 787 04d4 B8000000 		.word	.LC6
+ 788 04d8 7C000000 		.word	.LC4
+ 789              		.cfi_endproc
+ 790              	.LFE5:
+ 792              		.align	2
+ 793              		.global	SensorInit
+ 795              	SensorInit:
+ 796              	.LFB6:
+ 244:../sensor.c   **** 
+ 245:../sensor.c   **** /* Image sensor initialization sequence. */
+ 246:../sensor.c   **** void SensorInit(void) {
+ 797              		.loc 1 246 0
+ 798              		.cfi_startproc
+ 799              		@ args = 0, pretend = 0, frame = 8
+ 800              		@ frame_needed = 0, uses_anonymous_args = 0
+ 801 04dc 04E02DE5 		str	lr, [sp, #-4]!
+ 802              	.LCFI11:
+ 803              		.cfi_def_cfa_offset 4
+ 804 04e0 0CD04DE2 		sub	sp, sp, #12
+ 805              	.LCFI12:
+ 806              		.cfi_def_cfa_offset 16
+ 807              	.LBB40:
+ 808              	.LBB41:
+ 247:../sensor.c   **** 	if (SensorI2cBusTest() != CY_U3P_SUCCESS) /* Verify that the sensor is connected. */
+ 248:../sensor.c   **** 	{
+ 249:../sensor.c   **** 		CyU3PDebugPrint(4, "Error: Reading Sensor ID failed!\r\n");
+ 250:../sensor.c   **** 		return;
+ 251:../sensor.c   **** 	}
+ 252:../sensor.c   **** 
+ 253:../sensor.c   **** 	/* Generic settings (which are common for all resolutions) for bringing up the image sensor to str
+ 254:../sensor.c   **** 	 video data should be populated here.
+ 255:../sensor.c   **** 	 */
+ 256:../sensor.c   **** 
+ 257:../sensor.c   **** 	/* Update sensor configuration based on desired video stream parameters. Using 720p 30fps as defau
+ 258:../sensor.c   **** 	//SensorScaling_HD720p_30fps();
+ 259:../sensor.c   **** }
+ 260:../sensor.c   **** 
+ 261:../sensor.c   **** /*
+ 262:../sensor.c   ****    Verify that the sensor can be accessed over the I2C bus from FX3.
+ 263:../sensor.c   ****  */
+ 264:../sensor.c   **** uint8_t SensorI2cBusTest(void) {
+ 265:../sensor.c   **** 	/* The sensor ID register can be read here to verify sensor connectivity. */
+ 266:../sensor.c   **** 	uint8_t buf[2];
+ 267:../sensor.c   **** 
+ 268:../sensor.c   **** 	/* Reading sensor ID */
+ 269:../sensor.c   **** 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, 1, buf) == CY_U3P_
+ 809              		.loc 1 269 0
+ 810 04e4 5200A0E3 		mov	r0, #82
+ 811 04e8 3010A0E3 		mov	r1, #48
+ 812 04ec F220A0E3 		mov	r2, #242
+ 813 04f0 04308DE2 		add	r3, sp, #4
+ 814              		.cfi_offset 14, -4
+ 815 04f4 C1FEFFEB 		bl	SensorRead2B.clone.1
+ 816 04f8 000050E3 		cmp	r0, #0
+ 817 04fc 0200001A 		bne	.L53
+ 270:../sensor.c   **** 		if ((buf[0] == 0x56) /*&& (buf[1] == 0x02)*/) {
+ 818              		.loc 1 270 0
+ 819 0500 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 820 0504 560053E3 		cmp	r3, #86
+ 821 0508 0200000A 		beq	.L52
+ 822              	.L53:
+ 823              	.LBE41:
+ 824              	.LBE40:
+ 249:../sensor.c   **** 		CyU3PDebugPrint(4, "Error: Reading Sensor ID failed!\r\n");
+ 825              		.loc 1 249 0
+ 826 050c 0400A0E3 		mov	r0, #4
+ 827 0510 08109FE5 		ldr	r1, .L55
+ 828 0514 FEFFFFEB 		bl	CyU3PDebugPrint
+ 829              	.L52:
+ 259:../sensor.c   **** }
+ 830              		.loc 1 259 0
+ 831 0518 0CD08DE2 		add	sp, sp, #12
+ 832 051c 04F09DE4 		ldmfd	sp!, {pc}
+ 833              	.L56:
+ 834              		.align	2
+ 835              	.L55:
+ 836 0520 CC000000 		.word	.LC7
+ 837              		.cfi_endproc
+ 838              	.LFE6:
+ 840              		.align	2
+ 841              		.global	SensorI2cBusTest
+ 843              	SensorI2cBusTest:
+ 844              	.LFB7:
+ 264:../sensor.c   **** uint8_t SensorI2cBusTest(void) {
+ 845              		.loc 1 264 0
+ 846              		.cfi_startproc
+ 847              		@ args = 0, pretend = 0, frame = 8
+ 848              		@ frame_needed = 0, uses_anonymous_args = 0
+ 849 0524 04E02DE5 		str	lr, [sp, #-4]!
+ 850              	.LCFI13:
+ 851              		.cfi_def_cfa_offset 4
+ 852 0528 0CD04DE2 		sub	sp, sp, #12
+ 853              	.LCFI14:
+ 854              		.cfi_def_cfa_offset 16
+ 269:../sensor.c   **** 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, 1, buf) == CY_U3P_
+ 855              		.loc 1 269 0
+ 856 052c 5200A0E3 		mov	r0, #82
+ 857 0530 3010A0E3 		mov	r1, #48
+ 858 0534 F220A0E3 		mov	r2, #242
+ 859 0538 04308DE2 		add	r3, sp, #4
+ 860              		.cfi_offset 14, -4
+ 861 053c AFFEFFEB 		bl	SensorRead2B.clone.1
+ 862 0540 000050E3 		cmp	r0, #0
+ 271:../sensor.c   **** 			return CY_U3P_SUCCESS;
+ 272:../sensor.c   **** 		}
+ 273:../sensor.c   **** 	}
+ 274:../sensor.c   **** #ifdef USB_DEBUG_PRINT
+ 275:../sensor.c   **** 	CyU3PDebugPrint (4, "The Sensor test 0x%x 0x%x\r\n", buf[0], buf[1]); // additional debug
+ 276:../sensor.c   **** #endif
+ 277:../sensor.c   **** 	return 1;
+ 863              		.loc 1 277 0
+ 864 0544 0100A013 		movne	r0, #1
+ 269:../sensor.c   **** 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, 1, buf) == CY_U3P_
+ 865              		.loc 1 269 0
+ 866 0548 0200001A 		bne	.L58
+ 264:../sensor.c   **** uint8_t SensorI2cBusTest(void) {
+ 867              		.loc 1 264 0
+ 868 054c 0400DDE5 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
+ 271:../sensor.c   **** 			return CY_U3P_SUCCESS;
+ 869              		.loc 1 271 0
+ 870 0550 560050E2 		subs	r0, r0, #86
+ 871 0554 0100A013 		movne	r0, #1
+ 872              	.L58:
+ 278:../sensor.c   **** }
+ 873              		.loc 1 278 0
+ 874 0558 0CD08DE2 		add	sp, sp, #12
+ 875 055c 04F09DE4 		ldmfd	sp!, {pc}
+ 876              		.cfi_endproc
+ 877              	.LFE7:
+ 879              		.align	2
+ 880              		.global	SensorGetControl
+ 882              	SensorGetControl:
+ 883              	.LFB8:
+ 279:../sensor.c   **** 
+ 280:../sensor.c   **** /*************************************************************
+ 281:../sensor.c   ****  *  the modularized control get routine. IDext is the control ID.
+ 282:../sensor.c   ****  *
+ 283:../sensor.c   ****  * ********************************************************* */
+ 284:../sensor.c   **** 
+ 285:../sensor.c   **** uint8_t SensorGetControl(uint8_t IDext, uint8_t devAdd)  //for register w/r, the IDext is Reg. addr
+ 286:../sensor.c   **** {
+ 884              		.loc 1 286 0
+ 885              		.cfi_startproc
+ 886              		@ args = 0, pretend = 0, frame = 8
+ 887              		@ frame_needed = 0, uses_anonymous_args = 0
+ 888              	.LVL109:
+ 889 0560 10402DE9 		stmfd	sp!, {r4, lr}
+ 890              	.LCFI15:
+ 891              		.cfi_def_cfa_offset 8
+ 892 0564 08D04DE2 		sub	sp, sp, #8
+ 893              	.LCFI16:
+ 894              		.cfi_def_cfa_offset 16
+ 895              		.loc 1 286 0
+ 896 0568 0040A0E1 		mov	r4, r0
+ 897              		.cfi_offset 14, -4
+ 898              		.cfi_offset 4, -8
+ 287:../sensor.c   **** 	uint8_t buf[2];
+ 288:../sensor.c   **** 	SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_RD, devAdd, IDext, 1, buf);
+ 899              		.loc 1 288 0
+ 900 056c 0020A0E1 		mov	r2, r0
+ 901 0570 04308DE2 		add	r3, sp, #4
+ 902 0574 5300A0E3 		mov	r0, #83
+ 903              	.LVL110:
+ 904 0578 A0FEFFEB 		bl	SensorRead2B.clone.1
+ 905              	.LVL111:
+ 289:../sensor.c   **** //#ifdef USB_DEBUG_PRINT
+ 290:../sensor.c   **** 	CyU3PDebugPrint (4, "The Get control ID 0x%x %d\r\n", IDext, buf[0]); // additional debug
+ 906              		.loc 1 290 0
+ 907 057c 18109FE5 		ldr	r1, .L61
+ 908 0580 0420A0E1 		mov	r2, r4
+ 909 0584 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 910 0588 0400A0E3 		mov	r0, #4
+ 911 058c FEFFFFEB 		bl	CyU3PDebugPrint
+ 291:../sensor.c   **** //#endif
+ 292:../sensor.c   **** 	return buf[0];
+ 293:../sensor.c   **** };
+ 912              		.loc 1 293 0
+ 913 0590 0400DDE5 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
+ 914 0594 08D08DE2 		add	sp, sp, #8
+ 915 0598 1080BDE8 		ldmfd	sp!, {r4, pc}
+ 916              	.L62:
+ 917              		.align	2
+ 918              	.L61:
+ 919 059c F0000000 		.word	.LC8
+ 920              		.cfi_endproc
+ 921              	.LFE8:
+ 923              		.align	2
+ 924              		.global	SensorSetControl
+ 926              	SensorSetControl:
+ 927              	.LFB9:
+ 294:../sensor.c   **** 
+ 295:../sensor.c   **** /* *********************************************************
+ 296:../sensor.c   ****  * the modularized control Set routine. IDuvc: the control ID;
+ 297:../sensor.c   ****  * value: set value, range check.
+ 298:../sensor.c   ****  *
+ 299:../sensor.c   ****  ************************************************************ */
+ 300:../sensor.c   **** 
+ 301:../sensor.c   **** uint8_t SensorSetControl(uint8_t IDext, uint8_t devAdd, uint8_t value) //for register w/r, the IDex
+ 302:../sensor.c   **** {
+ 928              		.loc 1 302 0
+ 929              		.cfi_startproc
+ 930              		@ args = 0, pretend = 0, frame = 24
+ 931              		@ frame_needed = 0, uses_anonymous_args = 0
+ 932              	.LVL112:
+ 933 05a0 30402DE9 		stmfd	sp!, {r4, r5, lr}
+ 934              	.LCFI17:
+ 935              		.cfi_def_cfa_offset 12
+ 936              	.LBB48:
+ 937              	.LBB51:
   73:../sensor.c   **** 	preamble.buffer[1] = boradAddr;
- 937              		.loc 1 73 0
- 938 05a0 52C0A0E3 		mov	ip, #82
- 939              	.LBE51:
- 940              	.LBE48:
- 941              		.loc 1 301 0
- 942 05a4 1CD04DE2 		sub	sp, sp, #28
- 943              	.LCFI18:
- 944              		.cfi_def_cfa_offset 40
- 945              	.LBB62:
- 946              	.LBB50:
+ 938              		.loc 1 73 0
+ 939 05a4 52C0A0E3 		mov	ip, #82
+ 940              	.LBE51:
+ 941              	.LBE48:
+ 942              		.loc 1 302 0
+ 943 05a8 1CD04DE2 		sub	sp, sp, #28
+ 944              	.LCFI18:
+ 945              		.cfi_def_cfa_offset 40
+ 946              	.LBB62:
+ 947              	.LBB50:
   72:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;						/************** command block *******************************
- 947              		.loc 1 72 0
- 948 05a8 70E0A0E3 		mov	lr, #112
- 949              		.cfi_offset 14, -4
- 950              		.cfi_offset 5, -8
- 951              		.cfi_offset 4, -12
- 952              	.LBE50:
- 953              	.LBE62:
- 954              		.loc 1 301 0
- 955 05ac 0050A0E1 		mov	r5, r0
- 956 05b0 0240A0E1 		mov	r4, r2
- 957              	.LBB63:
- 958              	.LBB60:
+ 948              		.loc 1 72 0
+ 949 05ac 70E0A0E3 		mov	lr, #112
+ 950              		.cfi_offset 14, -4
+ 951              		.cfi_offset 5, -8
+ 952              		.cfi_offset 4, -12
+ 953              	.LBE50:
+ 954              	.LBE62:
+ 955              		.loc 1 302 0
+ 956 05b0 0050A0E1 		mov	r5, r0
+ 957 05b4 0240A0E1 		mov	r4, r2
+ 958              	.LBB63:
+ 959              	.LBB60:
   74:../sensor.c   **** 	preamble.buffer[2] = highAddr;
- 959              		.loc 1 74 0
- 960 05b4 0610CDE5 		strb	r1, [sp, #6]
+ 960              		.loc 1 74 0
+ 961 05b8 0610CDE5 		strb	r1, [sp, #6]
   72:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;						/************** command block *******************************
- 961              		.loc 1 72 0
- 962 05b8 04E0CDE5 		strb	lr, [sp, #4]
+ 962              		.loc 1 72 0
+ 963 05bc 04E0CDE5 		strb	lr, [sp, #4]
   73:../sensor.c   **** 	preamble.buffer[1] = boradAddr;
- 963              		.loc 1 73 0
- 964 05bc 05C0CDE5 		strb	ip, [sp, #5]
+ 964              		.loc 1 73 0
+ 965 05c0 05C0CDE5 		strb	ip, [sp, #5]
   75:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 965              		.loc 1 75 0
- 966 05c0 00E0A0E3 		mov	lr, #0	@ movhi
+ 966              		.loc 1 75 0
+ 967 05c4 00E0A0E3 		mov	lr, #0	@ movhi
   76:../sensor.c   **** 	preamble.length = 3; /*  Three byte preamble. */
- 967              		.loc 1 76 0
- 968 05c4 03C0A0E3 		mov	ip, #3
+ 968              		.loc 1 76 0
+ 969 05c8 03C0A0E3 		mov	ip, #3
   79:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, inbuf, 1, 0);
- 969              		.loc 1 79 0
- 970 05c8 04008DE2 		add	r0, sp, #4
- 971              	.LVL113:
- 972 05cc 10108DE2 		add	r1, sp, #16
- 973              	.LVL114:
- 974 05d0 0120A0E3 		mov	r2, #1
- 975              	.LVL115:
- 976 05d4 0030A0E3 		mov	r3, #0
- 977              	.LBE60:
- 978              	.LBE63:
- 302:../sensor.c   **** 	uint8_t buf[2];
- 303:../sensor.c   **** 	buf[0] = value;
- 979              		.loc 1 303 0
- 980 05d8 1440CDE5 		strb	r4, [sp, #20]
- 981              	.LVL116:
- 982              	.LBB64:
- 983              	.LBB49:
+ 970              		.loc 1 79 0
+ 971 05cc 04008DE2 		add	r0, sp, #4
+ 972              	.LVL113:
+ 973 05d0 10108DE2 		add	r1, sp, #16
+ 974              	.LVL114:
+ 975 05d4 0120A0E3 		mov	r2, #1
+ 976              	.LVL115:
+ 977 05d8 0030A0E3 		mov	r3, #0
+ 978              	.LBE60:
+ 979              	.LBE63:
+ 303:../sensor.c   **** 	uint8_t buf[2];
+ 304:../sensor.c   **** 	buf[0] = value;
+ 980              		.loc 1 304 0
+ 981 05dc 1440CDE5 		strb	r4, [sp, #20]
+ 982              	.LVL116:
+ 983              	.LBB64:
+ 984              	.LBB49:
   75:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 984              		.loc 1 75 0
- 985 05dc BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
+ 985              		.loc 1 75 0
+ 986 05e0 BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
   76:../sensor.c   **** 	preamble.length = 3; /*  Three byte preamble. */
- 986              		.loc 1 76 0
- 987 05e0 0CC0CDE5 		strb	ip, [sp, #12]
+ 987              		.loc 1 76 0
+ 988 05e4 0CC0CDE5 		strb	ip, [sp, #12]
   77:../sensor.c   **** 	inbuf[0] = lowAddr;
- 988              		.loc 1 77 0
- 989 05e4 1050CDE5 		strb	r5, [sp, #16]
+ 989              		.loc 1 77 0
+ 990 05e8 1050CDE5 		strb	r5, [sp, #16]
   79:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, inbuf, 1, 0);
- 990              		.loc 1 79 0
- 991 05e8 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
- 992              	.LVL117:
- 993              	.LBB55:
- 994              	.LBB56:
+ 991              		.loc 1 79 0
+ 992 05ec FEFFFFEB 		bl	CyU3PI2cTransmitBytes
+ 993              	.LVL117:
+ 994              	.LBB55:
+ 995              	.LBB56:
   44:../sensor.c   **** 	if (status == CY_U3P_SUCCESS)
- 995              		.loc 1 44 0
- 996 05ec 000050E3 		cmp	r0, #0
- 997 05f0 1500000A 		beq	.L66
- 998              	.LVL118:
- 999              	.L64:
- 1000              	.LBE56:
- 1001              	.LBE55:
+ 996              		.loc 1 44 0
+ 997 05f0 000050E3 		cmp	r0, #0
+ 998 05f4 1500000A 		beq	.L66
+ 999              	.LVL118:
+ 1000              	.L64:
+ 1001              	.LBE56:
+ 1002              	.LBE55:
   87:../sensor.c   **** 	preamble.length = 1;
- 1002              		.loc 1 87 0
- 1003 05f4 01C0A0E3 		mov	ip, #1
+ 1003              		.loc 1 87 0
+ 1004 05f8 01C0A0E3 		mov	ip, #1
   86:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 1004              		.loc 1 86 0
- 1005 05f8 00E0A0E3 		mov	lr, #0	@ movhi
+ 1005              		.loc 1 86 0
+ 1006 05fc 00E0A0E3 		mov	lr, #0	@ movhi
   88:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, numData, 0);
- 1006              		.loc 1 88 0
- 1007 05fc 04008DE2 		add	r0, sp, #4
- 1008 0600 14108DE2 		add	r1, sp, #20
- 1009 0604 0C20A0E1 		mov	r2, ip
- 1010 0608 0030A0E3 		mov	r3, #0
+ 1007              		.loc 1 88 0
+ 1008 0600 04008DE2 		add	r0, sp, #4
+ 1009 0604 14108DE2 		add	r1, sp, #20
+ 1010 0608 0C20A0E1 		mov	r2, ip
+ 1011 060c 0030A0E3 		mov	r3, #0
   86:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 1011              		.loc 1 86 0
- 1012 060c BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
+ 1012              		.loc 1 86 0
+ 1013 0610 BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
   87:../sensor.c   **** 	preamble.length = 1;
- 1013              		.loc 1 87 0
- 1014 0610 0CC0CDE5 		strb	ip, [sp, #12]
+ 1014              		.loc 1 87 0
+ 1015 0614 0CC0CDE5 		strb	ip, [sp, #12]
   88:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, numData, 0);
- 1015              		.loc 1 88 0
- 1016 0614 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
- 1017              	.LVL119:
- 1018              	.LBB52:
- 1019              	.LBB53:
+ 1016              		.loc 1 88 0
+ 1017 0618 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
+ 1018              	.LVL119:
+ 1019              	.LBB52:
+ 1020              	.LBB53:
   44:../sensor.c   **** 	if (status == CY_U3P_SUCCESS)
- 1020              		.loc 1 44 0
- 1021 0618 000050E3 		cmp	r0, #0
- 1022 061c 0700000A 		beq	.L67
- 1023              	.LVL120:
- 1024              	.L65:
- 1025              	.LBE53:
- 1026              	.LBE52:
- 1027              	.LBE49:
- 1028              	.LBE64:
- 304:../sensor.c   **** 	SensorWrite2B(SENSOR_ADDR_WR, I2C_DSPBOARD_ADDR_WR, devAdd, IDext, 1, buf);
- 305:../sensor.c   **** //#ifdef USB_DEBUG_PRINT
- 306:../sensor.c   **** 	CyU3PDebugPrint (4, "The Set control regAdd 0x%x 0x%x\r\n", IDext, value); // additional debug
- 1029              		.loc 1 306 0
- 1030 0620 30109FE5 		ldr	r1, .L68
- 1031 0624 0520A0E1 		mov	r2, r5
- 1032 0628 0430A0E1 		mov	r3, r4
- 1033 062c 0400A0E3 		mov	r0, #4
- 1034 0630 FEFFFFEB 		bl	CyU3PDebugPrint
- 307:../sensor.c   **** //#endif
- 308:../sensor.c   **** 	return 0;
- 309:../sensor.c   **** };
- 1035              		.loc 1 309 0
- 1036 0634 0000A0E3 		mov	r0, #0
- 1037 0638 1CD08DE2 		add	sp, sp, #28
- 1038 063c 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
- 1039              	.LVL121:
- 1040              	.L67:
- 1041              	.LBB65:
- 1042              	.LBB61:
- 1043              	.LBB58:
- 1044              	.LBB54:
+ 1021              		.loc 1 44 0
+ 1022 061c 000050E3 		cmp	r0, #0
+ 1023 0620 0700000A 		beq	.L67
+ 1024              	.LVL120:
+ 1025              	.L65:
+ 1026              	.LBE53:
+ 1027              	.LBE52:
+ 1028              	.LBE49:
+ 1029              	.LBE64:
+ 305:../sensor.c   **** 	SensorWrite2B(SENSOR_ADDR_WR, I2C_DSPBOARD_ADDR_WR, devAdd, IDext, 1, buf);
+ 306:../sensor.c   **** //#ifdef USB_DEBUG_PRINT
+ 307:../sensor.c   **** 	CyU3PDebugPrint (4, "The Set control regAdd 0x%x 0x%x\r\n", IDext, value); // additional debug
+ 1030              		.loc 1 307 0
+ 1031 0624 30109FE5 		ldr	r1, .L68
+ 1032 0628 0520A0E1 		mov	r2, r5
+ 1033 062c 0430A0E1 		mov	r3, r4
+ 1034 0630 0400A0E3 		mov	r0, #4
+ 1035 0634 FEFFFFEB 		bl	CyU3PDebugPrint
+ 308:../sensor.c   **** //#endif
+ 309:../sensor.c   **** 	return 0;
+ 310:../sensor.c   **** };
+ 1036              		.loc 1 310 0
+ 1037 0638 0000A0E3 		mov	r0, #0
+ 1038 063c 1CD08DE2 		add	sp, sp, #28
+ 1039 0640 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
+ 1040              	.LVL121:
+ 1041              	.L67:
+ 1042              	.LBB65:
+ 1043              	.LBB61:
+ 1044              	.LBB58:
+ 1045              	.LBB54:
   46:../sensor.c   **** 		CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
- 1045              		.loc 1 46 0
- 1046 0640 7D0EA0E3 		mov	r0, #2000
- 1047              	.LVL122:
- 1048 0644 FEFFFFEB 		bl	CyU3PBusyWait
- 1049 0648 F4FFFFEA 		b	.L65
- 1050              	.LVL123:
- 1051              	.L66:
- 1052              	.LBE54:
- 1053              	.LBE58:
- 1054              	.LBB59:
- 1055              	.LBB57:
- 1056 064c 7D0EA0E3 		mov	r0, #2000
- 1057              	.LVL124:
- 1058 0650 FEFFFFEB 		bl	CyU3PBusyWait
- 1059 0654 E6FFFFEA 		b	.L64
- 1060              	.L69:
- 1061              		.align	2
- 1062              	.L68:
- 1063 0658 10010000 		.word	.LC9
- 1064              	.LBE57:
- 1065              	.LBE59:
- 1066              	.LBE61:
- 1067              	.LBE65:
- 1068              		.cfi_endproc
- 1069              	.LFE9:
- 1071              		.align	2
- 1072              		.global	SensorGetIrisControl
- 1074              	SensorGetIrisControl:
- 1075              	.LFB10:
- 310:../sensor.c   **** /*************************************************************
- 311:../sensor.c   ****  *  the Iris control get routine. IDext is the control ID, boardID: the Iris control board address.
- 312:../sensor.c   ****  *
- 313:../sensor.c   ****  * ********************************************************* */
- 314:../sensor.c   **** 
- 315:../sensor.c   **** uint8_t SensorGetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t boardID)  //for register w/r, t
- 316:../sensor.c   **** {
- 1076              		.loc 1 316 0
- 1077              		.cfi_startproc
- 1078              		@ args = 0, pretend = 0, frame = 8
- 1079              		@ frame_needed = 0, uses_anonymous_args = 0
- 1080              	.LVL125:
- 1081 065c 00C0A0E1 		mov	ip, r0
- 1082 0660 04E02DE5 		str	lr, [sp, #-4]!
- 1083              	.LCFI19:
- 1084              		.cfi_def_cfa_offset 4
- 1085 0664 0CD04DE2 		sub	sp, sp, #12
- 1086              	.LCFI20:
- 1087              		.cfi_def_cfa_offset 16
- 317:../sensor.c   **** 	uint8_t buf[2];
- 318:../sensor.c   **** 	SensorRead2B(SENSOR_ADDR_RD, boardID, devAdd, IDext, buf);
- 1088              		.loc 1 318 0
- 1089 0668 04308DE2 		add	r3, sp, #4
- 1090 066c 0200A0E1 		mov	r0, r2
- 1091              	.LVL126:
- 1092 0670 0C20A0E1 		mov	r2, ip
- 1093              	.LVL127:
- 1094              		.cfi_offset 14, -4
- 1095 0674 61FEFFEB 		bl	SensorRead2B.clone.1
- 1096              	.LVL128:
- 319:../sensor.c   **** #ifdef USB_DEBUG_PRINT
- 320:../sensor.c   **** 	CyU3PDebugPrint (4, "The Get control ID 0x%x 0x%x %d\r\n", boardID, IDext, buf[0]); // additional 
- 321:../sensor.c   **** #endif
- 322:../sensor.c   **** 	return buf[0];
- 323:../sensor.c   **** };
- 1097              		.loc 1 323 0
- 1098 0678 0400DDE5 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
- 1099 067c 0CD08DE2 		add	sp, sp, #12
- 1100 0680 04F09DE4 		ldmfd	sp!, {pc}
- 1101              		.cfi_endproc
- 1102              	.LFE10:
- 1104              		.align	2
- 1105              		.global	SensorSetIrisControl
- 1107              	SensorSetIrisControl:
- 1108              	.LFB11:
- 324:../sensor.c   **** 
- 325:../sensor.c   **** /* *********************************************************
- 326:../sensor.c   ****  * the Iris control Set routine. IDuvc: the control ID, boardID: the Iris control board address;
- 327:../sensor.c   ****  * value: set value, range check.
- 328:../sensor.c   ****  *
- 329:../sensor.c   ****  ************************************************************ */
- 330:../sensor.c   **** 
- 331:../sensor.c   **** uint8_t SensorSetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t value, uint8_t boardID) //for r
- 332:../sensor.c   **** {
- 1109              		.loc 1 332 0
- 1110              		.cfi_startproc
- 1111              		@ args = 0, pretend = 0, frame = 24
- 1112              		@ frame_needed = 0, uses_anonymous_args = 0
- 1113              	.LVL129:
- 1114 0684 04E02DE5 		str	lr, [sp, #-4]!
- 1115              	.LCFI21:
- 1116              		.cfi_def_cfa_offset 4
- 1117              	.LBB72:
- 1118              	.LBB74:
+ 1046              		.loc 1 46 0
+ 1047 0644 7D0EA0E3 		mov	r0, #2000
+ 1048              	.LVL122:
+ 1049 0648 FEFFFFEB 		bl	CyU3PBusyWait
+ 1050 064c F4FFFFEA 		b	.L65
+ 1051              	.LVL123:
+ 1052              	.L66:
+ 1053              	.LBE54:
+ 1054              	.LBE58:
+ 1055              	.LBB59:
+ 1056              	.LBB57:
+ 1057 0650 7D0EA0E3 		mov	r0, #2000
+ 1058              	.LVL124:
+ 1059 0654 FEFFFFEB 		bl	CyU3PBusyWait
+ 1060 0658 E6FFFFEA 		b	.L64
+ 1061              	.L69:
+ 1062              		.align	2
+ 1063              	.L68:
+ 1064 065c 10010000 		.word	.LC9
+ 1065              	.LBE57:
+ 1066              	.LBE59:
+ 1067              	.LBE61:
+ 1068              	.LBE65:
+ 1069              		.cfi_endproc
+ 1070              	.LFE9:
+ 1072              		.align	2
+ 1073              		.global	SensorGetIrisControl
+ 1075              	SensorGetIrisControl:
+ 1076              	.LFB10:
+ 311:../sensor.c   **** /*************************************************************
+ 312:../sensor.c   ****  *  the Iris control get routine. IDext is the control ID, boardID: the Iris control board address.
+ 313:../sensor.c   ****  *
+ 314:../sensor.c   ****  * ********************************************************* */
+ 315:../sensor.c   **** 
+ 316:../sensor.c   **** uint8_t SensorGetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t boardID)  //for register w/r, t
+ 317:../sensor.c   **** {
+ 1077              		.loc 1 317 0
+ 1078              		.cfi_startproc
+ 1079              		@ args = 0, pretend = 0, frame = 8
+ 1080              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1081              	.LVL125:
+ 1082 0660 00C0A0E1 		mov	ip, r0
+ 1083 0664 04E02DE5 		str	lr, [sp, #-4]!
+ 1084              	.LCFI19:
+ 1085              		.cfi_def_cfa_offset 4
+ 1086 0668 0CD04DE2 		sub	sp, sp, #12
+ 1087              	.LCFI20:
+ 1088              		.cfi_def_cfa_offset 16
+ 318:../sensor.c   **** 	uint8_t buf[2];
+ 319:../sensor.c   **** 	SensorRead2B(SENSOR_ADDR_RD, boardID, devAdd, IDext, 1, buf);
+ 1089              		.loc 1 319 0
+ 1090 066c 04308DE2 		add	r3, sp, #4
+ 1091 0670 0200A0E1 		mov	r0, r2
+ 1092              	.LVL126:
+ 1093 0674 0C20A0E1 		mov	r2, ip
+ 1094              	.LVL127:
+ 1095              		.cfi_offset 14, -4
+ 1096 0678 60FEFFEB 		bl	SensorRead2B.clone.1
+ 1097              	.LVL128:
+ 320:../sensor.c   **** #ifdef USB_DEBUG_PRINT
+ 321:../sensor.c   **** 	CyU3PDebugPrint (4, "The Get control ID 0x%x 0x%x %d\r\n", boardID, IDext, buf[0]); // additional 
+ 322:../sensor.c   **** #endif
+ 323:../sensor.c   **** 	return buf[0];
+ 324:../sensor.c   **** };
+ 1098              		.loc 1 324 0
+ 1099 067c 0400DDE5 		ldrb	r0, [sp, #4]	@ zero_extendqisi2
+ 1100 0680 0CD08DE2 		add	sp, sp, #12
+ 1101 0684 04F09DE4 		ldmfd	sp!, {pc}
+ 1102              		.cfi_endproc
+ 1103              	.LFE10:
+ 1105              		.align	2
+ 1106              		.global	SensorSetIrisControl
+ 1108              	SensorSetIrisControl:
+ 1109              	.LFB11:
+ 325:../sensor.c   **** 
+ 326:../sensor.c   **** /* *********************************************************
+ 327:../sensor.c   ****  * the Iris control Set routine. IDuvc: the control ID, boardID: the Iris control board address;
+ 328:../sensor.c   ****  * value: set value, range check.
+ 329:../sensor.c   ****  *
+ 330:../sensor.c   ****  ************************************************************ */
+ 331:../sensor.c   **** 
+ 332:../sensor.c   **** uint8_t SensorSetIrisControl(uint8_t IDext, uint8_t devAdd, uint8_t value, uint8_t boardID) //for r
+ 333:../sensor.c   **** {
+ 1110              		.loc 1 333 0
+ 1111              		.cfi_startproc
+ 1112              		@ args = 0, pretend = 0, frame = 24
+ 1113              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1114              	.LVL129:
+ 1115 0688 04E02DE5 		str	lr, [sp, #-4]!
+ 1116              	.LCFI21:
+ 1117              		.cfi_def_cfa_offset 4
+ 1118              	.LBB72:
+ 1119              	.LBB74:
   72:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;						/************** command block *******************************
- 1119              		.loc 1 72 0
- 1120 0688 70C0A0E3 		mov	ip, #112
- 1121              	.LBE74:
- 1122              	.LBE72:
- 1123              		.loc 1 332 0
- 1124 068c 1CD04DE2 		sub	sp, sp, #28
- 1125              	.LCFI22:
- 1126              		.cfi_def_cfa_offset 32
- 333:../sensor.c   **** 	uint8_t buf[2];
- 334:../sensor.c   **** 	buf[0] = value;
- 1127              		.loc 1 334 0
- 1128 0690 1420CDE5 		strb	r2, [sp, #20]
- 1129              	.LVL130:
- 1130              	.LBB84:
- 1131              	.LBB73:
+ 1120              		.loc 1 72 0
+ 1121 068c 70C0A0E3 		mov	ip, #112
+ 1122              	.LBE74:
+ 1123              	.LBE72:
+ 1124              		.loc 1 333 0
+ 1125 0690 1CD04DE2 		sub	sp, sp, #28
+ 1126              	.LCFI22:
+ 1127              		.cfi_def_cfa_offset 32
+ 334:../sensor.c   **** 	uint8_t buf[2];
+ 335:../sensor.c   **** 	buf[0] = value;
+ 1128              		.loc 1 335 0
+ 1129 0694 1420CDE5 		strb	r2, [sp, #20]
+ 1130              	.LVL130:
+ 1131              	.LBB84:
+ 1132              	.LBB73:
   73:../sensor.c   **** 	preamble.buffer[1] = boradAddr;
- 1132              		.loc 1 73 0
- 1133 0694 0530CDE5 		strb	r3, [sp, #5]
+ 1133              		.loc 1 73 0
+ 1134 0698 0530CDE5 		strb	r3, [sp, #5]
   74:../sensor.c   **** 	preamble.buffer[2] = highAddr;
- 1134              		.loc 1 74 0
- 1135 0698 0610CDE5 		strb	r1, [sp, #6]
+ 1135              		.loc 1 74 0
+ 1136 069c 0610CDE5 		strb	r1, [sp, #6]
   77:../sensor.c   **** 	inbuf[0] = lowAddr;
- 1136              		.loc 1 77 0
- 1137 069c 1000CDE5 		strb	r0, [sp, #16]
+ 1137              		.loc 1 77 0
+ 1138 06a0 1000CDE5 		strb	r0, [sp, #16]
   72:../sensor.c   **** 	preamble.buffer[0] = slaveAddr;						/************** command block *******************************
- 1138              		.loc 1 72 0
- 1139 06a0 04C0CDE5 		strb	ip, [sp, #4]
+ 1139              		.loc 1 72 0
+ 1140 06a4 04C0CDE5 		strb	ip, [sp, #4]
   75:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 1140              		.loc 1 75 0
- 1141 06a4 00E0A0E3 		mov	lr, #0	@ movhi
- 1142              		.cfi_offset 14, -4
+ 1141              		.loc 1 75 0
+ 1142 06a8 00E0A0E3 		mov	lr, #0	@ movhi
+ 1143              		.cfi_offset 14, -4
   76:../sensor.c   **** 	preamble.length = 3; /*  Three byte preamble. */
- 1143              		.loc 1 76 0
- 1144 06a8 03C0A0E3 		mov	ip, #3
+ 1144              		.loc 1 76 0
+ 1145 06ac 03C0A0E3 		mov	ip, #3
   79:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, inbuf, 1, 0);
- 1145              		.loc 1 79 0
- 1146 06ac 04008DE2 		add	r0, sp, #4
- 1147              	.LVL131:
- 1148 06b0 10108DE2 		add	r1, sp, #16
- 1149              	.LVL132:
- 1150 06b4 0120A0E3 		mov	r2, #1
- 1151              	.LVL133:
- 1152 06b8 0030A0E3 		mov	r3, #0
- 1153              	.LVL134:
+ 1146              		.loc 1 79 0
+ 1147 06b0 04008DE2 		add	r0, sp, #4
+ 1148              	.LVL131:
+ 1149 06b4 10108DE2 		add	r1, sp, #16
+ 1150              	.LVL132:
+ 1151 06b8 0120A0E3 		mov	r2, #1
+ 1152              	.LVL133:
+ 1153 06bc 0030A0E3 		mov	r3, #0
+ 1154              	.LVL134:
   75:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 1154              		.loc 1 75 0
- 1155 06bc BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
+ 1155              		.loc 1 75 0
+ 1156 06c0 BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
   76:../sensor.c   **** 	preamble.length = 3; /*  Three byte preamble. */
- 1156              		.loc 1 76 0
- 1157 06c0 0CC0CDE5 		strb	ip, [sp, #12]
+ 1157              		.loc 1 76 0
+ 1158 06c4 0CC0CDE5 		strb	ip, [sp, #12]
   79:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, inbuf, 1, 0);
- 1158              		.loc 1 79 0
- 1159 06c4 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
- 1160              	.LVL135:
- 1161              	.LBB78:
- 1162              	.LBB79:
+ 1159              		.loc 1 79 0
+ 1160 06c8 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
+ 1161              	.LVL135:
+ 1162              	.LBB78:
+ 1163              	.LBB79:
   44:../sensor.c   **** 	if (status == CY_U3P_SUCCESS)
- 1163              		.loc 1 44 0
- 1164 06c8 000050E3 		cmp	r0, #0
- 1165 06cc 1000000A 		beq	.L74
- 1166              	.LVL136:
- 1167              	.L72:
- 1168              	.LBE79:
- 1169              	.LBE78:
+ 1164              		.loc 1 44 0
+ 1165 06cc 000050E3 		cmp	r0, #0
+ 1166 06d0 1000000A 		beq	.L74
+ 1167              	.LVL136:
+ 1168              	.L72:
+ 1169              	.LBE79:
+ 1170              	.LBE78:
   87:../sensor.c   **** 	preamble.length = 1;
- 1170              		.loc 1 87 0
- 1171 06d0 01C0A0E3 		mov	ip, #1
+ 1171              		.loc 1 87 0
+ 1172 06d4 01C0A0E3 		mov	ip, #1
   86:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 1172              		.loc 1 86 0
- 1173 06d4 00E0A0E3 		mov	lr, #0	@ movhi
+ 1173              		.loc 1 86 0
+ 1174 06d8 00E0A0E3 		mov	lr, #0	@ movhi
   88:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, numData, 0);
- 1174              		.loc 1 88 0
- 1175 06d8 04008DE2 		add	r0, sp, #4
- 1176 06dc 14108DE2 		add	r1, sp, #20
- 1177 06e0 0C20A0E1 		mov	r2, ip
- 1178 06e4 0030A0E3 		mov	r3, #0
+ 1175              		.loc 1 88 0
+ 1176 06dc 04008DE2 		add	r0, sp, #4
+ 1177 06e0 14108DE2 		add	r1, sp, #20
+ 1178 06e4 0C20A0E1 		mov	r2, ip
+ 1179 06e8 0030A0E3 		mov	r3, #0
   86:../sensor.c   **** 	preamble.ctrlMask = 0x0000;
- 1179              		.loc 1 86 0
- 1180 06e8 BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
+ 1180              		.loc 1 86 0
+ 1181 06ec BEE0CDE1 		strh	lr, [sp, #14]	@ movhi
   87:../sensor.c   **** 	preamble.length = 1;
- 1181              		.loc 1 87 0
- 1182 06ec 0CC0CDE5 		strb	ip, [sp, #12]
+ 1182              		.loc 1 87 0
+ 1183 06f0 0CC0CDE5 		strb	ip, [sp, #12]
   88:../sensor.c   **** 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, numData, 0);
- 1183              		.loc 1 88 0
- 1184 06f0 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
- 1185              	.LVL137:
- 1186              	.LBB75:
- 1187              	.LBB76:
+ 1184              		.loc 1 88 0
+ 1185 06f4 FEFFFFEB 		bl	CyU3PI2cTransmitBytes
+ 1186              	.LVL137:
+ 1187              	.LBB75:
+ 1188              	.LBB76:
   44:../sensor.c   **** 	if (status == CY_U3P_SUCCESS)
- 1188              		.loc 1 44 0
- 1189 06f4 000050E3 		cmp	r0, #0
- 1190 06f8 0200000A 		beq	.L75
- 1191              	.LVL138:
- 1192              	.L73:
- 1193              	.LBE76:
- 1194              	.LBE75:
- 1195              	.LBE73:
- 1196              	.LBE84:
- 335:../sensor.c   **** 	SensorWrite2B(SENSOR_ADDR_WR, boardID, devAdd, IDext, 1, buf);
- 336:../sensor.c   **** #ifdef USB_DEBUG_PRINT
- 337:../sensor.c   **** 	CyU3PDebugPrint (4, "The Set control ID 0x%x 0x%x 0x%x\r\n", boardID, IDext, value); // additional
- 338:../sensor.c   **** #endif
- 339:../sensor.c   **** 	return 0;
- 340:../sensor.c   **** };
- 1197              		.loc 1 340 0
- 1198 06fc 0000A0E3 		mov	r0, #0
- 1199 0700 1CD08DE2 		add	sp, sp, #28
- 1200 0704 04F09DE4 		ldmfd	sp!, {pc}
- 1201              	.LVL139:
- 1202              	.L75:
- 1203              	.LBB85:
- 1204              	.LBB83:
- 1205              	.LBB81:
- 1206              	.LBB77:
+ 1189              		.loc 1 44 0
+ 1190 06f8 000050E3 		cmp	r0, #0
+ 1191 06fc 0200000A 		beq	.L75
+ 1192              	.LVL138:
+ 1193              	.L73:
+ 1194              	.LBE76:
+ 1195              	.LBE75:
+ 1196              	.LBE73:
+ 1197              	.LBE84:
+ 336:../sensor.c   **** 	SensorWrite2B(SENSOR_ADDR_WR, boardID, devAdd, IDext, 1, buf);
+ 337:../sensor.c   **** #ifdef USB_DEBUG_PRINT
+ 338:../sensor.c   **** 	CyU3PDebugPrint (4, "The Set control ID 0x%x 0x%x 0x%x\r\n", boardID, IDext, value); // additional
+ 339:../sensor.c   **** #endif
+ 340:../sensor.c   **** 	return 0;
+ 341:../sensor.c   **** };
+ 1198              		.loc 1 341 0
+ 1199 0700 0000A0E3 		mov	r0, #0
+ 1200 0704 1CD08DE2 		add	sp, sp, #28
+ 1201 0708 04F09DE4 		ldmfd	sp!, {pc}
+ 1202              	.LVL139:
+ 1203              	.L75:
+ 1204              	.LBB85:
+ 1205              	.LBB83:
+ 1206              	.LBB81:
+ 1207              	.LBB77:
   46:../sensor.c   **** 		CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
- 1207              		.loc 1 46 0
- 1208 0708 7D0EA0E3 		mov	r0, #2000
- 1209              	.LVL140:
- 1210 070c FEFFFFEB 		bl	CyU3PBusyWait
- 1211 0710 F9FFFFEA 		b	.L73
- 1212              	.LVL141:
- 1213              	.L74:
- 1214              	.LBE77:
- 1215              	.LBE81:
- 1216              	.LBB82:
- 1217              	.LBB80:
- 1218 0714 7D0EA0E3 		mov	r0, #2000
- 1219              	.LVL142:
- 1220 0718 FEFFFFEB 		bl	CyU3PBusyWait
- 1221 071c EBFFFFEA 		b	.L72
- 1222              	.LBE80:
- 1223              	.LBE82:
- 1224              	.LBE83:
- 1225              	.LBE85:
- 1226              		.cfi_endproc
- 1227              	.LFE11:
- 1229              		.section	.rodata.str1.4,"aMS",%progbits,1
- 1230              		.align	2
- 1231              	.LC0:
- 1232 0000 73656E73 		.ascii	"sensor read2B(T) %d %d %d\015\012\000"
- 1232      6F722072 
- 1232      65616432 
- 1232      42285429 
- 1232      20256420 
- 1233              	.LC1:
- 1234 001c 73656E73 		.ascii	"sensor read2B(R) %d %d %d\015\012\000"
- 1234      6F722072 
- 1234      65616432 
- 1234      42285229 
- 1234      20256420 
- 1235              	.LC2:
- 1236 0038 49324320 		.ascii	"I2C Slave address is not valid!\012\000"
- 1236      536C6176 
- 1236      65206164 
- 1236      64726573 
- 1236      73206973 
- 1237 0059 000000   		.space	3
- 1238              	.LC3:
- 1239 005c 4552524F 		.ascii	"ERROR: SensorWrite count > 64\012\000"
- 1239      523A2053 
- 1239      656E736F 
- 1239      72577269 
- 1239      74652063 
- 1240 007b 00       		.space	1
- 1241              	.LC4:
- 1242 007c 4750494F 		.ascii	"GPIO Set Value Error, Error Code = %d\012\000"
- 1242      20536574 
- 1242      2056616C 
- 1242      75652045 
- 1242      72726F72 
- 1243 00a3 00       		.space	1
- 1244              	.LC5:
- 1245 00a4 4750494F 		.ascii	"GPIO Set Value\015\012\000"
- 1245      20536574 
- 1245      2056616C 
- 1245      75650D0A 
- 1245      00
- 1246 00b5 000000   		.space	3
- 1247              	.LC6:
- 1248 00b8 54686520 		.ascii	"The ticks %d %d \015\012\000"
- 1248      7469636B 
- 1248      73202564 
- 1248      20256420 
- 1248      0D0A00
- 1249 00cb 00       		.space	1
- 1250              	.LC7:
- 1251 00cc 4572726F 		.ascii	"Error: Reading Sensor ID failed!\015\012\000"
- 1251      723A2052 
- 1251      65616469 
- 1251      6E672053 
- 1251      656E736F 
- 1252 00ef 00       		.space	1
- 1253              	.LC8:
- 1254 00f0 54686520 		.ascii	"The Get control ID 0x%x %d\015\012\000"
- 1254      47657420 
- 1254      636F6E74 
- 1254      726F6C20 
- 1254      49442030 
- 1255 010d 000000   		.space	3
- 1256              	.LC9:
- 1257 0110 54686520 		.ascii	"The Set control regAdd 0x%x 0x%x\015\012\000"
- 1257      53657420 
- 1257      636F6E74 
- 1257      726F6C20 
- 1257      72656741 
- 1258 0133 00       		.text
- 1259              	.Letext0:
+ 1208              		.loc 1 46 0
+ 1209 070c 7D0EA0E3 		mov	r0, #2000
+ 1210              	.LVL140:
+ 1211 0710 FEFFFFEB 		bl	CyU3PBusyWait
+ 1212 0714 F9FFFFEA 		b	.L73
+ 1213              	.LVL141:
+ 1214              	.L74:
+ 1215              	.LBE77:
+ 1216              	.LBE81:
+ 1217              	.LBB82:
+ 1218              	.LBB80:
+ 1219 0718 7D0EA0E3 		mov	r0, #2000
+ 1220              	.LVL142:
+ 1221 071c FEFFFFEB 		bl	CyU3PBusyWait
+ 1222 0720 EBFFFFEA 		b	.L72
+ 1223              	.LBE80:
+ 1224              	.LBE82:
+ 1225              	.LBE83:
+ 1226              	.LBE85:
+ 1227              		.cfi_endproc
+ 1228              	.LFE11:
+ 1230              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 1231              		.align	2
+ 1232              	.LC0:
+ 1233 0000 73656E73 		.ascii	"sensor read2B(T) %d %d %d\015\012\000"
+ 1233      6F722072 
+ 1233      65616432 
+ 1233      42285429 
+ 1233      20256420 
+ 1234              	.LC1:
+ 1235 001c 73656E73 		.ascii	"sensor read2B(R) %d %d %d\015\012\000"
+ 1235      6F722072 
+ 1235      65616432 
+ 1235      42285229 
+ 1235      20256420 
+ 1236              	.LC2:
+ 1237 0038 49324320 		.ascii	"I2C Slave address is not valid!\012\000"
+ 1237      536C6176 
+ 1237      65206164 
+ 1237      64726573 
+ 1237      73206973 
+ 1238 0059 000000   		.space	3
+ 1239              	.LC3:
+ 1240 005c 4552524F 		.ascii	"ERROR: SensorWrite count > 64\012\000"
+ 1240      523A2053 
+ 1240      656E736F 
+ 1240      72577269 
+ 1240      74652063 
+ 1241 007b 00       		.space	1
+ 1242              	.LC4:
+ 1243 007c 4750494F 		.ascii	"GPIO Set Value Error, Error Code = %d\012\000"
+ 1243      20536574 
+ 1243      2056616C 
+ 1243      75652045 
+ 1243      72726F72 
+ 1244 00a3 00       		.space	1
+ 1245              	.LC5:
+ 1246 00a4 4750494F 		.ascii	"GPIO Set Value\015\012\000"
+ 1246      20536574 
+ 1246      2056616C 
+ 1246      75650D0A 
+ 1246      00
+ 1247 00b5 000000   		.space	3
+ 1248              	.LC6:
+ 1249 00b8 54686520 		.ascii	"The ticks %d %d \015\012\000"
+ 1249      7469636B 
+ 1249      73202564 
+ 1249      20256420 
+ 1249      0D0A00
+ 1250 00cb 00       		.space	1
+ 1251              	.LC7:
+ 1252 00cc 4572726F 		.ascii	"Error: Reading Sensor ID failed!\015\012\000"
+ 1252      723A2052 
+ 1252      65616469 
+ 1252      6E672053 
+ 1252      656E736F 
+ 1253 00ef 00       		.space	1
+ 1254              	.LC8:
+ 1255 00f0 54686520 		.ascii	"The Get control ID 0x%x %d\015\012\000"
+ 1255      47657420 
+ 1255      636F6E74 
+ 1255      726F6C20 
+ 1255      49442030 
+ 1256 010d 000000   		.space	3
+ 1257              	.LC9:
+ 1258 0110 54686520 		.ascii	"The Set control regAdd 0x%x 0x%x\015\012\000"
+ 1258      53657420 
+ 1258      636F6E74 
+ 1258      726F6C20 
+ 1258      72656741 
+ 1259 0133 00       		.text
+ 1260              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 sensor.c
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:21     .text:00000000 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:23     .text:00000000 SensorRead2B.clone.1
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:151    .text:000000d8 $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:156    .text:000000e0 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:159    .text:000000e0 SensorWrite2B
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:295    .text:000001ac $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:299    .text:000001b0 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:302    .text:000001b0 SensorWrite
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:402    .text:00000250 $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:407    .text:00000258 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:410    .text:00000258 SensorRead2B
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:564    .text:0000035c $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:570    .text:00000368 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:573    .text:00000368 SensorRead
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:679    .text:00000410 $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:684    .text:00000418 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:687    .text:00000418 SensorReset
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:785    .text:000004cc $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:791    .text:000004d8 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:794    .text:000004d8 SensorInit
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:835    .text:0000051c $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:839    .text:00000520 $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:842    .text:00000520 SensorI2cBusTest
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:881    .text:0000055c SensorGetControl
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:918    .text:00000598 $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:922    .text:0000059c $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:925    .text:0000059c SensorSetControl
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:1063   .text:00000658 $d
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:1071   .text:0000065c $a
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:1074   .text:0000065c SensorGetIrisControl
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:1107   .text:00000684 SensorSetIrisControl
-C:\Users\wcheng\AppData\Local\Temp\cccrnWPn.s:1230   .rodata.str1.4:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:21     .text:00000000 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:23     .text:00000000 SensorRead2B.clone.1
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:151    .text:000000d8 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:156    .text:000000e0 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:159    .text:000000e0 SensorWrite2B
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:295    .text:000001ac $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:299    .text:000001b0 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:302    .text:000001b0 SensorWrite
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:402    .text:00000250 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:407    .text:00000258 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:410    .text:00000258 SensorRead2B
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:565    .text:00000360 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:571    .text:0000036c $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:574    .text:0000036c SensorRead
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:680    .text:00000414 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:685    .text:0000041c $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:688    .text:0000041c SensorReset
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:786    .text:000004d0 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:792    .text:000004dc $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:795    .text:000004dc SensorInit
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:836    .text:00000520 $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:840    .text:00000524 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:843    .text:00000524 SensorI2cBusTest
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:882    .text:00000560 SensorGetControl
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:919    .text:0000059c $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:923    .text:000005a0 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:926    .text:000005a0 SensorSetControl
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:1064   .text:0000065c $d
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:1072   .text:00000660 $a
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:1075   .text:00000660 SensorGetIrisControl
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:1108   .text:00000688 SensorSetIrisControl
+C:\Users\wcheng\AppData\Local\Temp\ccXrsaCD.s:1231   .rodata.str1.4:00000000 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

@@ -174,6 +174,7 @@ SensorRead2B (
         uint8_t highAddr,
         uint8_t lowAddr,
         uint8_t RegAdd,
+        uint8_t numData,
         uint8_t *buf);
 
 /* Function    : SensorRead
