@@ -52,9 +52,9 @@ static uint16_t DelayArray[64] = {
 		260, //1F: 0
 		260, //20: Iris auto (AF Lens)
 		260, //21: Iris auto (non AF Lens)
-		260, //22: Iris value (DC manual)
-		260, //23: Iris value (DC manual)
-		260, //24: BLCRange
+		400, //22: Iris value (DC manual)
+		400, //23: Iris value (DC manual)
+		400, //24: BLCRange
 		260, //25: BLCWeight
 		260, //26: BLCGrid
 		260, //27: 0
