@@ -70,9 +70,9 @@
   52:../cmdqu.c    **** 		260, //1F: 0
   53:../cmdqu.c    **** 		260, //20: Iris auto (AF Lens)
   54:../cmdqu.c    **** 		260, //21: Iris auto (non AF Lens)
-  55:../cmdqu.c    **** 		260, //22: Iris value (DC manual)
-  56:../cmdqu.c    **** 		260, //23: Iris value (DC manual)
-  57:../cmdqu.c    **** 		260, //24: BLCRange
+  55:../cmdqu.c    **** 		400, //22: Iris value (DC manual)
+  56:../cmdqu.c    **** 		400, //23: Iris value (DC manual)
+  57:../cmdqu.c    **** 		400, //24: BLCRange
   58:../cmdqu.c    **** 		260, //25: BLCWeight
   59:../cmdqu.c    **** 		260, //26: BLCGrid
   60:../cmdqu.c    **** 		260, //27: 0
@@ -1110,9 +1110,9 @@
  776 003e 0401     		.short	260
  777 0040 0401     		.short	260
  778 0042 0401     		.short	260
- 779 0044 0401     		.short	260
- 780 0046 0401     		.short	260
- 781 0048 0401     		.short	260
+ 779 0044 9001     		.short	400
+ 780 0046 9001     		.short	400
+ 781 0048 9001     		.short	400
  782 004a 0401     		.short	260
  783 004c 0401     		.short	260
  784 004e 0401     		.short	260
@@ -1196,30 +1196,30 @@
  820              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 cmdqu.c
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:21     .text:00000000 $a
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:24     .text:00000000 creatqu
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:46     .text:00000010 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:50     .text:00000014 $a
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:53     .text:00000014 cmdquTest
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:362    .text:000003b4 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:368    .text:000003c0 $a
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:371    .text:000003c0 cmdbufCreate
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:421    .text:0000041c $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:425    .text:00000420 $a
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:428    .text:00000420 cmdquInit
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:515    .text:000004b0 cmdbufDestroy
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:533    .text:000004b8 cmdSet
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:617    .text:00000544 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:622    .text:0000054c $a
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:625    .text:0000054c statGet
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:717    .text:000005e0 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:721    .text:000005e4 $a
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:724    .text:000005e4 cmdFind
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:740    .rodata:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:744    .rodata:00000000 DelayArray
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:792    .rodata.str1.4:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:813    .bss:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\ccWDCRyb.s:817    .bss:00000000 glEp0Buffer
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:21     .text:00000000 $a
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:24     .text:00000000 creatqu
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:46     .text:00000010 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:50     .text:00000014 $a
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:53     .text:00000014 cmdquTest
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:362    .text:000003b4 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:368    .text:000003c0 $a
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:371    .text:000003c0 cmdbufCreate
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:421    .text:0000041c $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:425    .text:00000420 $a
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:428    .text:00000420 cmdquInit
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:515    .text:000004b0 cmdbufDestroy
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:533    .text:000004b8 cmdSet
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:617    .text:00000544 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:622    .text:0000054c $a
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:625    .text:0000054c statGet
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:717    .text:000005e0 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:721    .text:000005e4 $a
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:724    .text:000005e4 cmdFind
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:740    .rodata:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:744    .rodata:00000000 DelayArray
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:792    .rodata.str1.4:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:813    .bss:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc5XZcxj.s:817    .bss:00000000 glEp0Buffer
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

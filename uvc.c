@@ -383,7 +383,7 @@ inline void setIrisauto(VdRingBuf *cmdQuptr, uint8_t isAuto){
 	  dataIdx = 0;
 	  CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
 	  cmdSet(cmdQuptr, 0x20/*AFIrisMode*/, 0x27, 0x30, isAuto?0:1, dataIdx);  //set Iris Mode for AF Lens value to 0
-	  cmdSet(cmdQuptr, 0x21/*noAFIrisMode*/, 0x25, 0x30, isAuto?0:2, dataIdx);  //set Iris Mode value for no-AF Lens to 0
+	  cmdSet(cmdQuptr, 0x21/*noAFIrisMode*/, 0x25, 0x30, isAuto?1:2, dataIdx);  //set Iris Mode value for no-AF Lens to 0
 	  CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
 }
 
@@ -3059,14 +3059,18 @@ UVCHandleVideoStreamingRqts (
                         if (apiRetStatus == CY_U3P_SUCCESS)
                         {
     #if 0
-                            /* We can start streaming video now. */
-                            apiRetStatus = CyU3PEventSet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_OR);
+                            /* We can start still streaming video now. */
+                            apiRetStatus = CyU3PEventSet (&glFxUVCEvent, VD_FX_UVC_STIL_EVENT, CYU3P_EVENT_OR);
                             if (apiRetStatus != CY_U3P_SUCCESS)
                             {
                                 CyU3PDebugPrint (4, "Set CY_FX_UVC_STREAM_EVENT failed %x\n", apiRetStatus);
                             }
     #endif
-                            CyU3PDebugPrint (4, "Get UVC still trigger control %d %d\r\n", readCount, glCommitCtrl[0]);
+                            //else{
+                            stiflag = CyTrue;//set still trigger flag
+                            //stillcont = 0;
+                            //}
+                            CyU3PDebugPrint (4, "Get UVC still trigger control %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[1]);
                         }else{
                         	CyU3PDebugPrint (4, "UVC still trigger control fail %d %d\r\n", readCount, glCommitCtrl[0]);
                         	CyU3PUsbStall (0, CyTrue, CyFalse);
