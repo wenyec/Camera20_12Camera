@@ -35,7 +35,7 @@
 #define DEBUG_PRINT_FRAME_COUNT    /* Enable UART debug prints to print the frame count every end of frame */
 //#define USB_DEBUG_INTERFACE       /* Enable custom USB interface for sensor interface debugging. */
 //#define USB_DEBUG_PRINT          /* print debug message */
-//#define CAM720                     /* for 720p camera */
+#define CAM720                     /* for 720p camera */
 //#define GPIFIIM                    /* gpif modified for 1080p */
 
 /* UVC application thread parameters. */

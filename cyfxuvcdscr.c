@@ -302,7 +302,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 #endif
 #else
         0x80,0x02,                      /* Width in pixel: 640(0x80,0x02) */
-        0x68,0x01,                      /* Height in pixel 360(0x68,0x01) */
+        0xE0,0x01,                      /* Height in pixel 360(0x68,0x01) 480(0xE0,0x01)*/
 #endif
         0x00,0xE0,0xD4,0x0E,//0x00,0x10,0x5C,0x0C,            /* Min bit rate bits/s. Not specified, taken from MJPEG */
         0x00,0xE0,0xD4,0x0E,            /* Max bit rate bits/s. Not specified, taken from MJPEG */
@@ -333,7 +333,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 #endif
 #else
         0x80,0x02,                      /* Width in pixel: 640(0x80,0x02) */
-        0x68,0x01,                      /* Height in pixel 360(0x68,0x01) */
+        0xE0,0x01,                      /* Height in pixel 360(0x68,0x01) 480(0xE0,0x01) */
 #endif
          0x00,                           /* Number of compression pattern of this format */
          //0x00,                           /* The uncompression still image */
@@ -631,7 +631,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x38, 0x04,                     /* Height in pixel 1080 (0x38, 0x04) 720 (0xd0, 0x02) **********************************************************************************/
 #else
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xd0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) */
+        0xd0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xd0, 0x03) */
 #endif
         0x00,0x40,0x70,0x31,            /* Min bit rate bits/s.=1920*1080*16*25= 0x31704000 ******************************************************/
         0x00,0x80,0x53,0x3b,            /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 ******************************************************/
@@ -657,7 +657,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x38, 0x04,                     /* Height in pixel 1080 (0x38, 0x04) 720 (0xd0, 0x02) **********************************************************************************/
 #else
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xd0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) */
+        0xd0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xd0, 0x03) */
 #endif
          0x00,                           /* Number of compression pattern of this format */
          //0x00,                           /* The uncompression still image */

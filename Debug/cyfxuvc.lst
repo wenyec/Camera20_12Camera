@@ -13481,7 +13481,7 @@ UVCAppEP0Thread_Entry (
       		ControlHandle(ExtNDlevCtlID8);
      		break;
     	case CY_FX_EXT_CONTROL_10EXPOSURE_MODE: //AEx mode CONTROL10
-    		if(CamMode == 1){//only 720p support
+    		if(1||CamMode == 1){//only 720p support
 				CtrlAdd = CtrlParArry[ExtAexModCtlID9][0];
 				ControlHandle(ExtAexModCtlID9);
 40006fe4:	e3a00019 	mov	r0, #25
@@ -25979,9 +25979,9 @@ handle_fatal_error:
 40010e8c:	00020e01 01240e00 83005701 01020400     ......$..W......
 40010e9c:	1b000101 01010424 32595559 00100000     ....$...YUY2....
 40010eac:	aa000080 719b3800 09100110 241e0000     .....8.q.......$
-40010ebc:	00020105 0002d005 00317040 003b5380     ........@p1..S;.
+40010ebc:	00020105 0003c005 00317040 003b5380     ........@p1..S;.
 40010ecc:	0a001fa4 0100028b 00028b0a 0003240a     .............$..
-40010edc:	d0050001 24060002 0000000d 02830507     .......$........
+40010edc:	c0050001 24060003 0000000d 02830507     .......$........
 40010eec:	06010400 00000f30 00000000              ....0.......
 
 40010ef8 <CyFxUSBStringLangIDDscr>:
