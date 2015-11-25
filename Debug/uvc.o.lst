@@ -2779,7 +2779,7 @@
 2761:../uvc.c      ****       		ControlHandle(ExtNDlevCtlID8);
 2762:../uvc.c      ****      		break;
 2763:../uvc.c      ****     	case CY_FX_EXT_CONTROL_10EXPOSURE_MODE: //AEx mode CONTROL10
-2764:../uvc.c      ****     		if(1||CamMode == 1){//only 720p support
+2764:../uvc.c      ****     		if(CamMode == 1){//only 720p support
 2765:../uvc.c      **** 				CtrlAdd = CtrlParArry[ExtAexModCtlID9][0];
 2766:../uvc.c      **** 				ControlHandle(ExtAexModCtlID9);
 2767:../uvc.c      ****     		}else/* no support for 1080p camera */
@@ -15360,138 +15360,138 @@
  9750              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 uvc.c
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:21     .text:00000000 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:24     .text:00000000 I2cAppThread_Entry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:184    .text:00000148 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:190    .text:00000158 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:282    .text:0000020c $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:296    .text:0000022c I2CCmdCb
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:21     .text:00000000 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:24     .text:00000000 I2cAppThread_Entry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:184    .text:00000148 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:190    .text:00000158 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:282    .text:0000020c $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:296    .text:0000022c I2CCmdCb
                             *COM*:0000002c I2CCmdTimer
                             *COM*:00000020 cmdQu
                             *COM*:00000020 statQu
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:293    .text:0000022c $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:315    .text:0000023c $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:319    .text:00000240 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:322    .text:00000240 CyFxUvcApplnDmaCallback
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:480    .text:00000368 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:293    .text:0000022c $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:315    .text:0000023c $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:319    .text:00000240 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:322    .text:00000240 CyFxUvcApplnDmaCallback
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:480    .text:00000368 $d
                             *COM*:000000dc glChHandleUVCStream
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:488    .text:0000037c $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:490    .text:0000037c CyFxUVCApplnUSBEventCB
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:669    .text:000004dc $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:678    .text:000004ec $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:680    .text:000004ec CyFxUVCApplnUSBSetupCB
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1005   .text:000007b4 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:488    .text:0000037c $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:490    .text:0000037c CyFxUVCApplnUSBEventCB
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:669    .text:000004dc $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:678    .text:000004ec $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:680    .text:000004ec CyFxUVCApplnUSBSetupCB
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1005   .text:000007b4 $d
                             *COM*:00000001 bmReqType
                             *COM*:00000001 bRequest
                             *COM*:00000002 wValue
                             *COM*:00000002 wIndex
                             *COM*:00000002 wLength
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1021   .text:000007e0 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1024   .text:000007e0 CyFxGpifCB
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1070   .text:0000081c $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1083   .text:00000848 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1146   .text:000008b8 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1153   .text:000008c8 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1164   .text:000008e0 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1167   .text:000008e0 I2CCmdHandler
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1295   .text:000009f4 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1300   .text:000009fc $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1303   .text:000009fc setIrisauto
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1366   .text:00000a7c ControlHandle
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1578   .text:00000c24 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1620   .text:00000cc0 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1685   .text:00000d44 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:1725   .text:00000ddc $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3003   .text:000019f8 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3023   .text:00001a3c $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3026   .text:00001a3c CTControlHandle
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3194   .text:00001b98 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3207   .text:00001bc0 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3702   .text:000020d0 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3713   .text:000020f0 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3975   .text:000023ac $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3988   .text:000023d4 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:3991   .text:000023d4 UVCAppEP0Thread_Entry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:4053   .text:00002450 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:4061   .text:00002460 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5196   .text:00002dbc $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1021   .text:000007e0 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1024   .text:000007e0 CyFxGpifCB
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1070   .text:0000081c $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1083   .text:00000848 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1146   .text:000008b8 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1153   .text:000008c8 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1164   .text:000008e0 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1167   .text:000008e0 I2CCmdHandler
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1295   .text:000009f4 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1300   .text:000009fc $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1303   .text:000009fc setIrisauto
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1366   .text:00000a7c ControlHandle
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1578   .text:00000c24 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1620   .text:00000cc0 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1685   .text:00000d44 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:1725   .text:00000ddc $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3003   .text:000019f8 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3023   .text:00001a3c $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3026   .text:00001a3c CTControlHandle
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3194   .text:00001b98 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3207   .text:00001bc0 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3702   .text:000020d0 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3713   .text:000020f0 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3975   .text:000023ac $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3988   .text:000023d4 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:3991   .text:000023d4 UVCAppEP0Thread_Entry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:4053   .text:00002450 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:4061   .text:00002460 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5196   .text:00002dbc $d
                             *COM*:00000004 glInterStaBuffer
                             *COM*:000000a0 glChHandleInterStat
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5223   .text:00002e14 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5226   .text:00002e14 CamDefSet
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5517   .text:000030cc $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5524   .text:000030dc $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5527   .text:000030dc CyFxUVCAddHeader
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5563   .text:00003108 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5567   .text:0000310c $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5570   .text:0000310c CyFxAppErrorHandler
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5595   .text:00003128 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5599   .text:0000312c $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:5602   .text:0000312c UVCAppThread_Entry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:6981   .text:00003bf0 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7041   .text:00003cc4 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7044   .text:00003cc4 CyFxUVCApplnI2CInit
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7127   .text:00003d50 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7136   .text:00003d60 $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7139   .text:00003d60 CyFxApplicationDefine
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7296   .text:00003ed8 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5223   .text:00002e14 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5226   .text:00002e14 CamDefSet
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5517   .text:000030cc $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5524   .text:000030dc $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5527   .text:000030dc CyFxUVCAddHeader
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5563   .text:00003108 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5567   .text:0000310c $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5570   .text:0000310c CyFxAppErrorHandler
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5595   .text:00003128 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5599   .text:0000312c $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:5602   .text:0000312c UVCAppThread_Entry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:6981   .text:00003bf0 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7041   .text:00003cc4 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7044   .text:00003cc4 CyFxUVCApplnI2CInit
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7127   .text:00003d50 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7136   .text:00003d60 $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7139   .text:00003d60 CyFxApplicationDefine
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7296   .text:00003ed8 $d
                             *COM*:00000038 cmdQuMux
                             *COM*:00000038 staQuMux
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7312   .text:00003f0c $a
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7315   .text:00003f0c main
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8909   .data:00000660 CyFxGpifTransition
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8918   .data:0000066c CyFxGpifWavedata
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8993   .data:0000078c CyFxGpifWavedataPosition
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9012   .data:0000079c CyFxGpifRegValue
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7476   .rodata:00000010 CyFxGpifConfig
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9091   .data:000008cc CyFxGpifTransition_usb2
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9102   .data:000008dc CyFxGpifWavedata_usb2
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9213   .data:00000a8c CyFxGpifWavedataPosition_usb2
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9364   .data:00000b20 CyFxGpifRegValue_usb2
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7489   .rodata:0000002c CyFxGpifConfig_usb2
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8905   .data:0000065f snapButFlag
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9730   .bss:00000298 testSnap
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9652   .bss:00000028 fb
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9656   .bss:0000002a pb
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9660   .bss:0000002c pbc
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9735   .bss:0000029a fbbak
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9739   .bss:0000029c pbbak
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9743   .bss:0000029e pbcbak
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9747   .bss:000002a0 pbcpbak
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9681   .bss:0000003c isUsbConnected
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9693   .bss:00000048 usbSpeed
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9685   .bss:00000040 clearFeatureRqtReceived
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9673   .bss:00000034 streamingStarted
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8816   .data:00000610 glProbeCtrl
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8876   .data:00000648 glProbeStilCtrl
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8846   .data:0000062c glProbeCtrl20
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8891   .data:00000654 glProbeStilCtrl20
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8471   .data:00000480 glUVCHeader
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7312   .text:00003f0c $a
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7315   .text:00003f0c main
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8909   .data:00000660 CyFxGpifTransition
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8918   .data:0000066c CyFxGpifWavedata
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8993   .data:0000078c CyFxGpifWavedataPosition
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9012   .data:0000079c CyFxGpifRegValue
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7476   .rodata:00000010 CyFxGpifConfig
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9091   .data:000008cc CyFxGpifTransition_usb2
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9102   .data:000008dc CyFxGpifWavedata_usb2
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9213   .data:00000a8c CyFxGpifWavedataPosition_usb2
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9364   .data:00000b20 CyFxGpifRegValue_usb2
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7489   .rodata:0000002c CyFxGpifConfig_usb2
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8905   .data:0000065f snapButFlag
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9730   .bss:00000298 testSnap
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9652   .bss:00000028 fb
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9656   .bss:0000002a pb
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9660   .bss:0000002c pbc
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9735   .bss:0000029a fbbak
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9739   .bss:0000029c pbbak
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9743   .bss:0000029e pbcbak
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9747   .bss:000002a0 pbcpbak
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9681   .bss:0000003c isUsbConnected
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9693   .bss:00000048 usbSpeed
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9685   .bss:00000040 clearFeatureRqtReceived
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9673   .bss:00000034 streamingStarted
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8816   .data:00000610 glProbeCtrl
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8876   .data:00000648 glProbeStilCtrl
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8846   .data:0000062c glProbeCtrl20
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8891   .data:00000654 glProbeStilCtrl20
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8471   .data:00000480 glUVCHeader
                             *COM*:000000dc glChHandleStillStream
                             *COM*:00000038 timMux
                             *COM*:00000004 posTick
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7453   .rodata:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7457   .rodata:00000000 ExTime
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7501   .data:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7505   .data:00000000 ExUCtrlParArry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:7828   .data:00000180 CtrlParArry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8486   .data:0000048c WBMenuCmpArry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:8493   .data:00000490 CTCtrlParArry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9442   .rodata.str1.4:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9644   .bss:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9648   .bss:00000000 glFxUVCEvent
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9664   .bss:0000002e prodCount
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9668   .bss:00000030 consCount
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9677   .bss:00000038 gpif_initialized
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9689   .bss:00000044 hitFV
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9698   .bss:0000004c I2CCMDArry
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9702   .bss:00000058 glEp0Buffer
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9706   .bss:00000078 WDRflag
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9710   .bss:0000007c glCommitCtrl
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9714   .bss:0000009c stiflag
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9718   .bss:000000a0 uvcAppThread
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9722   .bss:00000148 uvcAppEP0Thread
-C:\Users\wcheng\AppData\Local\Temp\cc7NMJqc.s:9726   .bss:000001f0 i2cAppThread
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7453   .rodata:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7457   .rodata:00000000 ExTime
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7501   .data:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7505   .data:00000000 ExUCtrlParArry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:7828   .data:00000180 CtrlParArry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8486   .data:0000048c WBMenuCmpArry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:8493   .data:00000490 CTCtrlParArry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9442   .rodata.str1.4:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9644   .bss:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9648   .bss:00000000 glFxUVCEvent
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9664   .bss:0000002e prodCount
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9668   .bss:00000030 consCount
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9677   .bss:00000038 gpif_initialized
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9689   .bss:00000044 hitFV
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9698   .bss:0000004c I2CCMDArry
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9702   .bss:00000058 glEp0Buffer
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9706   .bss:00000078 WDRflag
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9710   .bss:0000007c glCommitCtrl
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9714   .bss:0000009c stiflag
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9718   .bss:000000a0 uvcAppThread
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9722   .bss:00000148 uvcAppEP0Thread
+C:\Users\wcheng\AppData\Local\Temp\cc0KINOq.s:9726   .bss:000001f0 i2cAppThread
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

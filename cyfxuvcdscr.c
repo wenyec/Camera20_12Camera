@@ -354,9 +354,10 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0x02,                           /* BULK End point */
         (uint8_t)(512 & 0x00FF),        /* High speed max packet size is always 512 bytes. */
         (uint8_t)((512 & 0xFF00)>>8),
-        0x01,                            /* Servicing interval for data transfers */
+        0x01                            /* Servicing interval for data transfers */
 #if 0 //for still image capture method 3
         /* Endpoint Descriptor for BULK Streaming still image Data */
+        ,
         0x07,                           /* Descriptor size */
         CY_U3P_USB_ENDPNT_DESCR,        /* Endpoint Descriptor Type */
         0x87/*CY_FX_EP_BULK_IMAGE*/,            /* Endpoint address and description */
@@ -631,7 +632,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x38, 0x04,                     /* Height in pixel 1080 (0x38, 0x04) 720 (0xd0, 0x02) **********************************************************************************/
 #else
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xd0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xd0, 0x03) */
+        0xC0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03) */
 #endif
         0x00,0x40,0x70,0x31,            /* Min bit rate bits/s.=1920*1080*16*25= 0x31704000 ******************************************************/
         0x00,0x80,0x53,0x3b,            /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 ******************************************************/
@@ -657,7 +658,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x38, 0x04,                     /* Height in pixel 1080 (0x38, 0x04) 720 (0xd0, 0x02) **********************************************************************************/
 #else
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xd0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xd0, 0x03) */
+        0xC0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03) */
 #endif
          0x00,                           /* Number of compression pattern of this format */
          //0x00,                           /* The uncompression still image */
