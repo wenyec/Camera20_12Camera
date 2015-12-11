@@ -128,6 +128,8 @@
 
 #define VD_FX_INT_STA_EVENT						(1 << 6)
 
+#define VD_FX_UVC_STIL_EVENT					(1 << 7)
+
 /*
    The following constants are taken from the USB and USB Video Class (UVC) specifications.
    They are defined here for convenient usage in the rest of the application source code.

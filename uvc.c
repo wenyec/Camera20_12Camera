@@ -94,6 +94,7 @@ VdRingBuf        statQu;                //the state queue
 CyU3PMutex       cmdQuMux;
 CyU3PMutex       staQuMux;
 CyU3PMutex       timMux;
+CyU3PMutex       imgHdMux;
 
 /* Current UVC control request fields. See USB specification for definition. */
 uint8_t  bmReqType, bRequest;                           /* bmReqType and bRequest fields. */
@@ -265,6 +266,8 @@ static uint8_t CtrlParArry[32][24]={
 #else
 	static uint8_t CamMode = 1; //1:720p
 #endif
+	static uint8_t setRes = 0;  // 1:1280x960; 2:1280x720; 0:n/a
+	static uint8_t setstilRes = 0;  // 1:1280x960; 2:1280x720; 0:n/a
 
 static uint8_t ExUCtrlParArry[16][24]={
 		{/*20 set Iris auto (AF Lens)*/0,               0   , 4,    0x1,    0, 0x38, 0x01, 1, 0, 3, 0,0x4e, 0,0x4e,   0, I2C_EAGLESDP_ADDR,   CyTrue, CyFalse, 0},   //
@@ -1979,6 +1982,7 @@ CyFxUVCApplnInit (void)
     }
 
     /* Create a DMA Manual channel for sending the video data to the USB host. */
+    CyU3PMutexCreate(&imgHdMux, CYU3P_NO_INHERIT);// create a mutex for the image header operation.
     dmaMultiConfig.size           = CY_FX_UVC_STREAM_BUF_SIZE;
     dmaMultiConfig.count          = CY_FX_UVC_STREAM_BUF_COUNT;
     dmaMultiConfig.validSckCount  = 2;
@@ -2195,6 +2199,7 @@ UVCAppThread_Entry (
     uint8_t i = 0;
     uint32_t flag;
     uint32_t prinflag = 0;
+static uint8_t IMcount = 0;
 #ifdef DEBUG_PRINT_FRAME_COUNT
     uint32_t frameCnt = 0;
 #endif
@@ -2301,13 +2306,58 @@ UVCAppThread_Entry (
                 	//;//CyU3PEventSet (&glFxUVCEvent, VD_FX_I2C_CMD_EVENT, CYU3P_EVENT_OR); //each frame trigger I2C thread sending command.
                 //}
                 /* Toggle UVC header FRAME ID bit */
+            	CyU3PMutexGet(&imgHdMux, CYU3P_WAIT_FOREVER);
                 glUVCHeader[1] ^= CY_FX_UVC_HEADER_FRAME_ID;
-                if(stiflag){
-                	glUVCHeader[1] |= (1<<5);    //set still image flag
-                	stiflag = CyFalse;
-                }else{
-                	glUVCHeader[1] &= ~(1<<5);    //clear still image flag
+            	//CyU3PMutexPut(&imgHdMux);
+                 	if ((stiflag == 0xF0) && CyU3PEventGet (&glFxUVCEvent, VD_FX_UVC_STIL_EVENT, CYU3P_EVENT_AND_CLEAR, &flag,
+                	                    CYU3P_NO_WAIT) == CY_U3P_SUCCESS){ //start full res.
+                		//glUVCHeader[1] |= (1<<5);    //set still image flag
+                       	//SensorSetIrisControl(0x1, 0x30, is60Hz? 0x64:0xE4, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                     	//CyU3PThreadSleep(100);
+                		stiflag = 0xFF;
+                		IMcount = 0;
+                	}
+                 	else if(stiflag==0xFF){//setting still marker in the stream head after one frame late
+
+                 		if(IMcount++ >= 0x3){
+                 		glUVCHeader[1] |= (1<<5);    //set still image flag
+                		stiflag = 0x0F;
+                		IMcount = 0;
+                		}
+                 		/*if(IMcount > 0x4){
+                			stiflag = 0x0F;
+                			IMcount = 0;
+                		}*/
+
+                }else if(stiflag==0xAA){//recovery video stream res. after one still frame set.
+                    //CyU3PThreadSleep(400);
+                	//CyU3PMutexGet(&imgHdMux, CYU3P_WAIT_FOREVER);
+                   	//glUVCHeader[1] &= ~(1<<5);    //clear still image flag
+                	//CyU3PMutexPut(&imgHdMux);
+
+                	if(IMcount++ >= 0x3)
+                	{
+                    switch (setRes)
+                     {
+                 	case 1: //960
+                 		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                 		//CyU3PThreadSleep(100);
+                        CyU3PDebugPrint (4, "Set the video mode format1 %x %d\n", 0xb, 0x0);
+                 		break;
+                 	case 2: //720
+                 		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                 		//CyU3PThreadSleep(100);
+                        CyU3PDebugPrint (4, "Set the video mode format1 %x %d\n", 0x0b, 0x1);
+                 		break;
+                 	default:
+                 		break;
+                     }
+                    IMcount = 0;
+                	//glUVCHeader[1] &= ~(1<<5);    //clear still image flag
+                	stiflag = 0x0;
+                	}
                 }
+                CyU3PMutexPut(&imgHdMux);
                 /* Reset the DMA channel. */
                 apiRetStatus = CyU3PDmaMultiChannelReset (&glChHandleUVCStream);
                 if (apiRetStatus != CY_U3P_SUCCESS)
@@ -2835,7 +2885,7 @@ UVCHandleVideoStreamingRqts (
                 case CY_FX_USB_UVC_GET_MIN_REQ:
                 case CY_FX_USB_UVC_GET_MAX_REQ:
                 case CY_FX_USB_UVC_GET_DEF_REQ: 	/* There is only one setting per USB speed. */
-                    if (usbSpeed == CY_U3P_SUPER_SPEED)
+                    if (1 || usbSpeed == CY_U3P_SUPER_SPEED)//supports both SS and HS
                     {
                         CyU3PUsbSendEP0Data (CY_FX_UVC_MAX_PROBE_SETTING, (uint8_t *)glProbeCtrl);
                     }
@@ -2849,7 +2899,7 @@ UVCHandleVideoStreamingRqts (
                             glCommitCtrl, &readCount);
                     if (apiRetStatus == CY_U3P_SUCCESS)
                     {
-                        if (usbSpeed == CY_U3P_SUPER_SPEED)
+                        //if (usbSpeed == CY_U3P_SUPER_SPEED)//for both SS and HS
                         {
                             /* Copy the relevant settings from the host provided data into the
                                active data structure. */
@@ -2859,6 +2909,7 @@ UVCHandleVideoStreamingRqts (
                             glProbeCtrl[5] = glCommitCtrl[5];
                             glProbeCtrl[6] = glCommitCtrl[6];
                             glProbeCtrl[7] = glCommitCtrl[7];
+                            CyU3PDebugPrint (4, "Get UVC Prob(set) control %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[3]);
                         }
                     }
                     break;
@@ -2881,7 +2932,7 @@ UVCHandleVideoStreamingRqts (
                     CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
                     break;
                 case CY_FX_USB_UVC_GET_CUR_REQ:
-                    if (usbSpeed == CY_U3P_SUPER_SPEED)
+                    if (1 || usbSpeed == CY_U3P_SUPER_SPEED) //support both SS and HS
                     {
                         CyU3PUsbSendEP0Data (CY_FX_UVC_MAX_PROBE_SETTING, (uint8_t *)glProbeCtrl);
                     }
@@ -2896,8 +2947,26 @@ UVCHandleVideoStreamingRqts (
                        */
                     apiRetStatus = CyU3PUsbGetEP0Data (CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED,
                             glCommitCtrl, &readCount);
-                    if (apiRetStatus == CY_U3P_SUCCESS)
+                    if (apiRetStatus == CY_U3P_SUCCESS)//supports both SS and HS
                     {
+                        switch (glCommitCtrl[3])
+                         {
+                         	case 1: //960 or 480
+                         		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                         		CyU3PThreadSleep(500);
+                                CyU3PDebugPrint (4, "Set the video mode format %x %d\n", 0x0, 0x0b);
+                         		break;
+                         	case 2: //720 or 360
+                         		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                         		CyU3PThreadSleep(500);
+                                CyU3PDebugPrint (4, "Set the video mode format %x %d\n", 0x1, 0x0b);
+                         		break;
+                         	default:
+                         		break;
+                         }
+                        setRes = glCommitCtrl[3];
+                        CyU3PDebugPrint (4, "Set the video mode format setRes %d\n", setRes);
+
 #if 0
                     	if (usbSpeed == CY_U3P_SUPER_SPEED)
                         {
@@ -2954,7 +3023,7 @@ UVCHandleVideoStreamingRqts (
                                 glCommitCtrl, &readCount);
                         if (apiRetStatus == CY_U3P_SUCCESS)
                         {
-                            if (usbSpeed == CY_U3P_SUPER_SPEED)
+                            //if (usbSpeed == CY_U3P_SUPER_SPEED)//for both SS and HS
                             {
                                 /* Copy the relevant settings from the host provided data into the
                                    active data structure. */
@@ -2965,6 +3034,7 @@ UVCHandleVideoStreamingRqts (
                             	glProbeStilCtrl[5] = glCommitCtrl[5];
                             	glProbeStilCtrl[6] = glCommitCtrl[6];
                             }
+                            CyU3PDebugPrint (4, "Get UVC still Prob(set) control %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[1]);
                         }
                         break;
                     default:
@@ -3012,13 +3082,33 @@ UVCHandleVideoStreamingRqts (
                             {
                                 SensorScaling_VGA ();
                             }
-    #endif
                             /* We can start streaming video now. */
                             apiRetStatus = CyU3PEventSet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_OR);
+
                             if (apiRetStatus != CY_U3P_SUCCESS)
                             {
                                 CyU3PDebugPrint (4, "Set CY_FX_UVC_STREAM_EVENT failed %x\n", apiRetStatus);
                             }
+	#endif
+                           switch (glCommitCtrl[1])
+                             {
+                             	case 2: //720
+                             		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                             		//CyU3PThreadSleep(500);
+                                    CyU3PDebugPrint (4, "Set the still mode format %x %d\n", 0x0b, 0x1);
+                             		break;
+                            	case 1: //960
+                             		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                             		//CyU3PThreadSleep(500);
+                                    CyU3PDebugPrint (4, "Set the still mode format %x %d\n", 0x0b, 0x0);
+                             		break;
+                              	default:
+                             		break;
+                             }
+                            setstilRes = glCommitCtrl[1];
+
+                        	CyU3PDebugPrint (4, "UVC still commit control set %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[1]);
+
                         }
                         break;
 
@@ -3041,7 +3131,7 @@ UVCHandleVideoStreamingRqts (
                         CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
                         break;
                     case CY_FX_USB_UVC_GET_CUR_REQ://TODO for still trigger control
-                        if (usbSpeed == CY_U3P_SUPER_SPEED)
+                        if (1 || usbSpeed == CY_U3P_SUPER_SPEED)// support both SS and HS
                         {
                             CyU3PUsbSendEP0Data (CY_FX_UVC_MAX_PROBE_SETTING, (uint8_t *)glProbeCtrl);
                         }
@@ -3058,18 +3148,18 @@ UVCHandleVideoStreamingRqts (
                                 glCommitCtrl, &readCount);
                         if (apiRetStatus == CY_U3P_SUCCESS)
                         {
-    #if 0
+    #if 1
                             /* We can start still streaming video now. */
                             apiRetStatus = CyU3PEventSet (&glFxUVCEvent, VD_FX_UVC_STIL_EVENT, CYU3P_EVENT_OR);
                             if (apiRetStatus != CY_U3P_SUCCESS)
                             {
-                                CyU3PDebugPrint (4, "Set CY_FX_UVC_STREAM_EVENT failed %x\n", apiRetStatus);
+                                CyU3PDebugPrint (4, "Set CY_FX_UVC_STIL_EVENT failed %x\n", apiRetStatus);
                             }
     #endif
-                            //else{
-                            stiflag = CyTrue;//set still trigger flag
+                            else{
+                            stiflag = 0xF0;//set still trigger flag
                             //stillcont = 0;
-                            //}
+                            }
                             CyU3PDebugPrint (4, "Get UVC still trigger control %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[1]);
                         }else{
                         	CyU3PDebugPrint (4, "UVC still trigger control fail %d %d\r\n", readCount, glCommitCtrl[0]);
@@ -3239,7 +3329,7 @@ UVCAppEP0Thread_Entry (
 					}
 
 					snapButFlag = 0; //snap button is not masked.
-					stiflag = CyTrue;
+					stiflag = 0xFF;
 				}
 #else			//for botton simulation
 				if(snapButFlag == 0x0f){

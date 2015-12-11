@@ -119,7 +119,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0xDC, 0x00//0xE4,0x00,//0xF6,0x00,                      /* Length of this descriptor and all sub descriptors */
         0x03,                           /* Number of interfaces */
 #else
-        0xDD, 0x00,//0xDF,0x00,                      /* Length of this descriptor and all sub descriptors */
+        0xFF, 0x00,//0xDD,0x00,                      /* Length of this descriptor and all sub descriptors */
         0x02,                           /* Number of interfaces */
 #endif
         0x01,                           /* Configuration number */
@@ -255,7 +255,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0x24,                           /* Class-specific VS I/f Type */
         0x01,                           /* Descriptotor Subtype : Input Header */
         0x01,                           /* 1 format desciptor follows */
-        0x57,0x00,                      /* Total size of Class specific VS descr: 0x51 Bytes*/
+        0x79,0x00, //0x57,0x00,                      /* Total size of Class specific VS descr: 0x51 Bytes*/
         CY_FX_EP_BULK_VIDEO,            /* EP address for BULK video data */
         0x00,                           /* No dynamic format change supported */
         0x04,                           /* Output terminal ID : 4 */
@@ -271,7 +271,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0x24,                           /* Class-specific VS I/f Type */
         0x04,                           /* Subtype : uncompressed format I/F */
         0x01,                           /* Format desciptor index (only one format is supported) */
-        0x01,                           /* number of frame descriptor followed */
+        0x02,                           /* number of frame descriptor followed */
         0x59,0x55,0x59,0x32,            /* GUID used to identify streaming-encoding format: YUY2  */
         0x00,0x00,0x10,0x00,
         0x80,0x00,0x00,0xAA,
@@ -286,7 +286,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0x00,                           /* Interlace Flags: Progressive scanning, no interlace */
         0x00,                           /* duplication of the video stream restriction: 0 - no restriction */
 
-       /* Class specific Uncompressed VS Frame descriptor */
+       /* Class specific Uncompressed VS Frame descriptor for Res 640x480 */
         0x1E,                           /* Descriptor size */
         0x24,                           /* Descriptor type*/
         0x05,                           /* Subtype: uncompressed frame I/F */
@@ -316,13 +316,45 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
         0x15,0x16,0x05,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
 #endif
+
+        /* Class specific Uncompressed VS Frame descriptor for Res 640x360 */
+         0x1E,                           /* Descriptor size */
+         0x24,                           /* Descriptor type*/
+         0x05,                           /* Subtype: uncompressed frame I/F */
+         0x02,                           /* Frame Descriptor Index */
+         0x02,                           /* Still image capture method 2/3 supported, fixed frame rate */
+ #ifndef CAM720
+ #ifdef GPIFIIM
+         0x80,0x02,
+         0xE0,0x01,
+ #else
+         0xC0,0x03,                      /* Width in pixel: 960(0xC0,0x03) or 640(0x80,0x02) */
+         0x1C,0x02,                      /* Height in pixel 540(0x1C,0x02) or 480(0xE0,0x01) */
+ #endif
+ #else
+         0x80,0x02,                      /* Width in pixel: 640(0x80,0x02) */
+         0x68,0x01,                      /* Height in pixel 360(0x68,0x01) 480(0xE0,0x01)*/
+ #endif
+         0x00,0xE0,0xD4,0x0E,//0x00,0x10,0x5C,0x0C,            /* Min bit rate bits/s. Not specified, taken from MJPEG */
+         0x00,0xE0,0xD4,0x0E,            /* Max bit rate bits/s. Not specified, taken from MJPEG */
+         0x00,0xD2,0x0F,0x00,            /* Maximum video or still frame size in bytes(Deprecated) */
+ #ifndef CAM720
+         0x15,0x16,0x05,0x00,            /* Default Frame Interval 30fps 0x15,0x16,0x05,0x00,*/
+         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
+         0x15,0x16,0x05,0x00,            /* Shortest Frame Interval 30fps :0x15,0x16,0x05,0x00, 25fps: 0x80,0x1a,0x06,0x00,*/
+ #else
+         0x15,0x16,0x05,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
+         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
+         0x15,0x16,0x05,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
+ #endif
+
 #if 1
         /* Class specific VS Still Image Frame descriptor for Method 2/3*/
-         0x0A,                           /* Descriptor size */
+         0x0E,                           /* Descriptor size */
          0x24,                           /* Descriptor type*/
          0x03,                           /* Subtype: still image frame I/F */
          0/*0x87 CY_FX_EP_BULK_IMAGE*/,            /* EP address for BULK still image the method 2 has to be set to 0 */
-         0x01,                           /* Number of image size pattern */
+         0x02,                           /* Number of image size pattern */
 #ifndef CAM720
 #ifdef GPIFIIM
         0x80,0x02,
@@ -333,7 +365,9 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 #endif
 #else
         0x80,0x02,                      /* Width in pixel: 640(0x80,0x02) */
-        0xE0,0x01,                      /* Height in pixel 360(0x68,0x01) 480(0xE0,0x01) */
+        0x68,0x01,                      /* Height in pixel 360(0x68,0x01)*/
+        0x80,0x02,                      /* Width in pixel: 640(0x80,0x02) */
+        0xE0,0x01,                      /* Height in pixel 480(0xE0,0x01) */
 #endif
          0x00,                           /* Number of compression pattern of this format */
          //0x00,                           /* The uncompression still image */
@@ -443,7 +477,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0xFC,0x00,//0x0E,0x01,                      /* Total length of this and all sub-descriptors. */
         0x03,                           /* Number of interfaces */
 #else
-        0xE9,0x00,//0xF1,0x00,//0xD9,0x00,//                      /* Length of this descriptor and all sub descriptors */
+        0x0B,0x01,//0xE9,0x00,                      /* Length of this descriptor and all sub descriptors */
         0x02,                           /* Number of interfaces */
 #endif
         0x01,                           /* Configuration number */
@@ -593,7 +627,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x24,                           /* Class-specific VS I/f Type */
         0x01,                           /* Descriptotor Subtype : Input Header */
         0x01,                           /* 1 format desciptor follows */
-        0x57,0x00,//0x47,0x00,                      /* Total size of Class specific VS descr */
+        0x79,0x00,//0x57,0x00,                      /* Total size of Class specific VS descr */
         CY_FX_EP_BULK_VIDEO,            /* EP address for BULK video data */
         0x00,                           /* No dynamic format change supported */
         0x04,                           /* Output terminal ID : 4 */
@@ -609,7 +643,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x24,                           /* Class-specific VS I/f Type */
         0x04,                           /* Subtype : uncompressed format I/F */
         0x01,                           /* Format desciptor index */
-        0x01,                           /* Number of frame descriptor followed */
+        0x02,                           /* Number of frame descriptor followed */
         0x59,0x55,0x59,0x32,            /* GUID used to identify streaming-encoding format: YUY2 --> Is this correct, the order I got from Wim, next 3 lines are reversed?????????? */
         0x00,0x00,0x10,0x00,			/* From Wim: 00 00 00 10,*/
         0x80,0x00,0x00,0xAA,			/*         : 80 00 00 AA,*/
@@ -621,7 +655,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x00,                           /* Interlace Flags: Progressive scanning, no interlace */
         0x00,                           /* duplication of the video stream restriction: 0 - no restriction */
 
-        /* Class specific Uncompressed VS frame descriptor */
+        /* Class specific Uncompressed VS frame descriptor for Res 1280x960 */
         0x1E,                           /* Descriptor size */
         0x24,                           /* Descriptor type*/
         0x05,                           /* Subtype: uncompressed frame I/F */
@@ -646,19 +680,37 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
         0x0A,0x8B,0x02,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
 #endif
+
+        /* Class specific Uncompressed VS frame descriptor 3 for 720p Res 1280x720*/
+        0x1E,                           /* Descriptor size */
+        0x24,                           /* Descriptor type*/
+        0x05,                           /* Subtype: uncompressed frame I/F */
+        0x02,                           /* Frame Descriptor Index */
+        0x02,                           /* Still image capture method 1 is not supported in this descriptor, fixed frame rate */
+        0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
+        0xd0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) */
+        0x00,0x00,0xBC,0x34,            /* Min bit rate bits/s. 1280*720*16*60= 0x34BC0000 *****************/
+        0x00,0x00,0xBC,0x34,			//0x00,0xD0,0x14,0x48,           /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 *****/
+        0x00,0xC6,0x99,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
+        0x0A,0x8B,0x02,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
+        0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
+        0x0A,0x8B,0x02,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
+
 #if 1
         /* Class specific VS Still Image Frame descriptor for Method 2/3*/
-         0x0A,                           /* Descriptor size */
+         0x0E,                           /* Descriptor size */
          0x24,                           /* Descriptor type*/
          0x03,                           /* Subtype: still image frame I/F */
          0x00/*CY_FX_EP_BULK_IMAGE:0x87*/,            /* EP address for BULK still image */
-         0x01,                           /* Number of image size pattern */
+         0x02,                           /* Number of image size pattern */
 #ifndef CAM720
         0x80, 0x07,                     /* Width in pixel  1920 (0x80, 0x07) 1280 (0x00, 0x05)**********************************************************************************/
         0x38, 0x04,                     /* Height in pixel 1080 (0x38, 0x04) 720 (0xd0, 0x02) **********************************************************************************/
 #else
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xC0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03) */
+        0xd0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) */
+        0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
+        0xC0, 0x03,                      /* Height in pixel 960(0xC0, 0x03) */
 #endif
          0x00,                           /* Number of compression pattern of this format */
          //0x00,                           /* The uncompression still image */
@@ -687,10 +739,11 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x0F,                           /* Max number of packets per burst: 15 */
         0x00,                           /* Attribute: Streams not defined */
         0x00,                           /* No meaning for bulk */
-        0x00,
+        0x00
 
 #if 0 // for still image method 3
         /* Endpoint Descriptor for BULK Streaming still image Data */
+        ,
         0x07,                           /* Descriptor size */
         CY_U3P_USB_ENDPNT_DESCR,        /* Endpoint Descriptor Type */
         0x87/*CY_FX_EP_BULK_IMAGE*/,            /* Endpoint address and description */
