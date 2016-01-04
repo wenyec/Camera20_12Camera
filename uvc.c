@@ -1221,7 +1221,9 @@ CyFxUVCAddHeader (
         )
 {
     /* Copy header to buffer */
+	CyU3PMutexGet(&imgHdMux, CYU3P_WAIT_FOREVER);
     CyU3PMemCopy (buffer_p, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
+	CyU3PMutexPut(&imgHdMux);
 
     /* The EOF flag needs to be set if this is the last packet for this video frame. */
     if (frameInd & CY_FX_UVC_HEADER_EOF)
@@ -1490,6 +1492,15 @@ CyFxUvcApplnDmaCallback (
                 pb++;
                 pbc = input->buffer_p.count;
                // hitFV = CyTrue;
+#if 1   //remove the still flag clearing here
+                if(stiflag == 0x0F){
+                	CyU3PMutexGet(&imgHdMux, CYU3P_WAIT_FOREVER);
+                	glUVCHeader[1] &= ~(1<<5);    //clear still image flag
+                	CyU3PMutexPut(&imgHdMux);
+                	stiflag = 0xAA;
+                }
+#endif
+                hitFV = CyTrue;  //set the hitFV flag to indicate the the partial buffer has been committed.
             }
 
             /* Commit the updated DMA buffer to the USB endpoint. */
@@ -1633,7 +1644,7 @@ CyFxGpifCB (
 {
     if (event == CYU3P_GPIF_EVT_SM_INTERRUPT)
     {
-        hitFV = CyTrue;
+        //hitFV = CyTrue;
         if (CyFxUvcAppCommitEOF (&glChHandleUVCStream, currentState) != CY_U3P_SUCCESS)
             CyU3PDebugPrint (4, "Commit EOF failed!\n");
     }
@@ -2429,7 +2440,8 @@ static uint8_t IMcount = 0;
                 /* Initialize gpif configuration and waveform descriptors */
                 if (gpif_initialized == CyFalse)
                 {
-                    //for start up of the AF Lens
+#if 0
+                	//for start up of the AF Lens
                    	SensorSetIrisControl(0x21, 0x30, 1, I2C_AFBOARD_ADDR_WR/*boardID*/);//set Iris manual (AF Lens)
                     CyU3PThreadSleep(500);
                    	SensorSetIrisControl(0x25, 0x30, 2, I2C_DSPBOARD_ADDR_WR/*boardID*/);//set Iris manual (non AF Lens)
@@ -2440,6 +2452,7 @@ static uint8_t IMcount = 0;
                     CyU3PThreadSleep(500);
                    	SensorSetIrisControl(0x25, 0x30, 0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//set Iris auto (non AF Lens)
                     CyU3PThreadSleep(500);
+#endif
                     CyFxUvcAppGpifInit ();
                     gpif_initialized = CyTrue;
                     CyU3PThreadSleep(200);
@@ -3092,12 +3105,12 @@ UVCHandleVideoStreamingRqts (
 	#endif
                            switch (glCommitCtrl[1])
                              {
-                             	case 2: //720
+                             	case 1: //720
                              		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
                              		//CyU3PThreadSleep(500);
                                     CyU3PDebugPrint (4, "Set the still mode format %x %d\n", 0x0b, 0x1);
                              		break;
-                            	case 1: //960
+                            	case 2: //960
                              		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
                              		//CyU3PThreadSleep(500);
                                     CyU3PDebugPrint (4, "Set the still mode format %x %d\n", 0x0b, 0x0);
