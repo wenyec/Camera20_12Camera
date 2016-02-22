@@ -7,15 +7,17 @@
    7              		.eabi_attribute 25, 1
    8              		.eabi_attribute 26, 1
    9              		.eabi_attribute 30, 2
-  10              		.eabi_attribute 18, 4
-  11              		.file	"cmdqu.c"
-  19              	.Ltext0:
-  20              		.cfi_sections	.debug_frame
-  21              		.align	2
-  22              		.global	creatqu
-  24              	creatqu:
-  25              	.LFB0:
-  26              		.file 1 "../cmdqu.c"
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"cmdqu.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.align	2
+  17              		.global	creatqu
+  19              	creatqu:
+  20              	.LFB0:
+  21              		.file 1 "../cmdqu.c"
    1:../cmdqu.c    **** /*********************************************************
    2:../cmdqu.c    ****  * The cmdqu.c for the ring buffer that can be used any case that needs a buffer.
    3:../cmdqu.c    ****  * Copyright Videology Imaging Solution Inc. 2013
@@ -85,414 +87,169 @@
   67:../cmdqu.c    **** };
   68:../cmdqu.c    **** 
   69:../cmdqu.c    **** void creatqu(uint8_t para){
-  27              		.loc 1 69 0
-  28              		.cfi_startproc
-  29              		@ args = 0, pretend = 0, frame = 0
-  30              		@ frame_needed = 0, uses_anonymous_args = 0
-  31              		@ link register save eliminated.
-  32              	.LVL0:
+  22              		.loc 1 69 0
+  23              		.cfi_startproc
+  24              		@ args = 0, pretend = 0, frame = 0
+  25              		@ frame_needed = 0, uses_anonymous_args = 0
+  26              		@ link register save eliminated.
+  27              	.LVL0:
+  28              		.loc 1 69 0
+  29 0000 0020A0E1 		mov	r2, r0
   70:../cmdqu.c    **** 	CyU3PDebugPrint (4, "The test cmdqu %d \r\n", para); // additional debug
-  33              		.loc 1 70 0
-  34 0000 08109FE5 		ldr	r1, .L2
-  69:../cmdqu.c    **** void creatqu(uint8_t para){
-  35              		.loc 1 69 0
-  36 0004 0020A0E1 		mov	r2, r0
-  37              		.loc 1 70 0
-  38 0008 0400A0E3 		mov	r0, #4
-  39              	.LVL1:
+  30              		.loc 1 70 0
+  31 0004 04109FE5 		ldr	r1, .L2
+  32 0008 0400A0E3 		mov	r0, #4
+  33              	.LVL1:
+  34 000c FEFFFFEA 		b	CyU3PDebugPrint
+  35              	.LVL2:
+  36              	.L3:
+  37              		.align	2
+  38              	.L2:
+  39 0010 00000000 		.word	.LC0
+  40              		.cfi_endproc
+  41              	.LFE0:
+  43              		.align	2
+  44              		.global	cmdquTest
+  46              	cmdquTest:
+  47              	.LFB1:
   71:../cmdqu.c    **** }
-  40              		.loc 1 71 0
-  70:../cmdqu.c    **** 	CyU3PDebugPrint (4, "The test cmdqu %d \r\n", para); // additional debug
-  41              		.loc 1 70 0
-  42 000c FEFFFFEA 		b	CyU3PDebugPrint
-  43              	.L3:
-  44              		.align	2
-  45              	.L2:
-  46 0010 00000000 		.word	.LC0
-  47              		.cfi_endproc
-  48              	.LFE0:
-  50              		.align	2
-  51              		.global	cmdquTest
-  53              	cmdquTest:
-  54              	.LFB1:
   72:../cmdqu.c    **** 
   73:../cmdqu.c    **** /**** it's used test the cmdqu data structure. */
   74:../cmdqu.c    **** void  cmdquTest(VdRingBuf *cmdbuf, uint8_t state){
-  55              		.loc 1 74 0
-  56              		.cfi_startproc
-  57              		@ args = 0, pretend = 0, frame = 0
-  58              		@ frame_needed = 0, uses_anonymous_args = 0
-  59              	.LVL2:
-  60 0014 F0402DE9 		stmfd	sp!, {r4, r5, r6, r7, lr}
-  61              	.LCFI0:
-  62              		.cfi_def_cfa_offset 20
+  48              		.loc 1 74 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52              	.LVL3:
+  53 0014 30402DE9 		stmfd	sp!, {r4, r5, lr}
+  54              	.LCFI0:
+  55              		.cfi_def_cfa_offset 12
+  56              		.cfi_offset 4, -12
+  57              		.cfi_offset 5, -8
+  58              		.cfi_offset 14, -4
   75:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
   76:../cmdqu.c    **** 	VdcmdDes *lcCmdDes;
   77:../cmdqu.c    **** 	CyU3PDebugPrint (4, "Command Queue %s state %d\r\n", cmdbuf->bufferName, state);
-  63              		.loc 1 77 0
-  64 0018 042090E5 		ldr	r2, [r0, #4]
-  74:../cmdqu.c    **** void  cmdquTest(VdRingBuf *cmdbuf, uint8_t state){
-  65              		.loc 1 74 0
-  66 001c 14D04DE2 		sub	sp, sp, #20
-  67              	.LCFI1:
-  68              		.cfi_def_cfa_offset 40
-  74:../cmdqu.c    **** void  cmdquTest(VdRingBuf *cmdbuf, uint8_t state){
-  69              		.loc 1 74 0
-  70 0020 0040A0E1 		mov	r4, r0
-  71              		.cfi_offset 14, -4
-  72              		.cfi_offset 7, -8
-  73              		.cfi_offset 6, -12
-  74              		.cfi_offset 5, -16
-  75              		.cfi_offset 4, -20
-  76 0024 0130A0E1 		mov	r3, r1
-  77              		.loc 1 77 0
-  78 0028 0400A0E3 		mov	r0, #4
-  79              	.LVL3:
-  80 002c 80139FE5 		ldr	r1, .L5
-  81              	.LVL4:
-  82 0030 FEFFFFEB 		bl	CyU3PDebugPrint
+  59              		.loc 1 77 0
+  60 0018 042090E5 		ldr	r2, [r0, #4]
+  74:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
+  61              		.loc 1 74 0
+  62 001c 0040A0E1 		mov	r4, r0
+  63 0020 14D04DE2 		sub	sp, sp, #20
+  64              	.LCFI1:
+  65              		.cfi_def_cfa_offset 32
+  74:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
+  66              		.loc 1 74 0
+  67 0024 0130A0E1 		mov	r3, r1
+  68              		.loc 1 77 0
+  69 0028 0400A0E3 		mov	r0, #4
+  70              	.LVL4:
+  71 002c 80109FE5 		ldr	r1, .L8
+  72              	.LVL5:
+  73 0030 FEFFFFEB 		bl	CyU3PDebugPrint
+  74              	.LVL6:
   78:../cmdqu.c    **** 	CyU3PDebugPrint (4, "Command Queue check queueID %d startAdd 0x%x endAdd 0x%x write 0x%x read 0x%x
-  83              		.loc 1 78 0
-  84 0034 10E094E5 		ldr	lr, [r4, #16]
-  85 0038 0C7094E5 		ldr	r7, [r4, #12]
-  86 003c 145094E5 		ldr	r5, [r4, #20]
-  87 0040 1AC0D4E5 		ldrb	ip, [r4, #26]	@ zero_extendqisi2
-  88 0044 0020D4E5 		ldrb	r2, [r4, #0]	@ zero_extendqisi2
-  89 0048 083094E5 		ldr	r3, [r4, #8]
-  90 004c 64139FE5 		ldr	r1, .L5+4
-  91 0050 0400A0E3 		mov	r0, #4
-  92 0054 08E08DE5 		str	lr, [sp, #8]
-  93 0058 00708DE5 		str	r7, [sp, #0]
-  94 005c 04508DE5 		str	r5, [sp, #4]
-  95 0060 0CC08DE5 		str	ip, [sp, #12]
-  96 0064 FEFFFFEB 		bl	CyU3PDebugPrint
+  75              		.loc 1 78 0
+  76 0034 100094E5 		ldr	r0, [r4, #16]
+  77 0038 1A10D4E5 		ldrb	r1, [r4, #26]	@ zero_extendqisi2
+  78 003c 0CE094E5 		ldr	lr, [r4, #12]
+  79 0040 14C094E5 		ldr	ip, [r4, #20]
+  80 0044 0020D4E5 		ldrb	r2, [r4]	@ zero_extendqisi2
+  81 0048 083094E5 		ldr	r3, [r4, #8]
+  82 004c 08008DE5 		str	r0, [sp, #8]
+  83 0050 0C108DE5 		str	r1, [sp, #12]
+  84 0054 00E08DE5 		str	lr, [sp]
+  85 0058 04C08DE5 		str	ip, [sp, #4]
+  86 005c 0400A0E3 		mov	r0, #4
+  87 0060 50109FE5 		ldr	r1, .L8+4
+  88 0064 FEFFFFEB 		bl	CyU3PDebugPrint
+  89              	.LVL7:
   79:../cmdqu.c    **** 			cmdbuf->ringbufID, cmdbuf->startAdd, cmdbuf->endAdd, cmdbuf->writePtr, cmdbuf->readPtr, cmdbuf->
   80:../cmdqu.c    **** 	lcCmdDes = cmdbuf->startAdd;
-  97              		.loc 1 80 0
-  98 0068 085094E5 		ldr	r5, [r4, #8]
-  99              	.LVL5:
+  90              		.loc 1 80 0
+  91 0068 084094E5 		ldr	r4, [r4, #8]
+  92              	.LVL8:
+  93 006c 0050A0E3 		mov	r5, #0
+  94              	.LVL9:
+  95              	.L6:
   81:../cmdqu.c    **** 	for(cmdQuIdx = 0; cmdQuIdx < 0x10/*MAXCMD*/; cmdQuIdx++){
   82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 100              		.loc 1 82 0
- 101 006c 0070A0E3 		mov	r7, #0
- 102 0070 386095E5 		ldr	r6, [r5, #56]
- 103 0074 0020D5E5 		ldrb	r2, [r5, #0]	@ zero_extendqisi2
- 104 0078 00608DE5 		str	r6, [sp, #0]
- 105 007c 340095E5 		ldr	r0, [r5, #52]
- 106 0080 34439FE5 		ldr	r4, .L5+8
- 107              	.LVL6:
- 108 0084 81008DE9 		stmib	sp, {r0, r7}	@ phole stm
- 109 0088 3CC095E5 		ldr	ip, [r5, #60]
- 110 008c 0410A0E1 		mov	r1, r4
- 111 0090 0530A0E1 		mov	r3, r5
- 112 0094 0400A0E3 		mov	r0, #4
- 113 0098 0CC08DE5 		str	ip, [sp, #12]
- 114 009c FEFFFFEB 		bl	CyU3PDebugPrint
- 115 00a0 781095E5 		ldr	r1, [r5, #120]
- 116 00a4 4020D5E5 		ldrb	r2, [r5, #64]	@ zero_extendqisi2
- 117 00a8 00108DE5 		str	r1, [sp, #0]
- 118 00ac 743095E5 		ldr	r3, [r5, #116]
- 119 00b0 0160A0E3 		mov	r6, #1
- 120 00b4 48008DE9 		stmib	sp, {r3, r6}	@ phole stm
- 121 00b8 7CC095E5 		ldr	ip, [r5, #124]
+  96              		.loc 1 82 0 discriminator 2
+  97 0070 383094E5 		ldr	r3, [r4, #56]
+  98 0074 0020D4E5 		ldrb	r2, [r4]	@ zero_extendqisi2
+  99 0078 00308DE5 		str	r3, [sp]
+ 100 007c 343094E5 		ldr	r3, [r4, #52]
+ 101 0080 0400A0E3 		mov	r0, #4
+ 102 0084 28008DE9 		stmib	sp, {r3, r5}
+ 103 0088 3C3094E5 		ldr	r3, [r4, #60]
+ 104 008c 015085E2 		add	r5, r5, #1
+ 105              	.LVL10:
+ 106 0090 0C308DE5 		str	r3, [sp, #12]
+ 107 0094 20109FE5 		ldr	r1, .L8+8
+ 108 0098 0430A0E1 		mov	r3, r4
+ 109 009c FEFFFFEB 		bl	CyU3PDebugPrint
+ 110              	.LVL11:
+  81:../cmdqu.c    **** 	for(cmdQuIdx = 0; cmdQuIdx < 0x10/*MAXCMD*/; cmdQuIdx++){
+ 111              		.loc 1 81 0 discriminator 2
+ 112 00a0 100055E3 		cmp	r5, #16
   83:../cmdqu.c    **** 				lcCmdDes->CmdID, lcCmdDes,	lcCmdDes->cmdDesPrevious, lcCmdDes->cmdDesNext, cmdQuIdx, lcCmdDes->
   84:../cmdqu.c    **** 		lcCmdDes += 1;
- 122              		.loc 1 84 0
- 123 00bc 407085E2 		add	r7, r5, #64
- 124              	.LVL7:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 125              		.loc 1 82 0
- 126 00c0 0410A0E1 		mov	r1, r4
- 127 00c4 0730A0E1 		mov	r3, r7
- 128 00c8 0400A0E3 		mov	r0, #4
- 129 00cc 0CC08DE5 		str	ip, [sp, #12]
- 130 00d0 FEFFFFEB 		bl	CyU3PDebugPrint
- 131 00d4 B80095E5 		ldr	r0, [r5, #184]
- 132 00d8 8020D5E5 		ldrb	r2, [r5, #128]	@ zero_extendqisi2
- 133 00dc 00008DE5 		str	r0, [sp, #0]
- 134 00e0 B41095E5 		ldr	r1, [r5, #180]
- 135 00e4 0230A0E3 		mov	r3, #2
- 136 00e8 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 137 00ec BCC095E5 		ldr	ip, [r5, #188]
- 138              		.loc 1 84 0
- 139 00f0 806085E2 		add	r6, r5, #128
- 140              	.LVL8:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 141              		.loc 1 82 0
- 142 00f4 0410A0E1 		mov	r1, r4
- 143 00f8 0630A0E1 		mov	r3, r6
- 144 00fc 0400A0E3 		mov	r0, #4
- 145 0100 0CC08DE5 		str	ip, [sp, #12]
- 146 0104 FEFFFFEB 		bl	CyU3PDebugPrint
- 147 0108 B80097E5 		ldr	r0, [r7, #184]
- 148 010c 8020D7E5 		ldrb	r2, [r7, #128]	@ zero_extendqisi2
- 149 0110 00008DE5 		str	r0, [sp, #0]
- 150 0114 B41097E5 		ldr	r1, [r7, #180]
- 151 0118 0360A0E3 		mov	r6, #3
- 152 011c 42008DE9 		stmib	sp, {r1, r6}	@ phole stm
- 153 0120 BCC097E5 		ldr	ip, [r7, #188]
- 154              		.loc 1 84 0
- 155 0124 C05085E2 		add	r5, r5, #192
- 156              	.LVL9:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 157              		.loc 1 82 0
- 158 0128 0410A0E1 		mov	r1, r4
- 159 012c 0530A0E1 		mov	r3, r5
- 160 0130 0400A0E3 		mov	r0, #4
- 161 0134 0CC08DE5 		str	ip, [sp, #12]
- 162 0138 FEFFFFEB 		bl	CyU3PDebugPrint
- 163 013c 783095E5 		ldr	r3, [r5, #120]
- 164              		.loc 1 84 0
- 165 0140 C06087E2 		add	r6, r7, #192
- 166              	.LVL10:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 167              		.loc 1 82 0
- 168 0144 4020D5E5 		ldrb	r2, [r5, #64]	@ zero_extendqisi2
- 169 0148 00308DE5 		str	r3, [sp, #0]
- 170 014c 747095E5 		ldr	r7, [r5, #116]
- 171 0150 0450A0E3 		mov	r5, #4
- 172 0154 04708DE5 		str	r7, [sp, #4]
- 173 0158 08508DE5 		str	r5, [sp, #8]
- 174 015c 3CC096E5 		ldr	ip, [r6, #60]
- 175 0160 0410A0E1 		mov	r1, r4
- 176 0164 0630A0E1 		mov	r3, r6
- 177 0168 0500A0E1 		mov	r0, r5
- 178 016c 0CC08DE5 		str	ip, [sp, #12]
- 179 0170 FEFFFFEB 		bl	CyU3PDebugPrint
- 180 0174 780096E5 		ldr	r0, [r6, #120]
- 181 0178 4020D6E5 		ldrb	r2, [r6, #64]	@ zero_extendqisi2
- 182 017c 00008DE5 		str	r0, [sp, #0]
- 183 0180 741096E5 		ldr	r1, [r6, #116]
- 184 0184 0530A0E3 		mov	r3, #5
- 185 0188 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 186 018c 7CC096E5 		ldr	ip, [r6, #124]
- 187              		.loc 1 84 0
- 188 0190 407086E2 		add	r7, r6, #64
- 189              	.LVL11:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 190              		.loc 1 82 0
- 191 0194 0410A0E1 		mov	r1, r4
- 192 0198 0730A0E1 		mov	r3, r7
- 193 019c 0500A0E1 		mov	r0, r5
- 194 01a0 0CC08DE5 		str	ip, [sp, #12]
- 195 01a4 FEFFFFEB 		bl	CyU3PDebugPrint
- 196 01a8 780097E5 		ldr	r0, [r7, #120]
- 197 01ac 4020D7E5 		ldrb	r2, [r7, #64]	@ zero_extendqisi2
- 198 01b0 00008DE5 		str	r0, [sp, #0]
- 199 01b4 741097E5 		ldr	r1, [r7, #116]
- 200 01b8 0630A0E3 		mov	r3, #6
- 201 01bc 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 202 01c0 7CC097E5 		ldr	ip, [r7, #124]
- 203              		.loc 1 84 0
- 204 01c4 806086E2 		add	r6, r6, #128
- 205              	.LVL12:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 206              		.loc 1 82 0
- 207 01c8 0410A0E1 		mov	r1, r4
- 208 01cc 0630A0E1 		mov	r3, r6
- 209 01d0 0500A0E1 		mov	r0, r5
- 210 01d4 0CC08DE5 		str	ip, [sp, #12]
- 211 01d8 FEFFFFEB 		bl	CyU3PDebugPrint
- 212 01dc 780096E5 		ldr	r0, [r6, #120]
- 213 01e0 4020D6E5 		ldrb	r2, [r6, #64]	@ zero_extendqisi2
- 214 01e4 00008DE5 		str	r0, [sp, #0]
- 215 01e8 741096E5 		ldr	r1, [r6, #116]
- 216 01ec 0730A0E3 		mov	r3, #7
- 217 01f0 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 218 01f4 7CC096E5 		ldr	ip, [r6, #124]
- 219              		.loc 1 84 0
- 220 01f8 807087E2 		add	r7, r7, #128
- 221              	.LVL13:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 222              		.loc 1 82 0
- 223 01fc 0410A0E1 		mov	r1, r4
- 224 0200 0730A0E1 		mov	r3, r7
- 225 0204 0500A0E1 		mov	r0, r5
- 226 0208 0CC08DE5 		str	ip, [sp, #12]
- 227 020c FEFFFFEB 		bl	CyU3PDebugPrint
- 228 0210 780097E5 		ldr	r0, [r7, #120]
- 229 0214 4020D7E5 		ldrb	r2, [r7, #64]	@ zero_extendqisi2
- 230 0218 00008DE5 		str	r0, [sp, #0]
- 231 021c 741097E5 		ldr	r1, [r7, #116]
- 232 0220 0830A0E3 		mov	r3, #8
- 233 0224 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 234 0228 7CC097E5 		ldr	ip, [r7, #124]
- 235              		.loc 1 84 0
- 236 022c 806086E2 		add	r6, r6, #128
- 237              	.LVL14:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 238              		.loc 1 82 0
- 239 0230 0410A0E1 		mov	r1, r4
- 240 0234 0630A0E1 		mov	r3, r6
- 241 0238 0500A0E1 		mov	r0, r5
- 242 023c 0CC08DE5 		str	ip, [sp, #12]
- 243 0240 FEFFFFEB 		bl	CyU3PDebugPrint
- 244 0244 780096E5 		ldr	r0, [r6, #120]
- 245 0248 4020D6E5 		ldrb	r2, [r6, #64]	@ zero_extendqisi2
- 246 024c 00008DE5 		str	r0, [sp, #0]
- 247 0250 741096E5 		ldr	r1, [r6, #116]
- 248 0254 0930A0E3 		mov	r3, #9
- 249 0258 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 250 025c 7CC096E5 		ldr	ip, [r6, #124]
- 251              		.loc 1 84 0
- 252 0260 807087E2 		add	r7, r7, #128
- 253              	.LVL15:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 254              		.loc 1 82 0
- 255 0264 0410A0E1 		mov	r1, r4
- 256 0268 0730A0E1 		mov	r3, r7
- 257 026c 0500A0E1 		mov	r0, r5
- 258 0270 0CC08DE5 		str	ip, [sp, #12]
- 259 0274 FEFFFFEB 		bl	CyU3PDebugPrint
- 260 0278 780097E5 		ldr	r0, [r7, #120]
- 261 027c 4020D7E5 		ldrb	r2, [r7, #64]	@ zero_extendqisi2
- 262 0280 00008DE5 		str	r0, [sp, #0]
- 263 0284 741097E5 		ldr	r1, [r7, #116]
- 264 0288 0A30A0E3 		mov	r3, #10
- 265 028c 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 266 0290 7CC097E5 		ldr	ip, [r7, #124]
- 267              		.loc 1 84 0
- 268 0294 806086E2 		add	r6, r6, #128
- 269              	.LVL16:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 270              		.loc 1 82 0
- 271 0298 0410A0E1 		mov	r1, r4
- 272 029c 0630A0E1 		mov	r3, r6
- 273 02a0 0500A0E1 		mov	r0, r5
- 274 02a4 0CC08DE5 		str	ip, [sp, #12]
- 275 02a8 FEFFFFEB 		bl	CyU3PDebugPrint
- 276 02ac 780096E5 		ldr	r0, [r6, #120]
- 277 02b0 4020D6E5 		ldrb	r2, [r6, #64]	@ zero_extendqisi2
- 278 02b4 00008DE5 		str	r0, [sp, #0]
- 279 02b8 741096E5 		ldr	r1, [r6, #116]
- 280 02bc 0B30A0E3 		mov	r3, #11
- 281 02c0 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 282 02c4 7CC096E5 		ldr	ip, [r6, #124]
- 283              		.loc 1 84 0
- 284 02c8 807087E2 		add	r7, r7, #128
- 285              	.LVL17:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 286              		.loc 1 82 0
- 287 02cc 0410A0E1 		mov	r1, r4
- 288 02d0 0730A0E1 		mov	r3, r7
- 289 02d4 0500A0E1 		mov	r0, r5
- 290 02d8 0CC08DE5 		str	ip, [sp, #12]
- 291 02dc FEFFFFEB 		bl	CyU3PDebugPrint
- 292 02e0 780097E5 		ldr	r0, [r7, #120]
- 293 02e4 4020D7E5 		ldrb	r2, [r7, #64]	@ zero_extendqisi2
- 294 02e8 00008DE5 		str	r0, [sp, #0]
- 295 02ec 741097E5 		ldr	r1, [r7, #116]
- 296 02f0 0C30A0E3 		mov	r3, #12
- 297 02f4 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 298 02f8 7CC097E5 		ldr	ip, [r7, #124]
- 299              		.loc 1 84 0
- 300 02fc 806086E2 		add	r6, r6, #128
- 301              	.LVL18:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 302              		.loc 1 82 0
- 303 0300 0410A0E1 		mov	r1, r4
- 304 0304 0630A0E1 		mov	r3, r6
- 305 0308 0500A0E1 		mov	r0, r5
- 306 030c 0CC08DE5 		str	ip, [sp, #12]
- 307 0310 FEFFFFEB 		bl	CyU3PDebugPrint
- 308 0314 780096E5 		ldr	r0, [r6, #120]
- 309 0318 4020D6E5 		ldrb	r2, [r6, #64]	@ zero_extendqisi2
- 310 031c 00008DE5 		str	r0, [sp, #0]
- 311 0320 741096E5 		ldr	r1, [r6, #116]
- 312 0324 0D30A0E3 		mov	r3, #13
- 313 0328 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 314 032c 7CC096E5 		ldr	ip, [r6, #124]
- 315              		.loc 1 84 0
- 316 0330 807087E2 		add	r7, r7, #128
- 317              	.LVL19:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 318              		.loc 1 82 0
- 319 0334 0410A0E1 		mov	r1, r4
- 320 0338 0730A0E1 		mov	r3, r7
- 321 033c 0500A0E1 		mov	r0, r5
- 322 0340 0CC08DE5 		str	ip, [sp, #12]
- 323 0344 FEFFFFEB 		bl	CyU3PDebugPrint
- 324 0348 780097E5 		ldr	r0, [r7, #120]
- 325 034c 4020D7E5 		ldrb	r2, [r7, #64]	@ zero_extendqisi2
- 326 0350 00008DE5 		str	r0, [sp, #0]
- 327 0354 741097E5 		ldr	r1, [r7, #116]
- 328 0358 0E30A0E3 		mov	r3, #14
- 329 035c 0A008DE9 		stmib	sp, {r1, r3}	@ phole stm
- 330 0360 7CC097E5 		ldr	ip, [r7, #124]
- 331              		.loc 1 84 0
- 332 0364 806086E2 		add	r6, r6, #128
- 333              	.LVL20:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 334              		.loc 1 82 0
- 335 0368 0410A0E1 		mov	r1, r4
- 336 036c 0630A0E1 		mov	r3, r6
- 337 0370 0500A0E1 		mov	r0, r5
- 338 0374 0CC08DE5 		str	ip, [sp, #12]
- 339 0378 FEFFFFEB 		bl	CyU3PDebugPrint
- 340              		.loc 1 84 0
- 341 037c 803087E2 		add	r3, r7, #128
- 342              	.LVL21:
-  82:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue check cmdID %d CmdDes 0x%x previous 0x%x next 0x%x Idx %d cmdf
- 343              		.loc 1 82 0
- 344 0380 38C093E5 		ldr	ip, [r3, #56]
- 345 0384 8020D7E5 		ldrb	r2, [r7, #128]	@ zero_extendqisi2
- 346 0388 00C08DE5 		str	ip, [sp, #0]
- 347 038c 340093E5 		ldr	r0, [r3, #52]
- 348 0390 0F10A0E3 		mov	r1, #15
- 349 0394 03008DE9 		stmib	sp, {r0, r1}	@ phole stm
- 350 0398 3CC093E5 		ldr	ip, [r3, #60]
- 351 039c 0500A0E1 		mov	r0, r5
- 352 03a0 0410A0E1 		mov	r1, r4
- 353 03a4 0CC08DE5 		str	ip, [sp, #12]
- 354 03a8 FEFFFFEB 		bl	CyU3PDebugPrint
- 355              	.LVL22:
+ 113              		.loc 1 84 0 discriminator 2
+ 114 00a4 404084E2 		add	r4, r4, #64
+ 115              	.LVL12:
+  81:../cmdqu.c    **** 	for(cmdQuIdx = 0; cmdQuIdx < 0x10/*MAXCMD*/; cmdQuIdx++){
+ 116              		.loc 1 81 0 discriminator 2
+ 117 00a8 F0FFFF1A 		bne	.L6
   85:../cmdqu.c    **** 	}
   86:../cmdqu.c    **** 
   87:../cmdqu.c    **** 	return;
   88:../cmdqu.c    **** }
- 356              		.loc 1 88 0
- 357 03ac 14D08DE2 		add	sp, sp, #20
- 358 03b0 F080BDE8 		ldmfd	sp!, {r4, r5, r6, r7, pc}
- 359              	.L6:
- 360              		.align	2
- 361              	.L5:
- 362 03b4 18000000 		.word	.LC1
- 363 03b8 34000000 		.word	.LC2
- 364 03bc 94000000 		.word	.LC3
- 365              		.cfi_endproc
- 366              	.LFE1:
- 368              		.align	2
- 369              		.global	cmdbufCreate
- 371              	cmdbufCreate:
- 372              	.LFB2:
+ 118              		.loc 1 88 0
+ 119 00ac 14D08DE2 		add	sp, sp, #20
+ 120              		@ sp needed
+ 121 00b0 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
+ 122              	.LVL13:
+ 123              	.L9:
+ 124              		.align	2
+ 125              	.L8:
+ 126 00b4 18000000 		.word	.LC1
+ 127 00b8 34000000 		.word	.LC2
+ 128 00bc 94000000 		.word	.LC3
+ 129              		.cfi_endproc
+ 130              	.LFE1:
+ 132              		.align	2
+ 133              		.global	cmdbufCreate
+ 135              	cmdbufCreate:
+ 136              	.LFB2:
   89:../cmdqu.c    **** 
   90:../cmdqu.c    **** /***** create a command buffer. *******/
   91:../cmdqu.c    **** VdRingBuf  cmdbufCreate(uint16_t size, CyU3PMutex *muxPtr){
- 373              		.loc 1 91 0
- 374              		.cfi_startproc
- 375              		@ args = 0, pretend = 0, frame = 0
- 376              		@ frame_needed = 0, uses_anonymous_args = 0
- 377              	.LVL23:
- 378 03c0 70402DE9 		stmfd	sp!, {r4, r5, r6, lr}
- 379              	.LCFI2:
- 380              		.cfi_def_cfa_offset 16
- 381              		.loc 1 91 0
- 382 03c4 0040A0E1 		mov	r4, r0
- 383              		.cfi_offset 14, -4
- 384              		.cfi_offset 6, -8
- 385              		.cfi_offset 5, -12
- 386              		.cfi_offset 4, -16
+ 137              		.loc 1 91 0
+ 138              		.cfi_startproc
+ 139              		@ args = 0, pretend = 0, frame = 0
+ 140              		@ frame_needed = 0, uses_anonymous_args = 0
+ 141              	.LVL14:
+ 142 00c0 70402DE9 		stmfd	sp!, {r4, r5, r6, lr}
+ 143              	.LCFI2:
+ 144              		.cfi_def_cfa_offset 16
+ 145              		.cfi_offset 4, -16
+ 146              		.cfi_offset 5, -12
+ 147              		.cfi_offset 6, -8
+ 148              		.cfi_offset 14, -4
+ 149              		.loc 1 91 0
+ 150 00c4 0040A0E1 		mov	r4, r0
   92:../cmdqu.c    **** 	VdRingBuf cmdque;
   93:../cmdqu.c    **** 
   94:../cmdqu.c    **** 	cmdque.startAdd = CyU3PMemAlloc(sizeof(VdcmdDes)*(MAXCMD));    //allocate memory for command queue
- 387              		.loc 1 94 0
- 388 03c8 010AA0E3 		mov	r0, #4096
-  91:../cmdqu.c    **** VdRingBuf  cmdbufCreate(uint16_t size, CyU3PMutex *muxPtr){
- 389              		.loc 1 91 0
- 390 03cc 0250A0E1 		mov	r5, r2
- 391              		.loc 1 94 0
- 392 03d0 FEFFFFEB 		bl	CyU3PMemAlloc
- 393              	.LVL24:
+ 151              		.loc 1 94 0
+ 152 00c8 010AA0E3 		mov	r0, #4096
+ 153              	.LVL15:
+  91:../cmdqu.c    **** 	VdRingBuf cmdque;
+ 154              		.loc 1 91 0
+ 155 00cc 0250A0E1 		mov	r5, r2
+ 156              		.loc 1 94 0
+ 157 00d0 FEFFFFEB 		bl	CyU3PMemAlloc
+ 158              	.LVL16:
   95:../cmdqu.c    **** 	cmdque.bugFlag = CyFalse;  // set command queue unavailable.
   96:../cmdqu.c    **** 	cmdque.bufferName = "I2C command queue";
   97:../cmdqu.c    **** 	cmdque.ringbufID = CMDQU0;
@@ -501,125 +258,136 @@
  100:../cmdqu.c    **** 	//cmdque.ringMux = CyU3PMemAlloc(sizeof(CyU3PMutex));
  101:../cmdqu.c    **** 	cmdque.ringMux = muxPtr;
  102:../cmdqu.c    **** 	CyU3PMutexCreate(cmdque.ringMux, CYU3P_NO_INHERIT);
- 394              		.loc 1 102 0
- 395 03d4 0010A0E3 		mov	r1, #0
- 396 03d8 0120A0E1 		mov	r2, r1
- 397 03dc 3830A0E3 		mov	r3, #56
-  94:../cmdqu.c    **** 	cmdque.startAdd = CyU3PMemAlloc(sizeof(VdcmdDes)*(MAXCMD));    //allocate memory for command queue
- 398              		.loc 1 94 0
- 399 03e0 0060A0E1 		mov	r6, r0
- 400              		.loc 1 102 0
- 401 03e4 0500A0E1 		mov	r0, r5
- 402 03e8 FEFFFFEB 		bl	_txe_mutex_create
- 403 03ec 28109FE5 		ldr	r1, .L8
- 404 03f0 0030A0E3 		mov	r3, #0
-  99:../cmdqu.c    **** 	cmdque.endAdd = cmdque.startAdd + MAXCMD;  //the read pointer is initialed one command unit behind
- 405              		.loc 1 99 0
- 406 03f4 010A86E2 		add	r0, r6, #4096
- 407              		.loc 1 102 0
- 408 03f8 4020A0E3 		mov	r2, #64	@ movhi
- 409 03fc 0C0084E5 		str	r0, [r4, #12]
- 410 0400 0030C4E5 		strb	r3, [r4, #0]
- 411 0404 420084E9 		stmib	r4, {r1, r6}	@ phole stm
- 412 0408 B821C4E1 		strh	r2, [r4, #24]	@ movhi
- 413 040c 1A30C4E5 		strb	r3, [r4, #26]
- 414 0410 1C5084E5 		str	r5, [r4, #28]
+ 159              		.loc 1 102 0
+ 160 00d4 0010A0E3 		mov	r1, #0
+ 161 00d8 0120A0E1 		mov	r2, r1
+ 162 00dc 3830A0E3 		mov	r3, #56
+  94:../cmdqu.c    **** 	cmdque.bugFlag = CyFalse;  // set command queue unavailable.
+ 163              		.loc 1 94 0
+ 164 00e0 0060A0E1 		mov	r6, r0
+ 165              	.LVL17:
+ 166              		.loc 1 102 0
+ 167 00e4 0500A0E1 		mov	r0, r5
+ 168              	.LVL18:
+ 169 00e8 FEFFFFEB 		bl	_txe_mutex_create
+ 170              	.LVL19:
  103:../cmdqu.c    **** 	return cmdque;
+ 171              		.loc 1 103 0
+ 172 00ec 2C109FE5 		ldr	r1, .L11
+  99:../cmdqu.c    **** 	//cmdque.ringMux = CyU3PMemAlloc(sizeof(CyU3PMutex));
+ 173              		.loc 1 99 0
+ 174 00f0 010A86E2 		add	r0, r6, #4096
+ 175              	.LVL20:
+ 176              		.loc 1 103 0
+ 177 00f4 0030A0E3 		mov	r3, #0
+ 178 00f8 4020A0E3 		mov	r2, #64
+ 179 00fc 0C0084E5 		str	r0, [r4, #12]
+ 180 0100 086084E5 		str	r6, [r4, #8]
+ 181 0104 1C5084E5 		str	r5, [r4, #28]
+ 182 0108 041084E5 		str	r1, [r4, #4]
+ 183 010c B821C4E1 		strh	r2, [r4, #24]	@ movhi
+ 184 0110 0030C4E5 		strb	r3, [r4]
+ 185 0114 1A30C4E5 		strb	r3, [r4, #26]
  104:../cmdqu.c    **** }
- 415              		.loc 1 104 0
- 416 0414 0400A0E1 		mov	r0, r4
- 417 0418 7080BDE8 		ldmfd	sp!, {r4, r5, r6, pc}
- 418              	.L9:
- 419              		.align	2
- 420              	.L8:
- 421 041c EC000000 		.word	.LC4
- 422              		.cfi_endproc
- 423              	.LFE2:
- 425              		.align	2
- 426              		.global	cmdquInit
- 428              	cmdquInit:
- 429              	.LFB3:
+ 186              		.loc 1 104 0
+ 187 0118 0400A0E1 		mov	r0, r4
+ 188              	.LVL21:
+ 189 011c 7080BDE8 		ldmfd	sp!, {r4, r5, r6, pc}
+ 190              	.L12:
+ 191              		.align	2
+ 192              	.L11:
+ 193 0120 EC000000 		.word	.LC4
+ 194              		.cfi_endproc
+ 195              	.LFE2:
+ 197              		.align	2
+ 198              		.global	cmdquInit
+ 200              	cmdquInit:
+ 201              	.LFB3:
  105:../cmdqu.c    **** 
  106:../cmdqu.c    **** /**** initialize the command queue  *****/
  107:../cmdqu.c    **** void  cmdquInit(VdRingBuf *cmdqu){
- 430              		.loc 1 107 0
- 431              		.cfi_startproc
- 432              		@ args = 0, pretend = 0, frame = 0
- 433              		@ frame_needed = 0, uses_anonymous_args = 0
- 434              	.LVL25:
+ 202              		.loc 1 107 0
+ 203              		.cfi_startproc
+ 204              		@ args = 0, pretend = 0, frame = 0
+ 205              		@ frame_needed = 0, uses_anonymous_args = 0
+ 206              	.LVL22:
  108:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
  109:../cmdqu.c    **** 	VdcmdDes *lcCmdDes;
  110:../cmdqu.c    **** 
  111:../cmdqu.c    **** 	for(lcCmdDes = cmdqu->startAdd; lcCmdDes <= cmdqu->endAdd; lcCmdDes++){
- 435              		.loc 1 111 0
- 436 0420 083090E5 		ldr	r3, [r0, #8]
- 437              	.LVL26:
- 438 0424 0C2090E5 		ldr	r2, [r0, #12]
- 107:../cmdqu.c    **** void  cmdquInit(VdRingBuf *cmdqu){
- 439              		.loc 1 107 0
- 440 0428 10402DE9 		stmfd	sp!, {r4, lr}
- 441              	.LCFI3:
- 442              		.cfi_def_cfa_offset 8
- 443              		.loc 1 111 0
- 444 042c 020053E1 		cmp	r3, r2
- 107:../cmdqu.c    **** void  cmdquInit(VdRingBuf *cmdqu){
- 445              		.loc 1 107 0
- 446 0430 0040A0E1 		mov	r4, r0
- 447              		.cfi_offset 14, -4
- 448              		.cfi_offset 4, -8
- 449              		.loc 1 111 0
- 450 0434 1300008A 		bhi	.L11
- 451 0438 0020A0E3 		mov	r2, #0
+ 207              		.loc 1 111 0
+ 208 0124 083090E5 		ldr	r3, [r0, #8]
+ 209              	.LVL23:
+ 210 0128 0C2090E5 		ldr	r2, [r0, #12]
+ 107:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
+ 211              		.loc 1 107 0
+ 212 012c 10402DE9 		stmfd	sp!, {r4, lr}
+ 213              	.LCFI3:
+ 214              		.cfi_def_cfa_offset 8
+ 215              		.cfi_offset 4, -8
+ 216              		.cfi_offset 14, -4
+ 217              		.loc 1 111 0
+ 218 0130 020053E1 		cmp	r3, r2
+ 107:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
+ 219              		.loc 1 107 0
+ 220 0134 0040A0E1 		mov	r4, r0
+ 221              		.loc 1 111 0
+ 222 0138 1400008A 		bhi	.L14
+ 108:../cmdqu.c    **** 	uint16_t cmdQuIdx = 0;
+ 223              		.loc 1 108 0
+ 224 013c 0020A0E3 		mov	r2, #0
+ 225 0140 403083E2 		add	r3, r3, #64
+ 226              	.LVL24:
  112:../cmdqu.c    **** 		lcCmdDes->CmdID = cmdQuIdx;
  113:../cmdqu.c    **** 		lcCmdDes->cmdFlag = deswait;            //initial the command unavailable
- 452              		.loc 1 113 0
- 453 043c 02E0A0E1 		mov	lr, r2
- 454              	.LVL27:
- 455              	.L12:
- 114:../cmdqu.c    **** 		lcCmdDes->cmdDesNext = cmdqu->startAdd + (uint16_t)((cmdQuIdx + 1)&0x3F);
- 456              		.loc 1 114 0
- 457 0440 010082E2 		add	r0, r2, #1
- 458 0444 0018A0E1 		mov	r1, r0, asl #16
+ 227              		.loc 1 113 0
+ 228 0144 02E0A0E1 		mov	lr, r2
+ 229              	.LVL25:
+ 230              	.L16:
  112:../cmdqu.c    **** 		lcCmdDes->CmdID = cmdQuIdx;
- 459              		.loc 1 112 0
- 460 0448 0020C3E5 		strb	r2, [r3, #0]
- 461              		.loc 1 114 0
- 462 044c 2128A0E1 		mov	r2, r1, lsr #16
- 463 0450 081094E5 		ldr	r1, [r4, #8]
+ 231              		.loc 1 112 0
+ 232 0148 402043E5 		strb	r2, [r3, #-64]
+ 233              		.loc 1 113 0
+ 234 014c 04E003E5 		str	lr, [r3, #-4]
+ 114:../cmdqu.c    **** 		lcCmdDes->cmdDesNext = cmdqu->startAdd + (uint16_t)((cmdQuIdx + 1)&0x3F);
+ 235              		.loc 1 114 0
+ 236 0150 011082E2 		add	r1, r2, #1
+ 237 0154 08C094E5 		ldr	ip, [r4, #8]
+ 238 0158 0118A0E1 		mov	r1, r1, asl #16
+ 239 015c 012042E2 		sub	r2, r2, #1
+ 240              	.LVL26:
  115:../cmdqu.c    **** 		lcCmdDes->cmdDesPrevious = cmdqu->startAdd + (uint16_t)((cmdQuIdx - 1)&0x3F);
- 464              		.loc 1 115 0
- 465 0454 02C042E2 		sub	ip, r2, #2
+ 241              		.loc 1 115 0
+ 242 0160 3F2002E2 		and	r2, r2, #63
+ 243              	.LVL27:
  114:../cmdqu.c    **** 		lcCmdDes->cmdDesNext = cmdqu->startAdd + (uint16_t)((cmdQuIdx + 1)&0x3F);
- 466              		.loc 1 114 0
- 467 0458 3F0002E2 		and	r0, r2, #63
- 468              		.loc 1 115 0
- 469 045c 3FC00CE2 		and	ip, ip, #63
+ 244              		.loc 1 114 0
+ 245 0164 3F0801E2 		and	r0, r1, #4128768
+ 246 0168 20058CE0 		add	r0, ip, r0, lsr #10
+ 247              		.loc 1 115 0
+ 248 016c 02C38CE0 		add	ip, ip, r2, asl #6
  114:../cmdqu.c    **** 		lcCmdDes->cmdDesNext = cmdqu->startAdd + (uint16_t)((cmdQuIdx + 1)&0x3F);
- 470              		.loc 1 114 0
- 471 0460 000381E0 		add	r0, r1, r0, asl #6
- 472              		.loc 1 115 0
- 473 0464 0CC381E0 		add	ip, r1, ip, asl #6
+ 249              		.loc 1 114 0
+ 250 0170 0C0003E5 		str	r0, [r3, #-12]
+ 251              		.loc 1 115 0
+ 252 0174 08C003E5 		str	ip, [r3, #-8]
+ 253              	.LVL28:
+ 111:../cmdqu.c    **** 		lcCmdDes->CmdID = cmdQuIdx;
+ 254              		.loc 1 111 0
+ 255 0178 0C0094E5 		ldr	r0, [r4, #12]
  114:../cmdqu.c    **** 		lcCmdDes->cmdDesNext = cmdqu->startAdd + (uint16_t)((cmdQuIdx + 1)&0x3F);
- 474              		.loc 1 114 0
- 475 0468 340083E5 		str	r0, [r3, #52]
- 476              		.loc 1 115 0
- 477 046c 38C083E5 		str	ip, [r3, #56]
- 478              	.LVL28:
- 111:../cmdqu.c    **** 	for(lcCmdDes = cmdqu->startAdd; lcCmdDes <= cmdqu->endAdd; lcCmdDes++){
- 479              		.loc 1 111 0
- 480 0470 0C1094E5 		ldr	r1, [r4, #12]
- 113:../cmdqu.c    **** 		lcCmdDes->cmdFlag = deswait;            //initial the command unavailable
- 481              		.loc 1 113 0
- 482 0474 3CE083E5 		str	lr, [r3, #60]
- 111:../cmdqu.c    **** 	for(lcCmdDes = cmdqu->startAdd; lcCmdDes <= cmdqu->endAdd; lcCmdDes++){
- 483              		.loc 1 111 0
- 484 0478 403083E2 		add	r3, r3, #64
- 485              	.LVL29:
- 486 047c 030051E1 		cmp	r1, r3
- 487 0480 EEFFFF2A 		bcs	.L12
- 488 0484 083094E5 		ldr	r3, [r4, #8]
- 489              	.LVL30:
- 490              	.L11:
+ 256              		.loc 1 114 0
+ 257 017c 2128A0E1 		mov	r2, r1, lsr #16
+ 258              	.LVL29:
+ 111:../cmdqu.c    **** 		lcCmdDes->CmdID = cmdQuIdx;
+ 259              		.loc 1 111 0
+ 260 0180 030050E1 		cmp	r0, r3
+ 261 0184 403083E2 		add	r3, r3, #64
+ 262              	.LVL30:
+ 263 0188 EEFFFF2A 		bcs	.L16
+ 264 018c 083094E5 		ldr	r3, [r4, #8]
+ 265              	.LVL31:
+ 266              	.L14:
  116:../cmdqu.c    **** 		if(0/*!cmdQuIdx debug*/) 		CyU3PDebugPrint (4, "Command Queue init 0 cmdID %d CmdDes 0x%x previou
  117:../cmdqu.c    **** 				lcCmdDes->CmdID, lcCmdDes,	lcCmdDes->cmdDesPrevious, lcCmdDes->cmdDesNext, 0, lcCmdDes->cmdFlag
  118:../cmdqu.c    **** 		cmdQuIdx ++;
@@ -633,27 +401,36 @@
  126:../cmdqu.c    **** 			cmdqu->startAdd, cmdqu->startAdd->cmdDesNext, cmdqu->startAdd->cmdDesPrevious);
  127:../cmdqu.c    **** #endif
  128:../cmdqu.c    **** 	cmdqu->readPtr = cmdqu->startAdd;
- 491              		.loc 1 128 0
- 492 0488 103084E5 		str	r3, [r4, #16]
+ 267              		.loc 1 128 0
+ 268 0190 103084E5 		str	r3, [r4, #16]
  129:../cmdqu.c    **** 	CyU3PThreadSleep(10);
- 493              		.loc 1 129 0
- 494 048c 0A00A0E3 		mov	r0, #10
- 495 0490 FEFFFFEB 		bl	_tx_thread_sleep
+ 269              		.loc 1 129 0
+ 270 0194 0A00A0E3 		mov	r0, #10
+ 271 0198 FEFFFFEB 		bl	_tx_thread_sleep
+ 272              	.LVL32:
  130:../cmdqu.c    **** 	cmdqu->writePtr = cmdqu->readPtr;
- 496              		.loc 1 130 0
- 497 0494 102094E5 		ldr	r2, [r4, #16]
+ 273              		.loc 1 130 0
+ 274 019c 103094E5 		ldr	r3, [r4, #16]
  131:../cmdqu.c    **** 	CyU3PThreadSleep(10);
- 498              		.loc 1 131 0
- 499 0498 0A00A0E3 		mov	r0, #10
+ 275              		.loc 1 131 0
+ 276 01a0 0A00A0E3 		mov	r0, #10
  130:../cmdqu.c    **** 	cmdqu->writePtr = cmdqu->readPtr;
- 500              		.loc 1 130 0
- 501 049c 142084E5 		str	r2, [r4, #20]
- 502              		.loc 1 131 0
- 503 04a0 FEFFFFEB 		bl	_tx_thread_sleep
+ 277              		.loc 1 130 0
+ 278 01a4 143084E5 		str	r3, [r4, #20]
+ 279              		.loc 1 131 0
+ 280 01a8 FEFFFFEB 		bl	_tx_thread_sleep
+ 281              	.LVL33:
  132:../cmdqu.c    **** 	cmdqu->bugFlag = (uint8_t)CyTrue; //command queue available.
- 504              		.loc 1 132 0
- 505 04a4 0130A0E3 		mov	r3, #1
- 506 04a8 1A30C4E5 		strb	r3, [r4, #26]
+ 282              		.loc 1 132 0
+ 283 01ac 0130A0E3 		mov	r3, #1
+ 284 01b0 1A30C4E5 		strb	r3, [r4, #26]
+ 285 01b4 1080BDE8 		ldmfd	sp!, {r4, pc}
+ 286              		.cfi_endproc
+ 287              	.LFE3:
+ 289              		.align	2
+ 290              		.global	cmdbufDestroy
+ 292              	cmdbufDestroy:
+ 293              	.LFB4:
  133:../cmdqu.c    **** #ifdef USB_DEBUG_PRINT
  134:../cmdqu.c    **** 	CyU3PDebugPrint (4, "send a I2C command(12) readptr 0x%x next 0x%x previous 0x%x local 0x%x\r\n",
  135:../cmdqu.c    **** 				cmdqu->readPtr, cmdqu->readPtr->cmdDesNext, cmdqu->readPtr->cmdDesPrevious, lcCmdDes);
@@ -664,139 +441,131 @@
  140:../cmdqu.c    **** #endif
  141:../cmdqu.c    **** 	return;
  142:../cmdqu.c    **** }
- 507              		.loc 1 142 0
- 508 04ac 1080BDE8 		ldmfd	sp!, {r4, pc}
- 509              		.cfi_endproc
- 510              	.LFE3:
- 512              		.align	2
- 513              		.global	cmdbufDestroy
- 515              	cmdbufDestroy:
- 516              	.LFB4:
  143:../cmdqu.c    **** 
  144:../cmdqu.c    **** CyBool_t  cmdbufDestroy(VdRingBuf *cmdqu){
- 517              		.loc 1 144 0
- 518              		.cfi_startproc
- 519              		@ args = 0, pretend = 0, frame = 0
- 520              		@ frame_needed = 0, uses_anonymous_args = 0
- 521              		@ link register save eliminated.
- 522              	.LVL31:
+ 294              		.loc 1 144 0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 0
+ 297              		@ frame_needed = 0, uses_anonymous_args = 0
+ 298              		@ link register save eliminated.
+ 299              	.LVL34:
  145:../cmdqu.c    **** 	;  //na
  146:../cmdqu.c    **** 	return CyTrue;
  147:../cmdqu.c    **** }
- 523              		.loc 1 147 0
- 524 04b0 0100A0E3 		mov	r0, #1
- 525              	.LVL32:
- 526 04b4 1EFF2FE1 		bx	lr
- 527              		.cfi_endproc
- 528              	.LFE4:
- 530              		.align	2
- 531              		.global	cmdSet
- 533              	cmdSet:
- 534              	.LFB5:
+ 300              		.loc 1 147 0
+ 301 01b8 0100A0E3 		mov	r0, #1
+ 302              	.LVL35:
+ 303 01bc 1EFF2FE1 		bx	lr
+ 304              		.cfi_endproc
+ 305              	.LFE4:
+ 307              		.align	2
+ 308              		.global	cmdSet
+ 310              	cmdSet:
+ 311              	.LFB5:
  148:../cmdqu.c    **** 
  149:../cmdqu.c    **** /******* set a command into command queue based on the command ID *******/
  150:../cmdqu.c    **** CyBool_t  cmdSet(VdRingBuf *cmdqu, uint8_t cmdID, uint8_t RegAdd, uint8_t DevAdd, uint8_t Data, uin
- 535              		.loc 1 150 0
- 536              		.cfi_startproc
- 537              		@ args = 8, pretend = 0, frame = 0
- 538              		@ frame_needed = 0, uses_anonymous_args = 0
- 539              	.LVL33:
+ 312              		.loc 1 150 0
+ 313              		.cfi_startproc
+ 314              		@ args = 8, pretend = 0, frame = 0
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316              	.LVL36:
+ 317 01c0 70402DE9 		stmfd	sp!, {r4, r5, r6, lr}
+ 318              	.LCFI4:
+ 319              		.cfi_def_cfa_offset 16
+ 320              		.cfi_offset 4, -16
+ 321              		.cfi_offset 5, -12
+ 322              		.cfi_offset 6, -8
+ 323              		.cfi_offset 14, -4
  151:../cmdqu.c    **** 	VdcmdDes *lcCmdDes;
  152:../cmdqu.c    **** 
  153:../cmdqu.c    **** 	lcCmdDes = cmdqu->startAdd; //get a command descriptor
- 540              		.loc 1 153 0
- 541 04b8 080090E5 		ldr	r0, [r0, #8]
- 542              	.LVL34:
- 150:../cmdqu.c    **** CyBool_t  cmdSet(VdRingBuf *cmdqu, uint8_t cmdID, uint8_t RegAdd, uint8_t DevAdd, uint8_t Data, uin
- 543              		.loc 1 150 0
- 544 04bc F0402DE9 		stmfd	sp!, {r4, r5, r6, r7, lr}
- 545              	.LCFI4:
- 546              		.cfi_def_cfa_offset 20
+ 324              		.loc 1 153 0
+ 325 01c4 084090E5 		ldr	r4, [r0, #8]
+ 326              	.LVL37:
+ 150:../cmdqu.c    **** 	VdcmdDes *lcCmdDes;
+ 327              		.loc 1 150 0
+ 328 01c8 10D04DE2 		sub	sp, sp, #16
+ 329              	.LCFI5:
+ 330              		.cfi_def_cfa_offset 32
  154:../cmdqu.c    **** 	lcCmdDes = lcCmdDes + cmdID;
- 547              		.loc 1 154 0
- 548 04c0 01C380E0 		add	ip, r0, r1, asl #6
- 549              	.LVL35:
+ 331              		.loc 1 154 0
+ 332 01cc 010384E0 		add	r0, r4, r1, asl #6
+ 333              	.LVL38:
  155:../cmdqu.c    **** 	if(lcCmdDes->cmdFlag != desusing){
- 550              		.loc 1 155 0
- 551 04c4 3C409CE5 		ldr	r4, [ip, #60]
- 552              		.cfi_offset 14, -4
- 553              		.cfi_offset 7, -8
- 554              		.cfi_offset 6, -12
- 555              		.cfi_offset 5, -16
- 556              		.cfi_offset 4, -20
- 150:../cmdqu.c    **** CyBool_t  cmdSet(VdRingBuf *cmdqu, uint8_t cmdID, uint8_t RegAdd, uint8_t DevAdd, uint8_t Data, uin
- 557              		.loc 1 150 0
- 558 04c8 14D04DE2 		sub	sp, sp, #20
- 559              	.LCFI5:
- 560              		.cfi_def_cfa_offset 40
- 561              		.loc 1 155 0
- 562 04cc 0F0054E3 		cmp	r4, #15
- 150:../cmdqu.c    **** CyBool_t  cmdSet(VdRingBuf *cmdqu, uint8_t cmdID, uint8_t RegAdd, uint8_t DevAdd, uint8_t Data, uin
- 563              		.loc 1 150 0
- 564 04d0 2850DDE5 		ldrb	r5, [sp, #40]	@ zero_extendqisi2
- 565 04d4 2C40DDE5 		ldrb	r4, [sp, #44]	@ zero_extendqisi2
- 566              		.loc 1 155 0
- 567 04d8 1600000A 		beq	.L17
+ 334              		.loc 1 155 0
+ 335 01d0 3CC090E5 		ldr	ip, [r0, #60]
+ 154:../cmdqu.c    **** 	lcCmdDes = lcCmdDes + cmdID;
+ 336              		.loc 1 154 0
+ 337 01d4 0150A0E1 		mov	r5, r1
+ 338              		.loc 1 155 0
+ 339 01d8 0F005CE3 		cmp	ip, #15
+ 150:../cmdqu.c    **** 	VdcmdDes *lcCmdDes;
+ 340              		.loc 1 150 0
+ 341 01dc 2060DDE5 		ldrb	r6, [sp, #32]	@ zero_extendqisi2
+ 342 01e0 24C0DDE5 		ldrb	ip, [sp, #36]	@ zero_extendqisi2
+ 343              		.loc 1 155 0
+ 344 01e4 1600000A 		beq	.L20
  156:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->DevAdd = DevAdd;
- 568              		.loc 1 156 0
- 569 04dc 847084E0 		add	r7, r4, r4, asl #1
- 570 04e0 87708CE0 		add	r7, ip, r7, asl #1
- 571 04e4 0530C7E5 		strb	r3, [r7, #5]
  157:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->RegAdd = RegAdd;
  158:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->Data = Data;
  159:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->DelayT = DelayArray[cmdID];
- 572              		.loc 1 159 0
- 573 04e8 54309FE5 		ldr	r3, .L18
- 574              	.LVL36:
- 157:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->RegAdd = RegAdd;
- 575              		.loc 1 157 0
- 576 04ec 0420C7E5 		strb	r2, [r7, #4]
- 158:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->Data = Data;
- 577              		.loc 1 158 0
- 578 04f0 0650C7E5 		strb	r5, [r7, #6]
+ 345              		.loc 1 159 0
+ 346 01e8 60E09FE5 		ldr	lr, .L24
+ 347 01ec 8110A0E1 		mov	r1, r1, asl #1
+ 348              	.LVL39:
+ 349 01f0 B1E09EE1 		ldrh	lr, [lr, r1]
+ 350 01f4 8C108CE0 		add	r1, ip, ip, asl #1
+ 351 01f8 811080E0 		add	r1, r0, r1, asl #1
+ 156:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->DevAdd = DevAdd;
+ 352              		.loc 1 156 0
+ 353 01fc 0530C1E5 		strb	r3, [r1, #5]
+ 354              		.loc 1 159 0
+ 355 0200 B8E0C1E1 		strh	lr, [r1, #8]	@ movhi
+ 157:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->Data = Data;
+ 356              		.loc 1 157 0
+ 357 0204 0420C1E5 		strb	r2, [r1, #4]
+ 158:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->DelayT = DelayArray[cmdID];
+ 358              		.loc 1 158 0
+ 359 0208 0660C1E5 		strb	r6, [r1, #6]
  160:../cmdqu.c    **** 		lcCmdDes->NumPara = dataIdx;
  161:../cmdqu.c    **** 		lcCmdDes->curNum = 0;
  162:../cmdqu.c    **** 		lcCmdDes->cmdFlag = desReady;
  163:../cmdqu.c    **** //#ifdef USB_DEBUG_PRINT
  164:../cmdqu.c    **** 		CyU3PDebugPrint (4, "Command Queue set cmdID %d CmdDes 0x%x next 0x%x cmdflag %d dataIdx %d data 
- 579              		.loc 1 164 0
- 580 04f4 0123D0E7 		ldrb	r2, [r0, r1, asl #6]	@ zero_extendqisi2
- 581              	.LVL37:
- 159:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->DelayT = DelayArray[cmdID];
- 582              		.loc 1 159 0
- 583 04f8 8100A0E1 		mov	r0, r1, asl #1
- 584 04fc B01093E1 		ldrh	r1, [r3, r0]
- 585              	.LVL38:
- 586              		.loc 1 164 0
- 587 0500 34609CE5 		ldr	r6, [ip, #52]
- 162:../cmdqu.c    **** 		lcCmdDes->cmdFlag = desReady;
- 588              		.loc 1 162 0
- 589 0504 FFE0A0E3 		mov	lr, #255
- 161:../cmdqu.c    **** 		lcCmdDes->curNum = 0;
- 590              		.loc 1 161 0
- 591 0508 0030A0E3 		mov	r3, #0
- 159:../cmdqu.c    **** 		((lcCmdDes->CmdPar)+dataIdx)->DelayT = DelayArray[cmdID];
- 592              		.loc 1 159 0
- 593 050c B810C7E1 		strh	r1, [r7, #8]	@ movhi
- 161:../cmdqu.c    **** 		lcCmdDes->curNum = 0;
- 594              		.loc 1 161 0
- 595 0510 0130CCE5 		strb	r3, [ip, #1]
+ 360              		.loc 1 164 0
+ 361 020c 34E090E5 		ldr	lr, [r0, #52]
+ 162:../cmdqu.c    **** //#ifdef USB_DEBUG_PRINT
+ 362              		.loc 1 162 0
+ 363 0210 FF10A0E3 		mov	r1, #255
+ 161:../cmdqu.c    **** 		lcCmdDes->cmdFlag = desReady;
+ 364              		.loc 1 161 0
+ 365 0214 0030A0E3 		mov	r3, #0
+ 366              	.LVL40:
+ 367              		.loc 1 164 0
+ 368 0218 0523D4E7 		ldrb	r2, [r4, r5, asl #6]	@ zero_extendqisi2
+ 369              	.LVL41:
+ 161:../cmdqu.c    **** 		lcCmdDes->cmdFlag = desReady;
+ 370              		.loc 1 161 0
+ 371 021c 0130C0E5 		strb	r3, [r0, #1]
+ 372              	.LVL42:
+ 162:../cmdqu.c    **** //#ifdef USB_DEBUG_PRINT
+ 373              		.loc 1 162 0
+ 374 0220 3C1080E5 		str	r1, [r0, #60]
  160:../cmdqu.c    **** 		lcCmdDes->NumPara = dataIdx;
- 596              		.loc 1 160 0
- 597 0514 0240CCE5 		strb	r4, [ip, #2]
- 162:../cmdqu.c    **** 		lcCmdDes->cmdFlag = desReady;
- 598              		.loc 1 162 0
- 599 0518 3CE08CE5 		str	lr, [ip, #60]
- 600              		.loc 1 164 0
- 601 051c 0400A0E3 		mov	r0, #4
- 602 0520 20109FE5 		ldr	r1, .L18+4
- 603 0524 0C30A0E1 		mov	r3, ip
- 604 0528 40408DE8 		stmia	sp, {r6, lr}	@ phole stm
- 605 052c 08408DE5 		str	r4, [sp, #8]
- 606 0530 0C508DE5 		str	r5, [sp, #12]
- 607 0534 FEFFFFEB 		bl	CyU3PDebugPrint
- 608              	.LVL39:
- 609              	.L17:
+ 375              		.loc 1 160 0
+ 376 0224 02C0C0E5 		strb	ip, [r0, #2]
+ 377              		.loc 1 164 0
+ 378 0228 0030A0E1 		mov	r3, r0
+ 379 022c 02108DE9 		stmib	sp, {r1, ip}
+ 380 0230 1C109FE5 		ldr	r1, .L24+4
+ 381 0234 00E08DE5 		str	lr, [sp]
+ 382 0238 0C608DE5 		str	r6, [sp, #12]
+ 383 023c 0400A0E3 		mov	r0, #4
+ 384              	.LVL43:
+ 385 0240 FEFFFFEB 		bl	CyU3PDebugPrint
+ 386              	.LVL44:
+ 387              	.L20:
  165:../cmdqu.c    **** 					lcCmdDes->CmdID, lcCmdDes,	lcCmdDes->cmdDesNext, lcCmdDes->cmdFlag, dataIdx, Data);
  166:../cmdqu.c    **** //#endif
  167:../cmdqu.c    **** 	}else{
@@ -807,21 +576,23 @@
  172:../cmdqu.c    **** 	}
  173:../cmdqu.c    **** 	return CyTrue;
  174:../cmdqu.c    **** }
- 610              		.loc 1 174 0
- 611 0538 0100A0E3 		mov	r0, #1
- 612 053c 14D08DE2 		add	sp, sp, #20
- 613 0540 F080BDE8 		ldmfd	sp!, {r4, r5, r6, r7, pc}
- 614              	.L19:
- 615              		.align	2
- 616              	.L18:
- 617 0544 00000000 		.word	.LANCHOR0
- 618 0548 00010000 		.word	.LC5
- 619              		.cfi_endproc
- 620              	.LFE5:
- 622              		.align	2
- 623              		.global	statGet
- 625              	statGet:
- 626              	.LFB6:
+ 388              		.loc 1 174 0
+ 389 0244 0100A0E3 		mov	r0, #1
+ 390 0248 10D08DE2 		add	sp, sp, #16
+ 391              		@ sp needed
+ 392 024c 7080BDE8 		ldmfd	sp!, {r4, r5, r6, pc}
+ 393              	.LVL45:
+ 394              	.L25:
+ 395              		.align	2
+ 396              	.L24:
+ 397 0250 00000000 		.word	.LANCHOR0
+ 398 0254 00010000 		.word	.LC5
+ 399              		.cfi_endproc
+ 400              	.LFE5:
+ 402              		.align	2
+ 403              		.global	statGet
+ 405              	statGet:
+ 406              	.LFB6:
  175:../cmdqu.c    **** 
  176:../cmdqu.c    **** #if 0 // alternate putting queue approach
  177:../cmdqu.c    **** /******* set a command into command queue based on write pointer *******/
@@ -893,34 +664,34 @@
  243:../cmdqu.c    ****  * it might be unused, if state request performs immediately
  244:../cmdqu.c    ****  *****/
  245:../cmdqu.c    **** void statGet(VdRingBuf *statqu, uint8_t statID){
- 627              		.loc 1 245 0
- 628              		.cfi_startproc
- 629              		@ args = 0, pretend = 0, frame = 0
- 630              		@ frame_needed = 0, uses_anonymous_args = 0
- 631              		@ link register save eliminated.
- 632              	.LVL40:
+ 407              		.loc 1 245 0
+ 408              		.cfi_startproc
+ 409              		@ args = 0, pretend = 0, frame = 0
+ 410              		@ frame_needed = 0, uses_anonymous_args = 0
+ 411              		@ link register save eliminated.
+ 412              	.LVL46:
  246:../cmdqu.c    **** #if 1 // copy
  247:../cmdqu.c    **** 	VdstateDes *lcStatDes;
  248:../cmdqu.c    **** 	uint8_t Data0, Data1;
  249:../cmdqu.c    **** 	uint8_t sendData[2];
  250:../cmdqu.c    **** 
  251:../cmdqu.c    **** 	lcStatDes = (VdstateDes*)((statqu->startAdd) + statID);//get a state descriptor, and find any avai
- 633              		.loc 1 251 0
- 634 054c 083090E5 		ldr	r3, [r0, #8]
- 635 0550 013383E0 		add	r3, r3, r1, asl #6
- 636              	.LVL41:
+ 413              		.loc 1 251 0
+ 414 0258 083090E5 		ldr	r3, [r0, #8]
+ 415 025c 013383E0 		add	r3, r3, r1, asl #6
+ 416              	.LVL47:
  252:../cmdqu.c    **** 
  253:../cmdqu.c    **** 	if(lcStatDes->statFlag == 0x0F){//statFlag: 0x00:noCom; 0xFF:cmdready; 0x0F:state ready.
- 637              		.loc 1 253 0
- 638 0554 3C2093E5 		ldr	r2, [r3, #60]
- 639 0558 0F0052E3 		cmp	r2, #15
- 640 055c 1EFF2F11 		bxne	lr
+ 417              		.loc 1 253 0
+ 418 0260 3C2093E5 		ldr	r2, [r3, #60]
+ 419 0264 0F0052E3 		cmp	r2, #15
+ 420 0268 1EFF2F11 		bxne	lr
  254:../cmdqu.c    **** 		switch(statID){
- 641              		.loc 1 254 0
- 642 0560 010051E3 		cmp	r1, #1
- 643 0564 0E00000A 		beq	.L23
- 644 0568 050051E3 		cmp	r1, #5
- 645 056c 0700000A 		beq	.L29
+ 421              		.loc 1 254 0
+ 422 026c 010051E3 		cmp	r1, #1
+ 423 0270 1000000A 		beq	.L29
+ 424 0274 050051E3 		cmp	r1, #5
+ 425 0278 0700000A 		beq	.L30
  255:../cmdqu.c    **** 			case BrgtCtlID1:
  256:../cmdqu.c    **** 					Data0 = lcStatDes->staPar->Data;
  257:../cmdqu.c    **** 					Data1 = ((lcStatDes->staPar)+1)->Data;
@@ -943,26 +714,92 @@
  274:../cmdqu.c    **** 				//case WBTLevCtlID10:
  275:../cmdqu.c    **** 				default:
  276:../cmdqu.c    **** 					glEp0Buffer[0] = lcStatDes->staPar->Data;
- 646              		.loc 1 276 0
- 647 0570 68C09FE5 		ldr	ip, .L30
- 648 0574 0600D3E5 		ldrb	r0, [r3, #6]	@ zero_extendqisi2
- 649              	.LVL42:
+ 426              		.loc 1 276 0
+ 427 027c 0610D3E5 		ldrb	r1, [r3, #6]	@ zero_extendqisi2
+ 428              	.LVL48:
+ 429              	.L35:
+ 430 0280 58309FE5 		ldr	r3, .L36
  277:../cmdqu.c    **** 					glEp0Buffer[1] = 0;
- 650              		.loc 1 277 0
- 651 0578 0020A0E3 		mov	r2, #0
- 276:../cmdqu.c    **** 					glEp0Buffer[0] = lcStatDes->staPar->Data;
- 652              		.loc 1 276 0
- 653 057c 0000CCE5 		strb	r0, [ip, #0]
- 654              		.loc 1 277 0
- 655 0580 0120CCE5 		strb	r2, [ip, #1]
- 656              	.LVL43:
- 657              	.L27:
+ 431              		.loc 1 277 0
+ 432 0284 0020A0E3 		mov	r2, #0
+ 276:../cmdqu.c    **** 					glEp0Buffer[1] = 0;
+ 433              		.loc 1 276 0
+ 434 0288 0010C3E5 		strb	r1, [r3]
  278:../cmdqu.c    **** 					break;
  279:../cmdqu.c    **** 			 }
  280:../cmdqu.c    **** 			  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
- 658              		.loc 1 280 0
- 659 0584 54109FE5 		ldr	r1, .L30
- 660 0588 0200A0E3 		mov	r0, #2
+ 435              		.loc 1 280 0
+ 436 028c 0200A0E3 		mov	r0, #2
+ 437              	.LVL49:
+ 438 0290 48109FE5 		ldr	r1, .L36
+ 277:../cmdqu.c    **** 					break;
+ 439              		.loc 1 277 0
+ 440 0294 0120C3E5 		strb	r2, [r3, #1]
+ 441              		.loc 1 280 0
+ 442 0298 FEFFFFEA 		b	CyU3PUsbSendEP0Data
+ 443              	.LVL50:
+ 444              	.L30:
+ 270:../cmdqu.c    **** 					sendData[1] = 0;
+ 445              		.loc 1 270 0
+ 446 029c 0620D3E5 		ldrb	r2, [r3, #6]	@ zero_extendqisi2
+ 447 02a0 38309FE5 		ldr	r3, .L36
+ 448              	.LVL51:
+ 449 02a4 802042E2 		sub	r2, r2, #128
+ 450              		.loc 1 280 0
+ 451 02a8 0200A0E3 		mov	r0, #2
+ 452              	.LVL52:
+ 453 02ac 2C109FE5 		ldr	r1, .L36
+ 454              	.LVL53:
+ 270:../cmdqu.c    **** 					sendData[1] = 0;
+ 455              		.loc 1 270 0
+ 456 02b0 0020C3E5 		strb	r2, [r3]
+ 457              	.LVL54:
+ 458              		.loc 1 280 0
+ 459 02b4 FEFFFFEA 		b	CyU3PUsbSendEP0Data
+ 460              	.LVL55:
+ 461              	.L29:
+ 257:../cmdqu.c    **** 					//CtrlParArry[CtrlID][13] = Data0;
+ 462              		.loc 1 257 0
+ 463 02b8 0C20D3E5 		ldrb	r2, [r3, #12]	@ zero_extendqisi2
+ 256:../cmdqu.c    **** 					Data1 = ((lcStatDes->staPar)+1)->Data;
+ 464              		.loc 1 256 0
+ 465 02bc 0630D3E5 		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 466              	.LVL56:
+ 261:../cmdqu.c    **** 					}else{
+ 467              		.loc 1 261 0
+ 468 02c0 0213A0E1 		mov	r1, r2, asl #6
+ 469              	.LVL57:
+ 260:../cmdqu.c    **** 						Data1 = ((Data1<<6)&0x40)| (Data0 >> 2);//clear MSB
+ 470              		.loc 1 260 0
+ 471 02c4 020012E3 		tst	r2, #2
+ 263:../cmdqu.c    **** 					}
+ 472              		.loc 1 263 0
+ 473 02c8 FF100102 		andeq	r1, r1, #255
+ 261:../cmdqu.c    **** 					}else{
+ 474              		.loc 1 261 0
+ 475 02cc 40100112 		andne	r1, r1, #64
+ 263:../cmdqu.c    **** 					}
+ 476              		.loc 1 263 0
+ 477 02d0 23118101 		orreq	r1, r1, r3, lsr #2
+ 261:../cmdqu.c    **** 					}else{
+ 478              		.loc 1 261 0
+ 479 02d4 23118111 		orrne	r1, r1, r3, lsr #2
+ 480              	.LVL58:
+ 263:../cmdqu.c    **** 					}
+ 481              		.loc 1 263 0
+ 482 02d8 80108103 		orreq	r1, r1, #128
+ 483              	.LVL59:
+ 484 02dc E7FFFFEA 		b	.L35
+ 485              	.L37:
+ 486              		.align	2
+ 487              	.L36:
+ 488 02e0 00000000 		.word	.LANCHOR1
+ 489              		.cfi_endproc
+ 490              	.LFE6:
+ 492              		.align	2
+ 493              		.global	cmdFind
+ 495              	cmdFind:
+ 496              	.LFB7:
  281:../cmdqu.c    **** #ifdef USB_DEBUG_PRINT
  282:../cmdqu.c    **** 			  CyU3PDebugPrint (4, "Command Queue init 0 cmdID %d CmdDes 0x%x previous 0x%x next 0x%x qunext 
  283:../cmdqu.c    **** 					  lcStatDes->StatID, lcStatDes, lcStatDes->staDesPrevious, lcStatDes->staDesNext, statqu->writ
@@ -972,254 +809,182 @@
  287:../cmdqu.c    **** #endif
  288:../cmdqu.c    **** 	return;
  289:../cmdqu.c    **** }
- 661              		.loc 1 289 0
- 280:../cmdqu.c    **** 			  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
- 662              		.loc 1 280 0
- 663 058c FEFFFFEA 		b	CyU3PUsbSendEP0Data
- 664              	.LVL44:
- 665              	.L29:
- 270:../cmdqu.c    **** 					glEp0Buffer[0] = Data0 + GREEN_BASE;
- 666              		.loc 1 270 0
- 667 0590 0610D3E5 		ldrb	r1, [r3, #6]	@ zero_extendqisi2
- 668              	.LVL45:
- 669 0594 44309FE5 		ldr	r3, .L30
- 670              	.LVL46:
- 671 0598 800041E2 		sub	r0, r1, #128
- 672              	.LVL47:
- 673 059c 0000C3E5 		strb	r0, [r3, #0]
- 272:../cmdqu.c    **** 					break;
- 674              		.loc 1 272 0
- 675 05a0 F7FFFFEA 		b	.L27
- 676              	.LVL48:
- 677              	.L23:
- 260:../cmdqu.c    **** 					if (Data1&0x2){ //check the sign bit (bit1)
- 678              		.loc 1 260 0
- 679 05a4 0CC0D3E5 		ldrb	ip, [r3, #12]	@ zero_extendqisi2
- 256:../cmdqu.c    **** 					Data0 = lcStatDes->staPar->Data;
- 680              		.loc 1 256 0
- 681 05a8 0620D3E5 		ldrb	r2, [r3, #6]	@ zero_extendqisi2
- 682              	.LVL49:
- 260:../cmdqu.c    **** 					if (Data1&0x2){ //check the sign bit (bit1)
- 683              		.loc 1 260 0
- 684 05ac 02001CE3 		tst	ip, #2
- 263:../cmdqu.c    **** 						Data1 = ((Data1<<6)|0x80)| (Data0 >> 2);//set MSB
- 685              		.loc 1 263 0
- 686 05b0 2221A001 		moveq	r2, r2, lsr #2
- 687              	.LVL50:
- 261:../cmdqu.c    **** 						Data1 = ((Data1<<6)&0x40)| (Data0 >> 2);//clear MSB
- 688              		.loc 1 261 0
- 689 05b4 0CC3A011 		movne	ip, ip, asl #6
- 263:../cmdqu.c    **** 						Data1 = ((Data1<<6)|0x80)| (Data0 >> 2);//set MSB
- 690              		.loc 1 263 0
- 691 05b8 822CE001 		mvneq	r2, r2, asl #25
- 265:../cmdqu.c    **** 					glEp0Buffer[0] = Data1;
- 692              		.loc 1 265 0
- 693 05bc 1C109FE5 		ldr	r1, .L30
- 694              	.LVL51:
- 261:../cmdqu.c    **** 						Data1 = ((Data1<<6)&0x40)| (Data0 >> 2);//clear MSB
- 695              		.loc 1 261 0
- 696 05c0 40C00C12 		andne	ip, ip, #64
- 263:../cmdqu.c    **** 						Data1 = ((Data1<<6)|0x80)| (Data0 >> 2);//set MSB
- 697              		.loc 1 263 0
- 698 05c4 A22CE001 		mvneq	r2, r2, lsr #25
- 261:../cmdqu.c    **** 						Data1 = ((Data1<<6)&0x40)| (Data0 >> 2);//clear MSB
- 699              		.loc 1 261 0
- 700 05c8 22C18C11 		orrne	ip, ip, r2, lsr #2
- 701              	.LVL52:
- 263:../cmdqu.c    **** 						Data1 = ((Data1<<6)|0x80)| (Data0 >> 2);//set MSB
- 702              		.loc 1 263 0
- 703 05cc 0CC38201 		orreq	ip, r2, ip, asl #6
- 704              	.LVL53:
- 266:../cmdqu.c    **** 					glEp0Buffer[1] = 0;
- 705              		.loc 1 266 0
- 706 05d0 0000A0E3 		mov	r0, #0
- 707              	.LVL54:
- 265:../cmdqu.c    **** 					glEp0Buffer[0] = Data1;
- 708              		.loc 1 265 0
- 709 05d4 00C0C1E5 		strb	ip, [r1, #0]
- 266:../cmdqu.c    **** 					glEp0Buffer[1] = 0;
- 710              		.loc 1 266 0
- 711 05d8 0100C1E5 		strb	r0, [r1, #1]
- 267:../cmdqu.c    **** 					break;
- 712              		.loc 1 267 0
- 713 05dc E8FFFFEA 		b	.L27
- 714              	.L31:
- 715              		.align	2
- 716              	.L30:
- 717 05e0 00000000 		.word	.LANCHOR1
- 718              		.cfi_endproc
- 719              	.LFE6:
- 721              		.align	2
- 722              		.global	cmdFind
- 724              	cmdFind:
- 725              	.LFB7:
  290:../cmdqu.c    **** 
  291:../cmdqu.c    **** /******* find a command form command queue ********/
  292:../cmdqu.c    **** VdcmdDes *cmdFind(VdRingBuf *cmdqu, uint8_t cmdID){
- 726              		.loc 1 292 0
- 727              		.cfi_startproc
- 728              		@ args = 0, pretend = 0, frame = 0
- 729              		@ frame_needed = 0, uses_anonymous_args = 0
- 730              		@ link register save eliminated.
- 731              	.LVL55:
+ 497              		.loc 1 292 0
+ 498              		.cfi_startproc
+ 499              		@ args = 0, pretend = 0, frame = 0
+ 500              		@ frame_needed = 0, uses_anonymous_args = 0
+ 501              		@ link register save eliminated.
+ 502              	.LVL60:
  293:../cmdqu.c    **** 	VdcmdDes *cmd = cmdqu->startAdd;
  294:../cmdqu.c    **** 	;  //na
  295:../cmdqu.c    **** 	return cmd;
  296:../cmdqu.c    **** }
- 732              		.loc 1 296 0
- 733 05e4 080090E5 		ldr	r0, [r0, #8]
- 734              	.LVL56:
- 735 05e8 1EFF2FE1 		bx	lr
- 736              		.cfi_endproc
- 737              	.LFE7:
- 739              		.section	.rodata
- 740              		.align	2
- 741              		.set	.LANCHOR0,. + 0
- 744              	DelayArray:
- 745 0000 BC02     		.short	700
- 746 0002 0401     		.short	260
- 747 0004 0401     		.short	260
- 748 0006 0401     		.short	260
- 749 0008 BC02     		.short	700
- 750 000a 0401     		.short	260
- 751 000c 0401     		.short	260
- 752 000e 0401     		.short	260
- 753 0010 0401     		.short	260
- 754 0012 0401     		.short	260
- 755 0014 0401     		.short	260
- 756 0016 0401     		.short	260
- 757 0018 0401     		.short	260
- 758 001a 0401     		.short	260
- 759 001c 0401     		.short	260
- 760 001e 0401     		.short	260
- 761 0020 BC02     		.short	700
- 762 0022 BC02     		.short	700
- 763 0024 9001     		.short	400
- 764 0026 2C01     		.short	300
- 765 0028 2C01     		.short	300
- 766 002a 2C01     		.short	300
- 767 002c 2C01     		.short	300
- 768 002e 0401     		.short	260
- 769 0030 0401     		.short	260
- 770 0032 BC02     		.short	700
- 771 0034 BC02     		.short	700
- 772 0036 0401     		.short	260
- 773 0038 BC02     		.short	700
- 774 003a 0401     		.short	260
- 775 003c F401     		.short	500
- 776 003e 0401     		.short	260
- 777 0040 0401     		.short	260
- 778 0042 0401     		.short	260
- 779 0044 9001     		.short	400
- 780 0046 9001     		.short	400
- 781 0048 9001     		.short	400
- 782 004a 0401     		.short	260
- 783 004c 0401     		.short	260
- 784 004e 0401     		.short	260
- 785 0050 0401     		.short	260
- 786 0052 0401     		.short	260
- 787 0054 0401     		.short	260
- 788 0056 0401     		.short	260
- 789 0058 0000     		.short	0
- 790 005a 00000000 		.space	38
- 790      00000000 
- 790      00000000 
- 790      00000000 
- 790      00000000 
- 791              		.section	.rodata.str1.4,"aMS",%progbits,1
- 792              		.align	2
- 793              	.LC0:
- 794 0000 54686520 		.ascii	"The test cmdqu %d \015\012\000"
- 794      74657374 
- 794      20636D64 
- 794      71752025 
- 794      64200D0A 
- 795 0015 000000   		.space	3
- 796              	.LC1:
- 797 0018 436F6D6D 		.ascii	"Command Queue %s state %d\015\012\000"
- 797      616E6420 
- 797      51756575 
- 797      65202573 
- 797      20737461 
- 798              	.LC2:
- 799 0034 436F6D6D 		.ascii	"Command Queue check queueID %d startAdd 0x%x endAdd"
- 799      616E6420 
- 799      51756575 
- 799      65206368 
- 799      65636B20 
- 800 0067 20307825 		.ascii	" 0x%x write 0x%x read 0x%x queueFlag %d\015\012\000"
- 800      78207772 
- 800      69746520 
- 800      30782578 
- 800      20726561 
- 801 0091 000000   		.space	3
- 802              	.LC3:
- 803 0094 436F6D6D 		.ascii	"Command Queue check cmdID %d CmdDes 0x%x previous 0"
- 803      616E6420 
- 803      51756575 
- 803      65206368 
- 803      65636B20 
- 804 00c7 78257820 		.ascii	"x%x next 0x%x Idx %d cmdflag %d\015\012\000"
- 804      6E657874 
- 804      20307825 
- 804      78204964 
- 804      78202564 
- 805 00e9 000000   		.space	3
- 806              	.LC4:
- 807 00ec 49324320 		.ascii	"I2C command queue\000"
- 807      636F6D6D 
- 807      616E6420 
- 807      71756575 
- 807      6500
- 808 00fe 0000     		.space	2
- 809              	.LC5:
- 810 0100 436F6D6D 		.ascii	"Command Queue set cmdID %d CmdDes 0x%x next 0x%x cm"
- 810      616E6420 
- 810      51756575 
- 810      65207365 
- 810      7420636D 
- 811 0133 64666C61 		.ascii	"dflag %d dataIdx %d data 0x%x\015\012\000"
- 811      67202564 
- 811      20646174 
- 811      61496478 
- 811      20256420 
- 812 0153 00       		.bss
- 813              		.align	2
- 814              		.set	.LANCHOR1,. + 0
- 817              	glEp0Buffer:
- 818 0000 00000000 		.space	32
- 818      00000000 
- 818      00000000 
- 818      00000000 
- 818      00000000 
- 819              		.text
- 820              	.Letext0:
+ 503              		.loc 1 296 0
+ 504 02e4 080090E5 		ldr	r0, [r0, #8]
+ 505              	.LVL61:
+ 506 02e8 1EFF2FE1 		bx	lr
+ 507              		.cfi_endproc
+ 508              	.LFE7:
+ 510              		.section	.rodata
+ 511              		.align	2
+ 512              		.set	.LANCHOR0,. + 0
+ 515              	DelayArray:
+ 516 0000 BC02     		.short	700
+ 517 0002 0401     		.short	260
+ 518 0004 0401     		.short	260
+ 519 0006 0401     		.short	260
+ 520 0008 BC02     		.short	700
+ 521 000a 0401     		.short	260
+ 522 000c 0401     		.short	260
+ 523 000e 0401     		.short	260
+ 524 0010 0401     		.short	260
+ 525 0012 0401     		.short	260
+ 526 0014 0401     		.short	260
+ 527 0016 0401     		.short	260
+ 528 0018 0401     		.short	260
+ 529 001a 0401     		.short	260
+ 530 001c 0401     		.short	260
+ 531 001e 0401     		.short	260
+ 532 0020 BC02     		.short	700
+ 533 0022 BC02     		.short	700
+ 534 0024 9001     		.short	400
+ 535 0026 2C01     		.short	300
+ 536 0028 2C01     		.short	300
+ 537 002a 2C01     		.short	300
+ 538 002c 2C01     		.short	300
+ 539 002e 0401     		.short	260
+ 540 0030 0401     		.short	260
+ 541 0032 BC02     		.short	700
+ 542 0034 BC02     		.short	700
+ 543 0036 0401     		.short	260
+ 544 0038 BC02     		.short	700
+ 545 003a 0401     		.short	260
+ 546 003c F401     		.short	500
+ 547 003e 0401     		.short	260
+ 548 0040 0401     		.short	260
+ 549 0042 0401     		.short	260
+ 550 0044 9001     		.short	400
+ 551 0046 9001     		.short	400
+ 552 0048 9001     		.short	400
+ 553 004a 0401     		.short	260
+ 554 004c 0401     		.short	260
+ 555 004e 0401     		.short	260
+ 556 0050 0401     		.short	260
+ 557 0052 0401     		.short	260
+ 558 0054 0401     		.short	260
+ 559 0056 0401     		.short	260
+ 560 0058 0000     		.short	0
+ 561 005a 00000000 		.space	38
+ 561      00000000 
+ 561      00000000 
+ 561      00000000 
+ 561      00000000 
+ 562              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 563              		.align	2
+ 564              	.LC0:
+ 565 0000 54686520 		.ascii	"The test cmdqu %d \015\012\000"
+ 565      74657374 
+ 565      20636D64 
+ 565      71752025 
+ 565      64200D0A 
+ 566 0015 000000   		.space	3
+ 567              	.LC1:
+ 568 0018 436F6D6D 		.ascii	"Command Queue %s state %d\015\012\000"
+ 568      616E6420 
+ 568      51756575 
+ 568      65202573 
+ 568      20737461 
+ 569              	.LC2:
+ 570 0034 436F6D6D 		.ascii	"Command Queue check queueID %d startAdd 0x%x endAdd"
+ 570      616E6420 
+ 570      51756575 
+ 570      65206368 
+ 570      65636B20 
+ 571 0067 20307825 		.ascii	" 0x%x write 0x%x read 0x%x queueFlag %d\015\012\000"
+ 571      78207772 
+ 571      69746520 
+ 571      30782578 
+ 571      20726561 
+ 572 0091 000000   		.space	3
+ 573              	.LC3:
+ 574 0094 436F6D6D 		.ascii	"Command Queue check cmdID %d CmdDes 0x%x previous 0"
+ 574      616E6420 
+ 574      51756575 
+ 574      65206368 
+ 574      65636B20 
+ 575 00c7 78257820 		.ascii	"x%x next 0x%x Idx %d cmdflag %d\015\012\000"
+ 575      6E657874 
+ 575      20307825 
+ 575      78204964 
+ 575      78202564 
+ 576 00e9 000000   		.space	3
+ 577              	.LC4:
+ 578 00ec 49324320 		.ascii	"I2C command queue\000"
+ 578      636F6D6D 
+ 578      616E6420 
+ 578      71756575 
+ 578      6500
+ 579 00fe 0000     		.space	2
+ 580              	.LC5:
+ 581 0100 436F6D6D 		.ascii	"Command Queue set cmdID %d CmdDes 0x%x next 0x%x cm"
+ 581      616E6420 
+ 581      51756575 
+ 581      65207365 
+ 581      7420636D 
+ 582 0133 64666C61 		.ascii	"dflag %d dataIdx %d data 0x%x\015\012\000"
+ 582      67202564 
+ 582      20646174 
+ 582      61496478 
+ 582      20256420 
+ 583 0153 00       		.bss
+ 584              		.align	2
+ 585              		.set	.LANCHOR1,. + 0
+ 588              	glEp0Buffer:
+ 589 0000 00000000 		.space	32
+ 589      00000000 
+ 589      00000000 
+ 589      00000000 
+ 589      00000000 
+ 590              		.text
+ 591              	.Letext0:
+ 592              		.file 2 "c:\\program files (x86)\\cypress\\ez-usb fx3 sdk\\1.3\\arm gcc\\arm-none-eabi\\include\\s
+ 593              		.file 3 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/cyu3
+ 594              		.file 4 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/tx_p
+ 595              		.file 5 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/tx_a
+ 596              		.file 6 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/cyu3
+ 597              		.file 7 "../cmdqu.h"
+ 598              		.file 8 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/cyu3
+ 599              		.file 9 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/cyu3
+ 600              		.file 10 "C:\\Program Files (x86)\\Cypress\\EZ-USB FX3 SDK\\1.3\\\\firmware\\u3p_firmware\\inc/cyu
 DEFINED SYMBOLS
                             *ABS*:00000000 cmdqu.c
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:21     .text:00000000 $a
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:24     .text:00000000 creatqu
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:46     .text:00000010 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:50     .text:00000014 $a
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:53     .text:00000014 cmdquTest
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:362    .text:000003b4 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:368    .text:000003c0 $a
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:371    .text:000003c0 cmdbufCreate
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:421    .text:0000041c $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:425    .text:00000420 $a
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:428    .text:00000420 cmdquInit
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:515    .text:000004b0 cmdbufDestroy
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:533    .text:000004b8 cmdSet
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:617    .text:00000544 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:622    .text:0000054c $a
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:625    .text:0000054c statGet
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:717    .text:000005e0 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:721    .text:000005e4 $a
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:724    .text:000005e4 cmdFind
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:740    .rodata:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:744    .rodata:00000000 DelayArray
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:792    .rodata.str1.4:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:813    .bss:00000000 $d
-C:\Users\wcheng\AppData\Local\Temp\ccSpZVmU.s:817    .bss:00000000 glEp0Buffer
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:16     .text:00000000 $a
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:19     .text:00000000 creatqu
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:39     .text:00000010 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:43     .text:00000014 $a
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:46     .text:00000014 cmdquTest
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:126    .text:000000b4 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:132    .text:000000c0 $a
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:135    .text:000000c0 cmdbufCreate
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:193    .text:00000120 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:197    .text:00000124 $a
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:200    .text:00000124 cmdquInit
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:292    .text:000001b8 cmdbufDestroy
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:310    .text:000001c0 cmdSet
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:397    .text:00000250 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:402    .text:00000258 $a
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:405    .text:00000258 statGet
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:488    .text:000002e0 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:492    .text:000002e4 $a
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:495    .text:000002e4 cmdFind
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:511    .rodata:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:515    .rodata:00000000 DelayArray
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:563    .rodata.str1.4:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:584    .bss:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\ccCPulo5.s:588    .bss:00000000 glEp0Buffer
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

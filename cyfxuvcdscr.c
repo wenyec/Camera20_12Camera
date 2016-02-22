@@ -193,7 +193,8 @@ const uint8_t CyFxUSBHSConfigDscr[] =
         0x01,                           /* Source ID : 1 : Conencted to input terminal */
         0x58,0x02,                      /* Digital multiplier original: 0x00,0x40,*/
         0x03,                           /* Size of controls field for this terminal : 3 bytes */
-        0xdf,0x45,0x00,                 /* Brightness Contrast Saturation sharpness, BLC, gain, mains freq, wb -0x1B,0x37,0x00
+        0xd3,0x45,0x00,//0xdf,0x45,0x00,
+        								/* Brightness Contrast Saturation sharpness, BLC, gain, mains freq, wb -0x1B,0x37,0x00
          	 	 	 	 	 	 	 	   controls supported   0x01,0x00,0x00 or 0x1B, 0x37, 0x00*/
         0x00,                           /* String desc index : Not used */
 
@@ -551,7 +552,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x01,                           /* Source ID : 1 : Connected to input terminal */
         0x58,0x02,                      /* Digital multiplier org:0x00,0x40,*/
         0x03,                           /* Size of controls field for this terminal : 3 bytes */
-        0xdf,0x45,0x00,                 /* Brightness Contrast Saturation sharpness, BLC, gain, mains freq, wb -0x1B,0x37,0x00
+        0xd3,0x45,0x00,//0xdf,0x45,0x00,
+        								/* Brightness Contrast Saturation sharpness, BLC, gain, mains freq, wb -0x1B,0x37,0x00
          	 	 	 	 	 	 	 	   controls supported   0x01,0x00,0x00 or 0x1B, 0x37, 0x00*/
         0x00,                           /* String desc index : Not used */
 
@@ -655,7 +657,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x00,                           /* Interlace Flags: Progressive scanning, no interlace */
         0x00,                           /* duplication of the video stream restriction: 0 - no restriction */
 
-        /* Class specific Uncompressed VS frame descriptor for Res 1280x960 */
+        /* Class specific Uncompressed VS frame descriptor for Res 1280x720 */
         0x1E,                           /* Descriptor size */
         0x24,                           /* Descriptor type*/
         0x05,                           /* Subtype: uncompressed frame I/F */
@@ -666,7 +668,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x38, 0x04,                     /* Height in pixel 1080 (0x38, 0x04) 720 (0xd0, 0x02) **********************************************************************************/
 #else
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xC0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03) */
+        0xD0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03) */
 #endif
         0x00,0x40,0x70,0x31,            /* Min bit rate bits/s.=1920*1080*16*25= 0x31704000 ******************************************************/
         0x00,0x80,0x53,0x3b,            /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 ******************************************************/
@@ -678,23 +680,23 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 #else
         0x0A,0x8B,0x02,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
-        0x0A,0x8B,0x02,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
+        0x7F,0x1A,0x06,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
 #endif
 
-        /* Class specific Uncompressed VS frame descriptor 3 for 720p Res 1280x720*/
+        /* Class specific Uncompressed VS frame descriptor 3 for 720p Res 1280x960*/
         0x1E,                           /* Descriptor size */
         0x24,                           /* Descriptor type*/
         0x05,                           /* Subtype: uncompressed frame I/F */
         0x02,                           /* Frame Descriptor Index */
         0x02,                           /* Still image capture method 1 is not supported in this descriptor, fixed frame rate */
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
-        0xd0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) */
+        0xC0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03)*/
         0x00,0x00,0xBC,0x34,            /* Min bit rate bits/s. 1280*720*16*60= 0x34BC0000 *****************/
         0x00,0x00,0xBC,0x34,			//0x00,0xD0,0x14,0x48,           /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 *****/
         0x00,0xC6,0x99,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
         0x0A,0x8B,0x02,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
-        0x0A,0x8B,0x02,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
+        0x24,0x7A,0x08,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
 
 #if 1
         /* Class specific VS Still Image Frame descriptor for Method 2/3*/
@@ -882,16 +884,16 @@ const uint8_t CyFxUSBProductDscr[] =
         'U',0x00,
         'S',0x00,
         'B',0x00,
-        ' ',0x00,
         '3',0x00,
-        '.',0x00,
-        '0',0x00,
         ' ',0x00,
-        'H',0x00,
-        'D',0x00,
-        'C',0x00,
-        'a',0x00,
-        'm',0x00
+        'I',0x00,
+        'n',0x00,
+        'v',0x00,
+        'e',0x00,
+        'n',0x00,
+        'd',0x00,
+        'o',0x00,
+        ' ',0x00
     };
 
 /*

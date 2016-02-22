@@ -215,15 +215,15 @@ static uint8_t CtrlParArry[32][24]={
 #else
 		{/*0*/BLCModeReg          , BLCModeReg           , 2,    0,    0,    3,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 #endif
-		{/*1*/BrightnessReg1      , BrightnessReg0       , 2,    0,    0,  255,    0, 1, 0, 3, 0, 118, 0, 118, 199, I2C_DevAdd_C6,      CyTrue,  CyTrue, 0},
-		{/*2*/ContrastReg         , ContrastReg          , 2,    0,    0,  255,    0, 1, 0, 3, 0, 112, 0, 112,   0, I2C_DevAdd_C6,      CyTrue,  CyTrue, 0},
+		{/*1*/BrightnessReg1      , BrightnessReg0       , 2,    0,    0,  63,     0, 1, 0, 3, 0, 31, 0,   31, 199, I2C_EAGLESDP_ADDR,  CyTrue,  CyTrue, 0},
+		{/*2*/0x7/*ContrastReg*/  , 0x7/*ContrastReg*/   , 2,    16,   0,  64,     0, 1, 0, 3, 0, 40, 0,   40,   0, I2C_EAGLESDP_ADDR,  CyTrue,  CyTrue, 0},
 		{/*3*/0                   , 0                    , 2,    0,    0,  100,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{/*4*/MainsFreqReg        , MainsFreqReg         , 2,    0,    0,    1,    0, 1, 0, 3, 0,   1, 0,   1,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{/*5*/HuectrlRegGr        , HuectrlRegBlu        , 2,    0,    0,  255,    0, 1, 0, 3, 0, 128, 0,   0,   0, I2C_DevAdd_C6,      CyTrue,  CyTrue, 0},  //Hue control
 		{/*6*/SaturationRegR      , SaturationRegB       , 2,    0,    0,  100,    0, 1, 0, 3, 0,  50, 0,  50,   0, I2C_DevAdd_F2,      CyTrue,  CyTrue, 0},  //Saturation control
-		{/*7*/SharpnessReg        , SharpnessReg         , 2,    0,    0,   64,    0, 1, 0, 3, 0,  32, 0,  32,   0, I2C_EAGLESDP_ADDR,  CyTrue,  CyTrue, 0},
+		{/*7*/SharpnessReg        , SharpnessReg         , 2,    0,    0,   14,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue,  CyTrue, 0},
 		{/*8*/0                   , 0                    , 2,    0,    0,  100,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
-		{/*9*/WBModeReg           , WBModeReg            , 2,    0,    0,    5,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  //white balance control
+		{/*9*/0xb/*WBModeReg*/    , 0xb/*WBModeReg*/     , 2,    0,    0,    5,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  //white balance control
 		{/*A*/0                   , 0                    , 2,    0,    0,   64,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{/*B*/ManuBWBReg          , ManuRWBReg           , 4,    0,    0,   64,    0, 1, 0, 3, 0,  32,56,  32,  56, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  //white balance component: Red, Blue. Only manual mode
 		{/*C*/0                   , 0                    , 2,    0,    0,  100,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
@@ -243,8 +243,8 @@ static uint8_t CtrlParArry[32][24]={
 		{/*16*/DayNightDlyReg      , DayNightDlyReg       , 2,    0,    0,   63,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // day night switch delay control. 0 ~ 0x3f second
 		{/*17*/DayNightLevReg      , DayNightLevReg       , 2,    0,    0,  100,    0, 1, 0, 3, 0,  16, 0,  16,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // day to night start level. 0 ~ 0x64
 		{/*18*/NightDayLevReg      , NightDayLevReg       , 2,    0,    0,  100,    0, 1, 0, 3, 0,  16, 0,  16,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // night to day start level. 0 ~ 0x64
-		{/*19*/AExModeReg          , AExAGCReg            , 4,    0,    0,  127,    0, 1, 0, 3, 0,   0,32,   0,  32, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE mode setting & AGC level: 0:auto 1~18:manual; 0 ~ 0xff:level. read(auto), write(menu).
-		{/*1A*/AExReferleveReg0    , AExReferleveReg1     , 2,    0,    0,   64,    0, 1, 0, 3, 0,  32, 0,  32,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE reference level 0 ~ 0x40
+		{/*19*/AExModeReg          , AExAGCReg            , 4,    0,    0,  255,    0, 1, 0, 3, 0,   0,32,   0,  32, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE mode setting & AGC level: 0:auto 1~18:manual; 0 ~ 0xff:level. read(auto), write(menu).
+		{/*1A*/AExReferleveReg0    , AExReferleveReg0     , 2,    0,    0,   63,    0, 1, 0, 3, 0,  32, 0,  32,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  // AE reference level 0 ~ 0x40
 		{/*1B*/0                   , 0                    , 2,    0,    0,   25,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{/*1C*/SensorModeReg       , SensorModeReg        , 2,    0,    0,    6,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{/*1D*/0/*StillImg*/       , 0                    , 2,    0,    0,    3,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
@@ -310,12 +310,15 @@ static uint8_t CTCtrlParArry[16][24]={
 };
 static uint16_t ShutValueArry[8]={200, 100, 39, 20, 10, 5, 2, 1};
 static uint8_t ExTime[8][2]={{0x9c, 0x00}, {0x4e, 0x00}, {0x27, 0x00}, {0x14, 0x00}, {0x0a, 0x00}, {0x05, 0x00}, {0x02, 0x00}, {0x01, 0x00}};
+
+static uint8_t curFlag[64]={0}; //the curFlag for each controls current records available. 0: unable. the data should be read from sensor and put into the records. 1: available. the data is read from records.
+
 /*
  * WBMenuCmpArry is set for white storing balance component requests values.
  * first two bytes represent blue and last two are for red. The defaults are set to 0.
  */
 static uint8_t WBMenuCmpArry[4]={
-		0x20, 0x0f, 0x38, 0xf0
+		0xa0, 0x0f, 0xf, 0xf0
 };
 static uint8_t I2CCMDArry[12]={//the index 12 points to data available; 0: no used; 0xf: unavailable; 0xff: available.
 		0
@@ -474,6 +477,20 @@ inline void ControlHandle(uint8_t CtrlID){
 			 		 }
 			 		 break;
 				 case ExtAexModCtlID9:
+
+		 	 		 if(curFlag[CtrlID]){
+						 glEp0Buffer[0] = CtrlParArry[CtrlID][13];//exposure mode
+						 glEp0Buffer[2] = CtrlParArry[CtrlID][14];//AGC
+		 	 		 }else{
+		 	 			glEp0Buffer[0] = SensorGetControl(RegAdd0, devAdd);
+		 	 			glEp0Buffer[0] = glEp0Buffer[0]&0x3; // get least two bits for Aex Mode
+		 	 			CtrlParArry[CtrlID][13] = glEp0Buffer[0];
+
+		 	 			glEp0Buffer[2] = SensorGetControl(RegAdd1, devAdd);
+		 	 			CtrlParArry[CtrlID][14] = glEp0Buffer[2];
+		 	 			curFlag[CtrlID] = CyTrue;
+		 	 		 }
+
 					 glEp0Buffer[0] = CtrlParArry[CtrlID][13];//exposure mode
 					 glEp0Buffer[1] = 0;
 					 glEp0Buffer[2] = CtrlParArry[CtrlID][14];//AGC
@@ -482,35 +499,72 @@ inline void ControlHandle(uint8_t CtrlID){
 					 sendData1 = glEp0Buffer[2];
 					 CyU3PDebugPrint (4, "ExpM&AGC sent to host. %d %d; %d %d\r\n", glEp0Buffer[0], glEp0Buffer[1], glEp0Buffer[2], glEp0Buffer[3]);
 					 break;
-
+#if 0	//the brightness is placed by Axreference for invendo camera
 			 	 case BrgtCtlID1:
-					 Data0 = CtrlParArry[CtrlID][13];  //SensorGetControl(RegAdd0, devAdd); //SensorGetBLCMode();
-					 Data1 = CtrlParArry[CtrlID][14];  //SensorGetControl(RegAdd1, devAdd);
+
+		 	 		 if(curFlag[CtrlID]){
+						 Data0 = CtrlParArry[CtrlID][13];  //SensorGetControl(RegAdd0, devAdd); //SensorGetBLCMode();
+						 Data1 = CtrlParArry[CtrlID][14];  //SensorGetControl(RegAdd1, devAdd);
+		 	 		 }else{
+		 	 			glEp0Buffer[0] = SensorGetControl(RegAdd0, devAdd);
+		 	 			glEp0Buffer[0] = glEp0Buffer[0]&0x3; // get least two bits for Aex Mode
+		 	 			CtrlParArry[CtrlID][13] = glEp0Buffer[0];
+
+		 	 			glEp0Buffer[2] = SensorGetControl(RegAdd1, devAdd);
+		 	 			CtrlParArry[CtrlID][14] = glEp0Buffer[2];
+		 	 			curFlag[CtrlID] = CyTrue;
+		 	 		 }
+
 					 if (Data1&0x2){ //check the sign bit (bit1)
 						 Data1 = ((Data1<<6)&0x40)| (Data0 >> 2);//clear MSB
 					 }else{
 						 Data1 = ((Data1<<6)|0x80)| (Data0 >> 2);//set MSB
 					 }
+
 					 glEp0Buffer[0] = Data1;
 					 glEp0Buffer[1] = 0;
 					 sendData = glEp0Buffer[0];
 					 break;
-				 case HueCtlID5:
+#endif
+				 case HueCtlID5://TODO check sensor register
 					 glEp0Buffer[0] = CtrlParArry[CtrlID][13];//SensorGetControl(HuectrlRegRed, devAdd);
 					 glEp0Buffer[0] = glEp0Buffer[0] + GREEN_BASE;
 					 glEp0Buffer[1] = 0;
 					 sendData = glEp0Buffer[0];
 					 break;
 				 case WBTLevCtlID11:
-					 glEp0Buffer[0] = WBMenuCmpArry[0];//using for blue part
+
+		 	 		 if(curFlag[CtrlID]){
+						 glEp0Buffer[0] = WBMenuCmpArry[0];//using for blue part
+						 glEp0Buffer[2] = WBMenuCmpArry[2];//using for red part
+		 	 		 }else{
+		 	 			Data0 = SensorGetControl(RegAdd1, devAdd);
+		 	 			Data1 = SensorGetControl(RegAdd0, devAdd);
+						glEp0Buffer[0] = Data0;
+						WBMenuCmpArry[0] = glEp0Buffer[0];//using for blue part
+						glEp0Buffer[2] = Data1;
+						WBMenuCmpArry[2]= glEp0Buffer[2];//using for red part
+		 	 			curFlag[CtrlID] = CyTrue;
+		 	 		 }
+
 					 glEp0Buffer[1] = 0;
-					 glEp0Buffer[2] = WBMenuCmpArry[2];//using for red part
 					 glEp0Buffer[3] = 0;
 					 sendData = glEp0Buffer[0];
 					 sendData1 = glEp0Buffer[2];
 					 break;
-				 case SaturCtlID6:
+				 case SaturCtlID6://TODO check sensor register
 				 default:
+
+		 	 		 if(curFlag[CtrlID]){
+						 glEp0Buffer[0] = CtrlParArry[CtrlID][13];//ext_control array;
+						 glEp0Buffer[1] = CtrlParArry[CtrlID][14];
+		 	 		 }else{
+		 	 			glEp0Buffer[0] = SensorGetControl(RegAdd0, devAdd);
+		 	 			CtrlParArry[CtrlID][13] = glEp0Buffer[0];
+		 	 			glEp0Buffer[1] = CtrlParArry[CtrlID][14];
+		 	 			curFlag[CtrlID] = CyTrue;
+		 	 		 }
+
 					 glEp0Buffer[0] = CtrlParArry[CtrlID][13];//SensorGetControl(RegAdd0, devAdd);
 					 glEp0Buffer[1] = 0;
 					 sendData = glEp0Buffer[0];
@@ -659,9 +713,9 @@ inline void ControlHandle(uint8_t CtrlID){
 							 CtrlParArry[CtrlID][16] = CyTrue;
 							 dataIdx = 0;
 							 CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
-							 cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, getData, dataIdx);  //Exposure
-							 if(getData != 0){
-								 dataIdx++;
+							 //cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, getData, dataIdx);  //Exposure
+							 if(1 || (getData != 0)){
+								 //dataIdx++;
 								 cmdSet(cmdQuptr, CtrlID, RegAdd1, devAdd, getData1, dataIdx);  //AGC
 							 }
 							 CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
@@ -767,6 +821,7 @@ inline void ControlHandle(uint8_t CtrlID){
 							 ExUCtrlParArry[locCtrlID][13] = Data0;
 							 ExUCtrlParArry[locCtrlID][16] = CyTrue;
 							 break;
+#if 0	//the brightness is placed by Axreference for invendo camera
 				  	  	 case BrgtCtlID1:
 							 dataIdx = 0;
 							 CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
@@ -790,6 +845,7 @@ inline void ControlHandle(uint8_t CtrlID){
 							 CtrlParArry[CtrlID][16] = CyTrue;
 
 							 break;
+#endif
 						 case HueCtlID5:  //mapping to hue control registers
 							 dataIdx = 0;
 
@@ -823,14 +879,14 @@ inline void ControlHandle(uint8_t CtrlID){
 							 break;
 
 						 case WBTLevCtlID11:
-							 Data0 = glEp0Buffer[0]; //blue
-							 Data1 = glEp0Buffer[2]; //red
+							 Data0 = glEp0Buffer[0]; //blue to 0x9 or low to 0xa
+							 Data1 = glEp0Buffer[2]; //red to 0xa or high to 0x9
 							 dataIdx = 0;
 
 							 CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
-							 cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, Data0, dataIdx);  //First
+							 cmdSet(cmdQuptr, CtrlID, RegAdd1, devAdd, Data0, dataIdx);  //First
 							 dataIdx++;
-							 cmdSet(cmdQuptr, CtrlID, RegAdd1, devAdd, Data1, dataIdx);  //Second
+							 cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, Data1, dataIdx);  //Second
 							 CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
 
 							 WBMenuCmpArry[0] = Data0;//using for blue part
@@ -2492,8 +2548,8 @@ UVCHandleProcessingUnitRqts (
     		ControlHandle(BLCCtlID0);
     		break;
         case CY_FX_UVC_PU_BRIGHTNESS_CONTROL:
-        	CtrlAdd = CtrlParArry[BrgtCtlID1][0];
-   			ControlHandle(BrgtCtlID1);
+        	CtrlAdd = CtrlParArry[ExtExRefCtlID10/*BrgtCtlID1*/][0]; //Exreference places brightness.
+   			ControlHandle(ExtExRefCtlID10/*BrgtCtlID1*/);
     		break;
        case CY_FX_UVC_PU_CONTRAST_CONTROL:
     	    CtrlAdd = CtrlParArry[ConsCtlID2][0];
