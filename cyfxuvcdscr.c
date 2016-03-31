@@ -670,15 +670,15 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
         0xD0, 0x02,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03) */
 #endif
-        0x00,0x40,0x70,0x31,            /* Min bit rate bits/s.=1920*1080*16*25= 0x31704000 ******************************************************/
-        0x00,0x80,0x53,0x3b,            /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 ******************************************************/
+        0x00,0x00,0xF9,0x15,            /* Min bit rate bits/s.=1280*720*16*25=0x15F90000 (1920*1080*16*25= 0x31704000) ******************************************************/
+        0x00,0x40,0x70,0x31,            /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 ******************************************************/
         0x00,0xA4,0x1F,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 #ifndef CAM720
         0x15,0x16,0x05,0x00,            /* Default Frame Interval 30fps 0x15,0x16,0x05,0x00,*/
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
         0x15,0x16,0x05,0x00,            /* Shortest Frame Interval 30fps :0x15,0x16,0x05,0x00, 25fps: 0x80,0x1a,0x06,0x00,*/
 #else
-        0x0A,0x8B,0x02,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
+        0x7F,0x1A,0x06,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
         0x7F,0x1A,0x06,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
 #endif
@@ -691,10 +691,10 @@ const uint8_t CyFxUSBSSConfigDscr[] =
         0x02,                           /* Still image capture method 1 is not supported in this descriptor, fixed frame rate */
         0x00, 0x05,                      /* Width in pixel: 1280 (0x00, 0x05) */
         0xC0, 0x03,                      /* Height in pixel 720 (0xd0, 0x02) 960(0xC0, 0x03)*/
-        0x00,0x00,0xBC,0x34,            /* Min bit rate bits/s. 1280*720*16*60= 0x34BC0000 *****************/
-        0x00,0x00,0xBC,0x34,			//0x00,0xD0,0x14,0x48,           /* Max bit rate bits/s.=2250*1150*16*30= 0x3b538000 *****/
+        0x00,0x00,0x44,0x16,            /* Min bit rate bits/s. 1280*960*16*19= 0x16440000 *****************/
+        0x00,0x40,0x70,0x31,			/* Max bit rate bits/s. 1920*1080*16*25= 0x31704000(2250*1150*16*30= 0x3b538000) *****/
         0x00,0xC6,0x99,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
-        0x0A,0x8B,0x02,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
+        0x24,0x7A,0x08,0x00,            /* Default Frame Interval 60fps 0x0A,0x8B,0x02,0x00 */
         0x01,                           /* Frame interval(Frame Rate) types: Only one frame interval supported */
         0x24,0x7A,0x08,0x00,            /* Shortest Frame Interval 60fps :0x0A,0x8B,0x02,0x00*/
 

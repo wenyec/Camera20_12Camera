@@ -2978,7 +2978,8 @@ UVCHandleVideoStreamingRqts (
                             glProbeCtrl[5] = glCommitCtrl[5];
                             glProbeCtrl[6] = glCommitCtrl[6];
                             glProbeCtrl[7] = glCommitCtrl[7];
-                            CyU3PDebugPrint (4, "Get UVC Prob(set) control %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[3]);
+                            CyU3PDebugPrint (4, "Get UVC Prob(set) control %d %d %d %d %d %d %d\r\n", readCount,
+                            		glCommitCtrl[0], glCommitCtrl[3], glCommitCtrl[4], glCommitCtrl[5], glCommitCtrl[6], glCommitCtrl[7]);
                         }
                     }
                     break;
