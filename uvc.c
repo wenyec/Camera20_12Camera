@@ -204,7 +204,7 @@ volatile static CyBool_t WDRflag = CyFalse;
  *  the first D is the index of functionality, the second D is the index of parameters.
  *    e.g.
  *     1th D: backlight compensation, brightness, contrast, hue, saturation, sharpness, gamma, WBT, ~, BLC, main freq, ...
- *     2ed D: RegAdd1, RegAdd2, length, Min1, Min2, Max1, Max2, Res1, Res2, InfoReq1, InfoReq2, DefReq1, DefReq2,
+ *     2nd D: RegAdd1, RegAdd2, length, Min1, Min2, Max1, Max2, Res1, Res2, InfoReq1, InfoReq2, DefReq1, DefReq2,
  *            curVal1, curVal2 (index:14th), device address, checked flag, command available flag
  **************************************************/
 #define BLCIndex  0 // the back light compensation index
@@ -223,7 +223,7 @@ static uint8_t CtrlParArry[32][24]={
 		{/*6*/SaturationRegR      , SaturationRegB       , 2,    0,    0,  100,    0, 1, 0, 3, 0,  50, 0,  50,   0, I2C_DevAdd_F2,      CyTrue,  CyTrue, 0},  //Saturation control
 		{/*7*/SharpnessReg        , SharpnessReg         , 2,    0,    0,   14,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue,  CyTrue, 0},
 		{/*8*/0                   , 0                    , 2,    0,    0,  100,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
-		{/*9*/0xb/*WBModeReg*/    , 0xb/*WBModeReg*/     , 2,    0,    0,    5,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  //white balance control
+		{/*9*/0x8/*WBModeReg*/    , 0x8/*WBModeReg*/     , 2,    0,    0,    5,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  //white balance control
 		{/*A*/0                   , 0                    , 2,    0,    0,   64,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
 		{/*B*/ManuBWBReg          , ManuRWBReg           , 4,    0,    0,   64,    0, 1, 0, 3, 0,  32,56,  32,  56, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},  //white balance component: Red, Blue. Only manual mode
 		{/*C*/0                   , 0                    , 2,    0,    0,  100,    0, 1, 0, 3, 0,   0, 0,   0,   0, I2C_EAGLESDP_ADDR,  CyTrue, CyFalse, 0},
@@ -448,7 +448,7 @@ inline void ControlHandle(uint8_t CtrlID){
 			 	 }
 			 	 case ExtCamMCtlID12:
 					 sendData = CtrlParArry[CtrlID][13];
-					 if(CamMode == 1){//720p
+					 if(CamMode == 1){//720p or invendo
 						if(sendData >= 3){
 							CyU3PDebugPrint (4, "back light compensation setting is not correct. %d %d\r\n", CamMode, sendData);
 							sendData = 0; //set back to default
@@ -482,9 +482,10 @@ inline void ControlHandle(uint8_t CtrlID){
 						 glEp0Buffer[0] = CtrlParArry[CtrlID][13];//exposure mode
 						 glEp0Buffer[2] = CtrlParArry[CtrlID][14];//AGC
 		 	 		 }else{
-		 	 			glEp0Buffer[0] = SensorGetControl(RegAdd0, devAdd);
-		 	 			glEp0Buffer[0] = glEp0Buffer[0]&0x3; // get least two bits for Aex Mode
-		 	 			CtrlParArry[CtrlID][13] = glEp0Buffer[0];
+		 	 			//remove for invendo
+		 	 			//glEp0Buffer[0] = SensorGetControl(RegAdd0, devAdd);
+		 	 			//glEp0Buffer[0] = glEp0Buffer[0]&0x3; // get least two bits for Aex Mode
+		 	 			//CtrlParArry[CtrlID][13] = glEp0Buffer[0];
 
 		 	 			glEp0Buffer[2] = SensorGetControl(RegAdd1, devAdd);
 		 	 			CtrlParArry[CtrlID][14] = glEp0Buffer[2];
@@ -902,7 +903,8 @@ inline void ControlHandle(uint8_t CtrlID){
 								 Data0 = 1;
 
 							 CyU3PMutexGet(cmdQuptr->ringMux, CYU3P_WAIT_FOREVER);       //get mutex
-							 cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, Data0, dataIdx);  //First
+							 //remove for Invendo
+							 //cmdSet(cmdQuptr, CtrlID, RegAdd0, devAdd, Data0, dataIdx);  //First
 							 CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
 
 							 CtrlParArry[CtrlID][13] = Data0;
@@ -1553,7 +1555,8 @@ CyFxUvcApplnDmaCallback (
                 	CyU3PMutexGet(&imgHdMux, CYU3P_WAIT_FOREVER);
                 	glUVCHeader[1] &= ~(1<<5);    //clear still image flag
                 	CyU3PMutexPut(&imgHdMux);
-                	stiflag = 0xAA;
+                	//stiflag = 0xAA;
+                	stiflag = 0x0;//set back to video
                 }
 #endif
                 hitFV = CyTrue;  //set the hitFV flag to indicate the the partial buffer has been committed.
@@ -2406,13 +2409,13 @@ static uint8_t IMcount = 0;
                 	{
                     switch (setRes)
                      {
-                 	case 1: //960
-                 		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                 	case 1: //720
+                 		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
                  		//CyU3PThreadSleep(100);
                         CyU3PDebugPrint (4, "Set the video mode format1 %x %d\n", 0xb, 0x0);
                  		break;
-                 	case 2: //720
-                 		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                 	case 2: //960
+                 		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
                  		//CyU3PThreadSleep(100);
                         CyU3PDebugPrint (4, "Set the video mode format1 %x %d\n", 0x0b, 0x1);
                  		break;
@@ -3019,22 +3022,25 @@ UVCHandleVideoStreamingRqts (
                             glCommitCtrl, &readCount);
                     if (apiRetStatus == CY_U3P_SUCCESS)//supports both SS and HS
                     {
+                        if(setRes != glCommitCtrl[3])
+                        {
                         switch (glCommitCtrl[3])
                          {
-                         	case 1: //960 or 480
-                         		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
-                         		CyU3PThreadSleep(500);
-                                CyU3PDebugPrint (4, "Set the video mode format %x %d\n", 0x0, 0x0b);
-                         		break;
-                         	case 2: //720 or 360
+                         	case 1: //720 or 360
                          		SensorSetIrisControl(0x0b, 0x30, 0x1, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
                          		CyU3PThreadSleep(500);
                                 CyU3PDebugPrint (4, "Set the video mode format %x %d\n", 0x1, 0x0b);
                          		break;
+                         	case 2: //960 or 480
+                         		SensorSetIrisControl(0x0b, 0x30, 0x0, I2C_DSPBOARD_ADDR_WR/*boardID*/);//start 5MP Res
+                         		CyU3PThreadSleep(500);
+                                CyU3PDebugPrint (4, "Set the video mode format %x %d\n", 0x0, 0x0b);
+                         		break;
                          	default:
                          		break;
-                         }
+                         }                         
                         setRes = glCommitCtrl[3];
+                        }
                         CyU3PDebugPrint (4, "Set the video mode format setRes %d\n", setRes);
 
 #if 0
@@ -3160,6 +3166,7 @@ UVCHandleVideoStreamingRqts (
                                 CyU3PDebugPrint (4, "Set CY_FX_UVC_STREAM_EVENT failed %x\n", apiRetStatus);
                             }
 	#endif
+#if 0 //remove the still resolution set for invendo because the still res. is always the same as the video res.
                            switch (glCommitCtrl[1])
                              {
                              	case 1: //720
@@ -3178,7 +3185,7 @@ UVCHandleVideoStreamingRqts (
                             setstilRes = glCommitCtrl[1];
 
                         	CyU3PDebugPrint (4, "UVC still commit control set %d %d %d\r\n", readCount, glCommitCtrl[0], glCommitCtrl[1]);
-
+#endif
                         }
                         break;
 
@@ -3566,6 +3573,8 @@ static uint8_t timeDelay[64] = {
 
 };
 */
+
+static uint8_t timercount = 0;
 void I2cAppThread_Entry(uint32_t input){
 
 	//uint16_t count = 0, cmdCopyIdx = 0; //count1 = 0, cmdQuIdx = 0,
@@ -3576,7 +3585,7 @@ void I2cAppThread_Entry(uint32_t input){
 	uint32_t flag = 0;
 	uint8_t  cmdFlag = 0;
 	uint8_t regAdd, /*regAdd1,*/ devAdd, data;// data1;
-	uint8_t i;
+	uint8_t i, curFlagIdx;
 	uint16_t delaytime;
 	//CyBool_t trigger = CyFalse;
 
@@ -3608,6 +3617,7 @@ void I2cAppThread_Entry(uint32_t input){
 	for(;;){
 
 		CyU3PEventGet (&glFxUVCEvent, VD_FX_I2C_CMD_EVENT, CYU3P_EVENT_AND_CLEAR, &flag, CYU3P_WAIT_FOREVER);//wait command event
+		//CyU3PDebugPrint (4, "In I2C loop timercounter %d cmdFlag 0x%x\r\n", timercount, cmdFlag);
 /*  // for test GPIO output
 		if(trigger)
 		{
@@ -3709,8 +3719,18 @@ void I2cAppThread_Entry(uint32_t input){
 						lcCmdDes->cmdFlag = desusing;
 					}
 				}else{
-					CyU3PTimerModify(&I2CCmdTimer, 1000, 0);
+					CyU3PTimerModify(&I2CCmdTimer, 1000, 0); //the free I2C commands timer pace (no setting command).
 					CyU3PTimerStart(&I2CCmdTimer);
+					//CyU3PDebugPrint (4, "I2Ctimer counter %d", timercount);
+					if(timercount >= 3){
+						for(curFlagIdx = 0; curFlagIdx<64; curFlagIdx++){
+							curFlag[curFlagIdx] = 0;
+						}
+							timercount = 0;
+
+					}else{
+							timercount++;
+					}
 				}
 			}
 			CyU3PMutexPut(cmdQuptr->ringMux);  //release the command queue mutex
