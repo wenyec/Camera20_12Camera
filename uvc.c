@@ -1391,6 +1391,10 @@ CyFxUVCApplnUSBSetupCB (
     wIndex    = (uint16_t)(setupdat1 & CY_FX_USB_SETUP_INDEX_MASK);
     wLength   = (uint16_t)((setupdat1 & CY_FX_USB_SETUP_LENGTH_MASK) >> 16);
 
+#if 1
+   	CyU3PDebugPrint(4, "\n\rbRType = 0x%x, bRequest = 0x%x, wValue = 0x%x, wIndex = 0x%x, wLength= 0x%x",bmReqType, bRequest, wValue, wIndex, wLength);
+#endif
+
     /* Check for UVC Class Requests */
     switch (bmReqType)
     {
@@ -3297,12 +3301,14 @@ UVCAppEP0Thread_Entry (
                 }
             }
 //#ifdef DbgInfo
+#if 0
             if((eventFlag & eventMask) & ~VD_FX_INT_STA_EVENT)
             CyU3PDebugPrint (4, "USB speed = %d evenflag = 0x%x bmReqType = 0x%x\r\n"
             		"bRequest = 0x%x wValue = 0x%x wIndex = 0x%x wLength = 0x%x isflag 0x%x\r\n",
             		usbSpeed, eventFlag, bmReqType, bRequest, wValue, wIndex, wLength, 0/*isFlag*/); /* additional debug message */
             //CyU3PDebugPrint (4, "fb = %d pb = %d pbc = %d pbcp = %d\r\n", fbbak, pbbak, pbcbak, pbcpbak);
             //fbbak=0;pbbak=0;pbcbak=0;pbcpbak=0;
+#endif
 //#endif
             if (eventFlag & CY_FX_UVC_VIDEO_CONTROL_REQUEST_EVENT)
             {

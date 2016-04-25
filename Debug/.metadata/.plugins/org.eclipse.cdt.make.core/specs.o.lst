@@ -7,11 +7,13 @@
    7              		.eabi_attribute 25, 1
    8              		.eabi_attribute 26, 1
    9              		.eabi_attribute 30, 2
-  10              		.eabi_attribute 18, 4
-  11              		.file	"specs.c"
-  19              	.Ltext0:
-  20              		.cfi_sections	.debug_frame
-  21              	.Letext0:
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"specs.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 specs.c
 

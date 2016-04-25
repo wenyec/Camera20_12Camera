@@ -39,11 +39,16 @@
 /* This function inserts a delay between successful I2C transfers to prevent
  false errors due to the slave being busy.
  */
-static void SensorI2CAccessDelay(CyU3PReturnStatus_t status) {
+static void SensorI2CAccessDelay(CyU3PReturnStatus_t status, CyBool_t isRead) {//add a read flag for invendo reading delay 80ms
 	/* Add a 10us delay if the I2C operation that preceded this call was successful. */
 	if (status == CY_U3P_SUCCESS)
 	{
-		CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
+		if(isRead){
+			CyU3PBusyWait(40000); // 40ms delay.
+			CyU3PBusyWait(40000); // 40ms delay.
+		}
+		else
+			CyU3PBusyWait(2000); //change into 2ms org is 100us (100).
 	}else //if I2C operation is not success reconfig the I2C
 	{
 		//CyFxUVCApplnI2CInit ();
@@ -80,7 +85,7 @@ CyU3PReturnStatus_t SensorWrite2B(
 #ifdef DbgInfo
 	CyU3PDebugPrint(4, "sensor write2B(0) %d %d %d\r\n", lowAddr, buf[0], lowData); //additional debug
 #endif
-	SensorI2CAccessDelay(apiRetStatus);
+	SensorI2CAccessDelay(apiRetStatus, 0);
 
 	//buf[0] = lowData;								/****************** data block *****************************************/
 	preamble.ctrlMask = 0x0000;
@@ -90,7 +95,7 @@ CyU3PReturnStatus_t SensorWrite2B(
 	CyU3PDebugPrint(4, "sensor write2B(1) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
 #endif
 	/* Set the parameters for the I2C API access and then call the write API. */
-	SensorI2CAccessDelay(apiRetStatus);
+	SensorI2CAccessDelay(apiRetStatus, 0);
 	return apiRetStatus;
 }
 
@@ -118,7 +123,7 @@ CyU3PReturnStatus_t SensorWrite(uint8_t slaveAddr, uint8_t highAddr,
 	preamble.ctrlMask = 0x0000;
 
 	apiRetStatus = CyU3PI2cTransmitBytes(&preamble, buf, count, 0);
-	SensorI2CAccessDelay(apiRetStatus);
+	SensorI2CAccessDelay(apiRetStatus, 0);
 
 	return apiRetStatus;
 }
@@ -156,7 +161,7 @@ CyU3PReturnStatus_t SensorRead2B(
 #ifdef DbgInfo
 	CyU3PDebugPrint(4, "sensor read2B(1) %d %d %d\r\n", lowAddr, buf[0], buf[1]); //additional debug
 #endif
-	SensorI2CAccessDelay(apiRetStatus);
+	SensorI2CAccessDelay(apiRetStatus, 1);
 	preamble.buffer[0] = slaveAddr;
 	preamble.length = 1;
 	preamble.ctrlMask = 0x0000;
@@ -166,7 +171,7 @@ CyU3PReturnStatus_t SensorRead2B(
 	if(apiRetStatus != CY_U3P_SUCCESS){
 		CyU3PDebugPrint(4, "sensor read2B(R) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]);
 	}
-	SensorI2CAccessDelay(apiRetStatus);
+	SensorI2CAccessDelay(apiRetStatus, 0);
 #ifdef DbgInfo
 	CyU3PDebugPrint(4, "sensor read2B(2) %d %d %d\r\n", apiRetStatus, buf[0], buf[1]); //additional debug
 #endif
@@ -195,7 +200,7 @@ CyU3PReturnStatus_t SensorRead(uint8_t slaveAddr, uint8_t highAddr,
 	preamble.ctrlMask = 0x0004; /*  Send start bit after third byte of preamble. */
 
 	apiRetStatus = CyU3PI2cReceiveBytes(&preamble, buf, count, 0);
-	SensorI2CAccessDelay(apiRetStatus);
+	SensorI2CAccessDelay(apiRetStatus, 0);
 
 	return apiRetStatus;
 }
@@ -266,11 +271,13 @@ uint8_t SensorI2cBusTest(void) {
 	uint8_t buf[2];
 
 	/* Reading sensor ID */
+#if 0	//remove sensor ID read
 	if (SensorRead2B(SENSOR_ADDR_RD, I2C_DSPBOARD_ADDR_WR, I2C_EAGLESDP_ADDR, 0xf2, 1, buf) == CY_U3P_SUCCESS) {
 		if ((buf[0] == 0x56) /*&& (buf[1] == 0x02)*/) {
 			return CY_U3P_SUCCESS;
 		}
 	}
+#endif
 #ifdef USB_DEBUG_PRINT
 	CyU3PDebugPrint (4, "The Sensor test 0x%x 0x%x\r\n", buf[0], buf[1]); // additional debug
 #endif

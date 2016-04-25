@@ -755,16 +755,16 @@
  775              		.file 3 "c:\\program files (x86)\\cypress\\ez-usb fx3 sdk\\1.3\\arm gcc\\arm-none-eabi\\include\\s
 DEFINED SYMBOLS
                             *ABS*:00000000 cyfxuvcdscr.c
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:30     .rodata:00000000 CyFxUSBProductDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:81     .rodata:00000030 CyFxUSBManufactureDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:140    .rodata:00000068 CyFxUSBStringLangIDDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:147    .rodata:0000006c CyFxUSBSSConfigDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:418    .rodata:00000178 CyFxUSBBOSDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:444    .rodata:00000190 CyFxUSBHSConfigDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:703    .rodata:00000290 CyFxUSBFSConfigDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:716    .rodata:0000029c CyFxUSBDeviceQualDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:730    .rodata:000002a8 CyFxUSBDeviceDscrSS
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:752    .rodata:000002bc CyFxUSBDeviceDscr
-C:\Users\wcheng\AppData\Local\Temp\ccWdYUYm.s:27     .rodata:00000000 $d
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:30     .rodata:00000000 CyFxUSBProductDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:81     .rodata:00000030 CyFxUSBManufactureDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:140    .rodata:00000068 CyFxUSBStringLangIDDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:147    .rodata:0000006c CyFxUSBSSConfigDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:418    .rodata:00000178 CyFxUSBBOSDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:444    .rodata:00000190 CyFxUSBHSConfigDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:703    .rodata:00000290 CyFxUSBFSConfigDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:716    .rodata:0000029c CyFxUSBDeviceQualDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:730    .rodata:000002a8 CyFxUSBDeviceDscrSS
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:752    .rodata:000002bc CyFxUSBDeviceDscr
+C:\Users\wcheng\AppData\Local\Temp\ccyzK42l.s:27     .rodata:00000000 $d
 
 NO UNDEFINED SYMBOLS

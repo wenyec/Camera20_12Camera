@@ -3,18 +3,18 @@
 ################################################################################
 
 ELF_SRCS := 
-OBJ_SRCS := 
-ASM_SRCS := 
+O_SRCS := 
 C_SRCS := 
 S_UPPER_SRCS := 
-O_SRCS := 
-EXECUTABLES := 
-OBJS := 
-SECONDARY_LIST := 
+OBJ_SRCS := 
+ASM_SRCS := 
 SECONDARY_SIZE := 
-ASM_DEPS := 
-S_UPPER_DEPS := 
+OBJS := 
 C_DEPS := 
+ASM_DEPS := 
+EXECUTABLES := 
+SECONDARY_LIST := 
+S_UPPER_DEPS := 
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
