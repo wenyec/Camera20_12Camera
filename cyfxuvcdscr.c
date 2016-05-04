@@ -454,7 +454,7 @@ const uint8_t CyFxUSBBOSDscr[] =
         0x07,                           /* Descriptor Size */
         CY_FX_DEVICE_CAPB_DSCR_TYPE,    /* Device Capability Type descriptor */
         CY_FX_USB2_EXTN_CAPB_TYPE,      /* USB 2.0 Extension Capability Type */
-        0x00,0x00,0x00,0x00,            /* Supported device level features  */
+        0x02, 0x00, 0x00, 0x00,            /* Supported device level features  */
 
         /* SuperSpeed Device Capability */
         0x0A,                           /* Descriptor Size */
