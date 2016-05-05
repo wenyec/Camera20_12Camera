@@ -29,10 +29,7 @@ uvc.d: ../uvc.c \
  C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3externcstart.h \
  C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3externcend.h \
  ../sensor.h ../camera_ptzcontrol.h ../cyfxgpif2config.h \
- ../cyfxgpif2config_usb2_720.h ../cmdqu.h \
- C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3socket.h \
- C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3descriptor.h \
- C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/sock_regs.h
+ ../cyfxgpif2config_usb2_720.h ../cmdqu.h
 
 C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3system.h:
 
@@ -101,9 +98,3 @@ C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc
 ../cyfxgpif2config_usb2_720.h:
 
 ../cmdqu.h:
-
-C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3socket.h:
-
-C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/cyu3descriptor.h:
-
-C:\Program\ Files\ (x86)\Cypress\EZ-USB\ FX3\ SDK\1.3\\firmware\u3p_firmware\inc/sock_regs.h:

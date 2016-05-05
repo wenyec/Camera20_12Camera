@@ -78,10 +78,6 @@
 /* Maximum video data that can be accommodated in one DMA buffer. */
 #define CY_FX_UVC_BUF_FULL_SIZE        (CY_FX_UVC_STREAM_BUF_SIZE - 16)
 
-#define CY_FX_UVC_PROD_HEADER                     	(12)            /* UVC DMA Buffer Header Size */
-#define CY_FX_UVC_PROD_FOOTER						(4)             /* UVC DMA Buffer Footer Size */
-
-
 /* Number of DMA buffers per GPIF DMA thread. */
 #define CY_FX_UVC_STREAM_BUF_COUNT     (4)  // change to 7 from 4 for low res
 
@@ -139,7 +135,6 @@
    They are defined here for convenient usage in the rest of the application source code.
  */
 #define CY_FX_INTF_ASSN_DSCR_TYPE       (0x0B)          /* Type code for Interface Association Descriptor (IAD) */
-#define CY_FX_UVC_CS_INTRFC_DESCR       (0x24)
 
 #define CY_FX_USB_SETUP_REQ_TYPE_MASK   (uint32_t)(0x000000FF)  /* Mask for bmReqType field from a control request. */
 #define CY_FX_USB_SETUP_REQ_MASK        (uint32_t)(0x0000FF00)  /* Mask for bRequest field from a control request. */
@@ -156,16 +151,9 @@
 #define VD_FX_UVC_MAX_STLPROBE_SETTING (11)             /* Maximum number of bytes in still image Probe Control */
 #define CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED (32)        /* Probe control data size aligned to 16 bytes. */
 
-#define CY_FX_UVC_MAX_STILL_PROBE_SETTING			(11)			/* UVC 1.1 still probe control*/
-#define CY_FX_MAX_STILL_PROBE_SETTING_ALIGNED	(32)			/* UVC 1.1 still probe control*/
-#define CY_FX_STILL_TRIGGER_COUNT				(1)			/* UVC 1.1 still probe control*/
-#define CY_FX_STILL_TRIGGER_ALIGNED			(16)			/* UVC 1.1 still probe control*/
-
 #define CY_FX_UVC_HEADER_FRAME          (0)                     /* UVC header value for normal frame indication */
 #define CY_FX_UVC_HEADER_EOF            (uint8_t)(1 << 1)       /* UVC header value for end of frame indication */
 #define CY_FX_UVC_HEADER_FRAME_ID       (uint8_t)(1 << 0)       /* Frame ID toggle bit in UVC header. */
-
-#define CY_FX_UVC_HEADER_STILL_IMAGE				(uint8_t)(1<<5)
 
 #define CY_FX_USB_UVC_SET_REQ_TYPE      (uint8_t)(0x21)         /* UVC Interface SET Request Type */
 #define CY_FX_USB_UVC_GET_REQ_TYPE      (uint8_t)(0xA1)         /* UVC Interface GET Request Type */
@@ -274,16 +262,6 @@ extern const uint8_t CyFxUSBSSConfigDscr[];             /* USB 3.0 config descri
 extern const uint8_t CyFxUSBStringLangIDDscr[];         /* String 0 descriptor. */
 extern const uint8_t CyFxUSBManufactureDscr[];          /* Manufacturer string descriptor. */
 extern const uint8_t CyFxUSBProductDscr[];              /* Product string descriptor. */
-
-/* UVC Probe Control Setting */
-extern uint8_t glProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING];
-extern const uint8_t gl720pProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING];
-extern const uint8_t gl1080pProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING];
-extern const uint8_t glVga60ProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING];
-extern const uint8_t glVga30ProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING];
-extern const uint8_t gl5MpProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING];
-
-extern uint8_t glStillProbeCtrl[CY_FX_UVC_MAX_STILL_PROBE_SETTING];
 
 extern void creatqu(uint8_t para);
 extern void CyFxUVCApplnI2CInit (void);
